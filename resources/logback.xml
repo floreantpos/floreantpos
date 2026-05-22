@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+  <!-- Console appender -->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%p: %d{dd-MMM-yyyy HH:mm:ss}: %m%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- Rolling file appender — same location as original log4j config -->
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${user.home}/floreantpos.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>${user.home}/floreantpos.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+      <maxFileSize>10MB</maxFileSize>
+      <maxHistory>30</maxHistory>
+      <totalSizeCap>200MB</totalSizeCap>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%p: %d{dd-MMM-yyyy HH:mm:ss}: %m%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- Per-package levels matching original log4j.properties -->
+  <logger name="com.floreantpos" level="DEBUG"/>
+  <logger name="com.orocube"     level="DEBUG"/>
+
+  <!-- Quiet down noisy third-party libraries -->
+  <logger name="org.hibernate"          level="WARN"/>
+  <logger name="org.apache"             level="WARN"/>
+  <logger name="com.formdev.flatlaf"    level="WARN"/>
+
+  <root level="ERROR">
+    <appender-ref ref="STDOUT"/>
+    <appender-ref ref="FILE"/>
+  </root>
+
+</configuration>

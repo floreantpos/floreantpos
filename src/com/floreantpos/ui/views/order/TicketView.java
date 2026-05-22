@@ -1,3 +1,20 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 /*
  * TicketView.java
  *
@@ -6,465 +23,581 @@
 
 package com.floreantpos.ui.views.order;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
+import org.hibernate.StaleStateException;
+import net.miginfocom.swing.MigLayout;
+
+import com.floreantpos.IconFactory;
+import com.floreantpos.Messages;
+import com.floreantpos.POSConstants;
 import com.floreantpos.PosException;
-import com.floreantpos.config.PrintConfig;
+import com.floreantpos.config.TerminalConfig;
 import com.floreantpos.main.Application;
-import com.floreantpos.model.MenuCategory;
-import com.floreantpos.model.MenuGroup;
+import com.floreantpos.model.ITicketItem;
 import com.floreantpos.model.MenuItem;
+import com.floreantpos.model.OrderType;
 import com.floreantpos.model.Ticket;
 import com.floreantpos.model.TicketItem;
 import com.floreantpos.model.TicketItemModifier;
 import com.floreantpos.model.dao.MenuItemDAO;
-import com.floreantpos.print.PosPrintService;
+import com.floreantpos.model.dao.ShopTableStatusDAO;
+import com.floreantpos.model.dao.TicketDAO;
+import com.floreantpos.report.ReceiptPrintService;
+import com.floreantpos.swing.PosButton;
+import com.floreantpos.swing.PosScrollPane;
+import com.floreantpos.swing.PosUIManager;
+import com.floreantpos.ui.dialog.AutomatedWeightInputDialog;
+import com.floreantpos.ui.dialog.BasicWeightInputDialog;
+import com.floreantpos.ui.dialog.ItemSearchDialog;
+import com.floreantpos.ui.dialog.NumberSelectionDialog2;
 import com.floreantpos.ui.dialog.POSMessageDialog;
-import com.floreantpos.ui.views.SwitchboardView;
+import com.floreantpos.ui.dialog.SeatSelectionDialog;
+import com.floreantpos.ui.views.CashierSwitchBoardView;
 import com.floreantpos.ui.views.order.actions.OrderListener;
+import com.floreantpos.util.CurrencyUtil;
+import com.floreantpos.util.DrawerUtil;
+import com.floreantpos.util.NumberUtil;
+import com.floreantpos.util.POSUtil;
 
 /**
- *
- * @author  MShahriar
+ * 
+ * @author MShahriar
  */
 public class TicketView extends JPanel {
+
 	private java.util.Vector<OrderListener> orderListeners = new java.util.Vector<OrderListener>();
 	private Ticket ticket;
-
-	public final static String VIEW_NAME = "TICKET_VIEW";
+	private com.floreantpos.swing.PosButton btnDecreaseAmount;
+	private com.floreantpos.swing.PosButton btnDelete = new PosButton();
+	private com.floreantpos.swing.PosButton btnIncreaseAmount = new PosButton();
+	private com.floreantpos.swing.PosButton btnEdit = new PosButton("..."); //$NON-NLS-1$ //$NON-NLS-2$
+	private com.floreantpos.swing.PosButton btnScrollDown;
+	private com.floreantpos.swing.PosButton btnScrollUp = new PosButton();
+	private com.floreantpos.swing.TransparentPanel ticketItemActionPanel;
+	private javax.swing.JScrollPane ticketScrollPane;
+	private PosButton btnTotal;
+	private com.floreantpos.ui.ticket.TicketViewerTable ticketViewerTable;
+	private JPanel itemSearchPanel;
+	private JTextField txtSearchItem;
+	private TitledBorder titledBorder = new TitledBorder(""); //$NON-NLS-1$
+	private Border border = new EmptyBorder(2, 2, 2, 2);
+	private boolean cancelable;
+	private boolean allowToLogOut;
+	public final static String VIEW_NAME = "TICKET_VIEW"; //$NON-NLS-1$
 
 	public TicketView() {
 		initComponents();
-
-		chkTaxExempt.setEnabled(false);
-		ticketViewerTable.getRenderer().setInTicketScreen(true);
-		ticketViewerTable.addMouseListener(new MouseAdapter() {
-
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
-					updateSelectionView();
-				}
-			}
-
-		});
 	}
 
-	/** This method is called from within the constructor to
-	 * initialize the form.
-	 * WARNING: Do NOT modify this code. The content of this method is
-	 * always regenerated by the Form Editor.
+	/**
+	 * This method is called from within the constructor to initialize the form.
+	 * WARNING: Do NOT modify this code. The content of this method is always
+	 * regenerated by the Form Editor.
 	 */
-	// <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
+	// <editor-fold defaultstate="collapsed"
+	// desc=" Generated Code ">//GEN-BEGIN:initComponents
 	private void initComponents() {
-		java.awt.GridBagConstraints gridBagConstraints;
 
-		jPanel1 = new com.floreantpos.swing.TransparentPanel();
-		jSeparator1 = new javax.swing.JSeparator();
-		jPanel3 = new com.floreantpos.swing.TransparentPanel();
-		jLabel5 = new javax.swing.JLabel();
-		jLabel6 = new javax.swing.JLabel();
-		jLabel1 = new javax.swing.JLabel();
-		jLabel2 = new javax.swing.JLabel();
-		jSeparator2 = new javax.swing.JSeparator();
-		jSeparator3 = new javax.swing.JSeparator();
-		tfSubtotal = new javax.swing.JTextField();
-		tfTax = new javax.swing.JTextField();
-		tfDiscount = new javax.swing.JTextField();
-		tfTotal = new javax.swing.JTextField();
-		chkTaxExempt = new javax.swing.JCheckBox();
-		bottomPanel = new com.floreantpos.swing.TransparentPanel();
-		btnPay = new com.floreantpos.swing.PosButton();
-		btnCancel = new com.floreantpos.swing.PosButton();
-		btnFinish = new com.floreantpos.swing.PosButton();
-		jPanel5 = new com.floreantpos.swing.TransparentPanel();
-		btnIncreaseAmount = new com.floreantpos.swing.PosButton();
-		btnDecreaseAmount = new com.floreantpos.swing.PosButton();
-		btnScrollUp = new com.floreantpos.swing.PosButton();
-		btnScrollDown = new com.floreantpos.swing.PosButton();
-		btnDelete = new com.floreantpos.swing.PosButton();
-		jPanel2 = new com.floreantpos.swing.TransparentPanel();
-		jScrollPane1 = new javax.swing.JScrollPane();
-		ticketViewerTable = new com.floreantpos.ui.ticket.TicketViewerTable();
-
-		setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Ticket", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
-		setPreferredSize(new java.awt.Dimension(280, 463));
+		titledBorder.setTitleJustification(TitledBorder.CENTER);
+		setBorder(border);
 		setLayout(new java.awt.BorderLayout(5, 5));
+		itemSearchPanel = new JPanel();
 
-		jPanel1.setLayout(new java.awt.BorderLayout(5, 5));
-		jPanel1.add(jSeparator1, java.awt.BorderLayout.CENTER);
+		ticketItemActionPanel = new com.floreantpos.swing.TransparentPanel();
+		btnDecreaseAmount = new com.floreantpos.swing.PosButton();
+		btnScrollDown = new com.floreantpos.swing.PosButton();
+		ticketViewerTable = new com.floreantpos.ui.ticket.TicketViewerTable();
+		ticketScrollPane = new PosScrollPane(ticketViewerTable);
+		ticketScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		ticketScrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+		ticketScrollPane.setPreferredSize(PosUIManager.getSize(180, 200));
 
-		jPanel3.setLayout(new java.awt.GridBagLayout());
+		btnEdit.setEnabled(false);
 
-		jLabel5.setFont(new java.awt.Font("Tahoma", 1, 12));
-		jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-		jLabel5.setText("Subtotal:");
-		gridBagConstraints = new java.awt.GridBagConstraints();
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 1;
-		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		gridBagConstraints.insets = new java.awt.Insets(3, 5, 0, 0);
-		jPanel3.add(jLabel5, gridBagConstraints);
+		createPayButton();
 
-		jLabel6.setFont(new java.awt.Font("Tahoma", 1, 12));
-		jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-		jLabel6.setText("Total:");
-		gridBagConstraints = new java.awt.GridBagConstraints();
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 3;
-		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		gridBagConstraints.insets = new java.awt.Insets(0, 5, 3, 0);
-		jPanel3.add(jLabel6, gridBagConstraints);
+		createTicketItemControlPanel();
+		createItemSearchPanel();
 
-		jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12));
-		jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-		jLabel1.setText("Discount:");
-		gridBagConstraints = new java.awt.GridBagConstraints();
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 2;
-		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-		jPanel3.add(jLabel1, gridBagConstraints);
+		JPanel centerPanel = new JPanel(new BorderLayout(5, 5));
+		centerPanel.add(ticketScrollPane);
 
-		jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12));
-		jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-		jLabel2.setText("Tax:");
-		gridBagConstraints = new java.awt.GridBagConstraints();
-		gridBagConstraints.gridx = 2;
-		gridBagConstraints.gridy = 2;
-		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-		jPanel3.add(jLabel2, gridBagConstraints);
-		gridBagConstraints = new java.awt.GridBagConstraints();
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 6;
-		gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		gridBagConstraints.weightx = 1.0;
-		jPanel3.add(jSeparator2, gridBagConstraints);
-		gridBagConstraints = new java.awt.GridBagConstraints();
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 0;
-		gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		gridBagConstraints.weightx = 1.0;
-		jPanel3.add(jSeparator3, gridBagConstraints);
-
-		tfSubtotal.setEditable(false);
-		tfSubtotal.setFont(new java.awt.Font("Tahoma", 1, 12));
-		gridBagConstraints = new java.awt.GridBagConstraints();
-		gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.insets = new java.awt.Insets(3, 5, 0, 5);
-		jPanel3.add(tfSubtotal, gridBagConstraints);
-
-		tfTax.setEditable(false);
-		tfTax.setFont(new java.awt.Font("Tahoma", 1, 12));
-		gridBagConstraints = new java.awt.GridBagConstraints();
-		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.insets = new java.awt.Insets(3, 5, 0, 5);
-		jPanel3.add(tfTax, gridBagConstraints);
-
-		tfDiscount.setEditable(false);
-		tfDiscount.setFont(new java.awt.Font("Tahoma", 1, 12));
-		gridBagConstraints = new java.awt.GridBagConstraints();
-		gridBagConstraints.gridx = 1;
-		gridBagConstraints.gridy = 2;
-		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.insets = new java.awt.Insets(3, 5, 0, 5);
-		jPanel3.add(tfDiscount, gridBagConstraints);
-
-		tfTotal.setEditable(false);
-		tfTotal.setFont(new java.awt.Font("Tahoma", 1, 12));
-		gridBagConstraints = new java.awt.GridBagConstraints();
-		gridBagConstraints.gridx = 1;
-		gridBagConstraints.gridy = 3;
-		gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.insets = new java.awt.Insets(3, 5, 3, 5);
-		jPanel3.add(tfTotal, gridBagConstraints);
-
-		chkTaxExempt.setFont(new java.awt.Font("Tahoma", 1, 12));
-		chkTaxExempt.setText("Tax Exempt");
-		chkTaxExempt.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
-		chkTaxExempt.setFocusable(false);
-		chkTaxExempt.setMargin(new java.awt.Insets(0, 0, 0, 0));
-		gridBagConstraints = new java.awt.GridBagConstraints();
-		gridBagConstraints.gridx = 1;
-		gridBagConstraints.gridy = 4;
-		gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-		gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		gridBagConstraints.insets = new java.awt.Insets(0, 5, 3, 0);
-		jPanel3.add(chkTaxExempt, gridBagConstraints);
-
-		jPanel1.add(jPanel3, java.awt.BorderLayout.NORTH);
-
-		bottomPanel.setLayout(new java.awt.GridBagLayout());
-
-		btnPay.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/pay_32.png")));
-		btnPay.setText("PAY NOW");
-		btnPay.setPreferredSize(new java.awt.Dimension(76, 45));
-		btnPay.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				doPayNow(evt);
-			}
-		});
-		gridBagConstraints = new java.awt.GridBagConstraints();
-		gridBagConstraints.gridwidth = 2;
-		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
-		bottomPanel.add(btnPay, gridBagConstraints);
-
-		btnCancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/cancel_32.png")));
-		btnCancel.setText("CANCEL");
-		btnCancel.setPreferredSize(new java.awt.Dimension(76, 45));
-		btnCancel.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				doCancelOrder(evt);
-			}
-		});
-		gridBagConstraints = new java.awt.GridBagConstraints();
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 1;
-		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-		gridBagConstraints.weightx = 1.0;
-		bottomPanel.add(btnCancel, gridBagConstraints);
-
-		btnFinish.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/finish_32.png")));
-		btnFinish.setText("FINISH");
-		btnFinish.setPreferredSize(new java.awt.Dimension(76, 45));
-		btnFinish.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				doFinishOrder(evt);
-			}
-		});
-		gridBagConstraints = new java.awt.GridBagConstraints();
-		gridBagConstraints.gridx = 1;
-		gridBagConstraints.gridy = 1;
-		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-		bottomPanel.add(btnFinish, gridBagConstraints);
-
-		jPanel1.add(bottomPanel, java.awt.BorderLayout.SOUTH);
-
-		jPanel5.setLayout(new java.awt.GridBagLayout());
-
-		btnIncreaseAmount.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/add_user_32.png")));
-		btnIncreaseAmount.setPreferredSize(new java.awt.Dimension(76, 45));
-		btnIncreaseAmount.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				doIncreaseAmount(evt);
-			}
-		});
-		gridBagConstraints = new java.awt.GridBagConstraints();
-		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-		gridBagConstraints.weightx = 1.0;
-		jPanel5.add(btnIncreaseAmount, gridBagConstraints);
-
-		btnDecreaseAmount.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/minus_32.png")));
-		btnDecreaseAmount.setPreferredSize(new java.awt.Dimension(76, 45));
-		btnDecreaseAmount.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				doDecreaseAmount(evt);
-			}
-		});
-		gridBagConstraints = new java.awt.GridBagConstraints();
-		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-		jPanel5.add(btnDecreaseAmount, gridBagConstraints);
-
-		btnScrollUp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/up_32.png")));
-		btnScrollUp.setPreferredSize(new java.awt.Dimension(76, 45));
-		btnScrollUp.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				doScrollUp(evt);
-			}
-		});
-		gridBagConstraints = new java.awt.GridBagConstraints();
-		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-		jPanel5.add(btnScrollUp, gridBagConstraints);
-
-		btnScrollDown.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/down_32.png")));
-		btnScrollDown.setPreferredSize(new java.awt.Dimension(76, 45));
-		btnScrollDown.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				doScrollDown(evt);
-			}
-		});
-		gridBagConstraints = new java.awt.GridBagConstraints();
-		gridBagConstraints.gridx = 2;
-		gridBagConstraints.gridy = 1;
-		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
-		jPanel5.add(btnScrollDown, gridBagConstraints);
-
-		btnDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/delete_32.png")));
-		btnDelete.setText("DELETE");
-		btnDelete.setPreferredSize(new java.awt.Dimension(80, 17));
-		btnDelete.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				doDeleteSelection(evt);
-			}
-		});
-		gridBagConstraints = new java.awt.GridBagConstraints();
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 1;
-		gridBagConstraints.gridwidth = 2;
-		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-		gridBagConstraints.weightx = 1.0;
-		gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
-		jPanel5.add(btnDelete, gridBagConstraints);
-
-		jPanel1.add(jPanel5, java.awt.BorderLayout.CENTER);
-
-		add(jPanel1, java.awt.BorderLayout.SOUTH);
-
-		jPanel2.setLayout(new java.awt.BorderLayout());
-
-		jScrollPane1.setBorder(null);
-		jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-		jScrollPane1.setPreferredSize(new java.awt.Dimension(180, 200));
-		jScrollPane1.setViewportView(ticketViewerTable);
-
-		jPanel2.add(jScrollPane1, java.awt.BorderLayout.CENTER);
-
-		add(jPanel2, java.awt.BorderLayout.CENTER);
+		add(itemSearchPanel, BorderLayout.NORTH);
+		add(centerPanel);
+		add(ticketItemActionPanel, BorderLayout.EAST);
+		ticketViewerTable.getRenderer().setInTicketScreen(true);
+		ticketViewerTable.getSelectionModel().addListSelectionListener(new TicketItemSelectionListener());
+		setPreferredSize(PosUIManager.getSize(340, 463));
 	}// </editor-fold>//GEN-END:initComponents
 
-	private void doFinishOrder(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doFinishOrder
+	private void createItemSearchPanel() {
+
+		itemSearchPanel.setLayout(new MigLayout("insets 0", "grow", ""));
+		PosButton btnSearch = new PosButton("...");
+
+		txtSearchItem = new JTextField();
+
+		txtSearchItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				if (txtSearchItem.getText().equals("")) {
+					POSMessageDialog.showMessage("Please enter item number or barcode ");
+					return;
+				}
+
+				if (!addMenuItemByBarcode(txtSearchItem.getText())) {
+					addMenuItemByItemId(txtSearchItem.getText());
+				}
+				txtSearchItem.setText("");
+			}
+		});
+
+		btnSearch.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ItemSearchDialog dialog = new ItemSearchDialog(Application.getPosWindow());
+				dialog.setTitle("Search item");
+				dialog.pack();
+				dialog.open();
+				if (dialog.isCanceled()) {
+					return;
+				}
+
+				txtSearchItem.requestFocus();
+
+				if (!addMenuItemByBarcode(dialog.getValue())) {
+					if (!addMenuItemByItemId(dialog.getValue())) {
+						POSMessageDialog.showError(Application.getPosWindow(), "Item not found");
+					}
+				}
+			}
+		});
+		itemSearchPanel.add(txtSearchItem, "split 2, grow,span");
+		itemSearchPanel.add(btnSearch, "grow, span, width " + PosUIManager.getSize(60) + "!, height " + PosUIManager.getSize(40) + "!");
+	}
+
+	private static boolean isParsable(String input) {
+		boolean parsable = true;
 		try {
+			Integer.parseInt(input);
+		} catch (NumberFormatException e) {
+			parsable = false;
+		}
+		return parsable;
+	}
+
+	private boolean addMenuItemByItemId(String id) {
+
+		if (!isParsable(id)) {
+			return false;
+		}
+
+		Integer itemId = Integer.parseInt(id);
+
+		MenuItem menuItem = MenuItemDAO.getInstance().get(itemId);
+
+		if (menuItem == null) {
+			return false;
+		}
+
+		if (!filterByOrderType(menuItem)) {
+			return false;
+		}
+
+		if (!filterByStockAmount(menuItem)) {
+			return false;
+		}
+
+		OrderView.getInstance().getOrderController().itemSelected(menuItem);
+		return true;
+	}
+
+	private boolean addMenuItemByBarcode(String barcode) {
+
+		MenuItemDAO dao = new MenuItemDAO();
+
+		MenuItem menuItem = dao.getMenuItemByBarcode(barcode);
+
+		if (menuItem == null) {
+			return false;
+		}
+
+		if (!filterByOrderType(menuItem)) {
+			return false;
+		}
+
+		if (!filterByStockAmount(menuItem)) {
+			return false;
+		}
+
+		OrderView.getInstance().getOrderController().itemSelected(menuItem);
+		return true;
+	}
+
+	private boolean filterByOrderType(MenuItem menuItem) {
+
+		List<OrderType> orderTypeList = menuItem.getOrderTypeList();
+
+		if (orderTypeList == null || orderTypeList.size() == 0) {
+			return true;
+		}
+
+		if (orderTypeList.contains(ticket.getOrderType())) {
+			return true;
+		}
+		return false;
+	}
+
+	private boolean filterByStockAmount(MenuItem menuItem) {
+		if (menuItem.isDisableWhenStockAmountIsZero() && menuItem.getStockAmount() <= 0) {
+			POSMessageDialog.showError("Items are not available in stock");
+			return false;
+		}
+		return true;
+	}
+
+	private void createPayButton() {
+		btnTotal = new PosButton(POSConstants.TOTAL.toUpperCase());
+		btnTotal.setFont(btnTotal.getFont().deriveFont(Font.BOLD));
+
+//		if (!Application.getInstance().getTerminal().isHasCashDrawer()) {
+//			btnTotal.setEnabled(false);
+//		}
+
+		btnTotal.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (ticket.getOrderType().isHasForHereAndToGo()) {
+					OrderTypeSelectionDialog2 dialog = new OrderTypeSelectionDialog2(ticket);
+					dialog.open();
+
+					if (dialog.isCanceled()) {
+						return;
+					}
+					String orderType = dialog.getSelectedOrderType();
+					if (orderType != null) {
+						ticket.updateTicketItemPriceByOrderType(orderType);
+						updateModel();
+						updateView();
+					}
+				}
+				doPayNow();
+			}
+		});
+
+		btnTotal.setVisible(false);
+		add(btnTotal, BorderLayout.SOUTH);
+	}
+
+	private void createTicketItemControlPanel() {
+		GridLayout gridLayout = new GridLayout(0, 1, 1, 4);
+		ticketItemActionPanel.setLayout(gridLayout);
+		Dimension size = PosUIManager.getSize(40, 40);
+		applyCardStyle(btnScrollUp);
+		applyCardStyle(btnIncreaseAmount);
+		applyCardStyle(btnDecreaseAmount);
+		applyCardStyle(btnDelete);
+		applyCardStyle(btnEdit);
+		applyCardStyle(btnScrollDown);
+		btnScrollUp.setIcon(IconFactory.getIcon("/ui_icons/", "up.png", size)); //$NON-NLS-1$ //$NON-NLS-2$
+		btnScrollUp.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				doScrollUp();
+			}
+		});
+
+		btnIncreaseAmount.setIcon(IconFactory.getIcon("/ui_icons/", "add_user.png", size)); //$NON-NLS-1$ //$NON-NLS-2$
+		btnIncreaseAmount.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+
+				ITicketItem selectedTicketItem = ticketViewerTable.getSelected();
+
+				if (selectedTicketItem == null) {
+					return;
+				}
+
+				if (isFractionalUnit()) {
+					doIncreaseFractionalUnit();
+				}
+				else {
+					doIncreaseAmount();
+				}
+			}
+		});
+
+		btnDecreaseAmount.setIcon(IconFactory.getIcon("/ui_icons/", "minus.png", size)); //$NON-NLS-1$ //$NON-NLS-2$
+		btnDecreaseAmount.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				doDecreaseAmount();
+			}
+		});
+
+		btnScrollDown.setIcon(IconFactory.getIcon("/ui_icons/", "down.png", size)); //$NON-NLS-1$ //$NON-NLS-2$
+		btnScrollDown.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				doScrollDown();
+			}
+		});
+
+		btnDelete.setIcon(IconFactory.getIcon("/ui_icons/", "delete.png", size)); //$NON-NLS-1$ //$NON-NLS-2$
+		btnDelete.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				doDeleteSelection();
+			}
+		});
+
+		btnEdit.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				doEditSelection();
+			}
+		});
+
+		ticketItemActionPanel.add(btnScrollUp);
+		ticketItemActionPanel.add(btnIncreaseAmount);
+		ticketItemActionPanel.add(btnDecreaseAmount);
+		ticketItemActionPanel.add(btnDelete);
+		ticketItemActionPanel.add(btnEdit);
+		ticketItemActionPanel.add(btnScrollDown);
+
+		ticketItemActionPanel.setPreferredSize(PosUIManager.getSize(55, 270));
+	}
+
+	private static void applyCardStyle(com.floreantpos.swing.PosButton btn) {
+		btn.setUI(new com.floreantpos.swing.CardPosButtonUI());
+		btn.setOpaque(false);
+		btn.setContentAreaFilled(false);
+		btn.setBorderPainted(false);
+		btn.setFocusPainted(false);
+	}
+
+	public synchronized void doFinishOrder() {// GEN-FIRST:event_doFinishOrder
+		sendTicketToKitchen();
+		closeView(false);
+	}// GEN-LAST:event_doFinishOrder
+
+	public synchronized void sendTicketToKitchen() {// GEN-FIRST:event_doFinishOrder
+		saveTicketIfNeeded();
+		if (ticket.getOrderType().isShouldPrintToKitchen()) {
+			if (ticket.needsKitchenPrint()) {
+				ReceiptPrintService.printToKitchen(ticket);
+				TicketDAO.getInstance().refresh(ticket);
+				setCancelable(false);
+				setAllowToLogOut(false);
+			}
+		}
+		OrderController.saveOrder(ticket);
+	}
+
+	public synchronized void doHoldOrder() {// GEN-FIRST:event_doFinishOrder
+		updateModel();
+
+		TicketDAO ticketDAO = TicketDAO.getInstance();
+		OrderController.saveOrder(ticket);
+		ticketDAO.refresh(ticket);
+
+		closeView(false);
+	}// GEN-LAST:event_doFinishOrder
+
+	public void saveTicketIfNeeded() {
+		updateModel();
+
+		TicketDAO ticketDAO = TicketDAO.getInstance();
+
+		//if (ticket.getId() == null) {
+		// save ticket first. ticket needs to save so that it
+		// contains an id.
+		OrderController.saveOrder(ticket);
+		ticketDAO.refresh(ticket);
+		//}
+	}
+
+	private void closeView(boolean orderCanceled) {
+		if (orderCanceled && ticket.getId() == null && ticket.getOrderType().isShowTableSelection()) {
+			doReleaseTables();
+		}
+		ticketViewerTable.setRowHeight(PosUIManager.getSize(60));
+		if (TerminalConfig.isCashierMode()) {
+			RootView.getInstance().showView(CashierSwitchBoardView.VIEW_NAME);
+		}
+		else {
+			RootView.getInstance().showDefaultView();
+		}
+	}
+
+	private void doReleaseTables() {
+		List<Integer> tableNumbers = ticket.getTableNumbers();
+		if (tableNumbers == null || tableNumbers.isEmpty())
+			return;
+		ShopTableStatusDAO.getInstance().removeTicketFromShopTableStatus(ticket, null);
+	}
+
+	public void doCancelOrder() {// GEN-FIRST:event_doCancelOrder
+		closeView(true);
+	}// GEN-LAST:event_doCancelOrder
+
+	public synchronized void updateModel() {
+		if (!ticket.isBarTab() && (ticket.getTicketItems() == null || ticket.getTicketItems().size() == 0)) {
+			throw new PosException(com.floreantpos.POSConstants.TICKET_IS_EMPTY_);
+		}
+
+		ticket.calculatePrice();
+	}
+
+	public void doPayNow() {// GEN-FIRST:event_doPayNow
+		try {
+			if (!POSUtil.checkDrawerAssignment()) {
+				return;
+			}
 			updateModel();
 
 			OrderController.saveOrder(ticket);
 
-			if (PrintConfig.isPrintReceiptWhenSetteled()) {
-				PosPrintService.printTicket(ticket);
-			}
-
-			if (PrintConfig.isPrintKitchenWhenSetteled()) {
-				if (ticket.needsKitchenPrint()) {
-					PosPrintService.printToKitcken(ticket);
-				}
-				ticket.clearDeletedItems();
-				OrderController.saveOrder(ticket);
-			}
-			RootView.getInstance().showView(SwitchboardView.VIEW_NAME);
-		} catch (PosException x) {
-			POSMessageDialog.showError(x.getMessage());
-		} catch (Exception e) {
-			POSMessageDialog.showError(Application.getPosWindow(), POSMessageDialog.ERROR_MESSAGE, e);
-		}
-	}//GEN-LAST:event_doFinishOrder
-
-	private void doCancelOrder(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doCancelOrder
-		RootView.getInstance().showView(SwitchboardView.VIEW_NAME);
-	}//GEN-LAST:event_doCancelOrder
-
-	private void updateModel() {
-		if (ticket.getTicketItems() == null || ticket.getTicketItems().size() == 0) {
-			throw new PosException("Ticket is empty.");
-		}
-		ticket.calculatePrice();
-	}
-
-	private void doPayNow(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doPayNow
-		try {
-			updateModel();
 			firePayOrderSelected();
 		} catch (PosException e) {
-			POSMessageDialog.showError(e.getMessage());
+			POSMessageDialog.showError(POSUtil.getFocusedWindow(), e.getMessage().toString());
+		} catch (StaleStateException x) {
+			POSMessageDialog.showMessageDialogWithReloadButton(POSUtil.getFocusedWindow(), OrderView.getInstance());
+			return;
 		}
-	}//GEN-LAST:event_doPayNow
+	}// GEN-LAST:event_doPayNow
 
-	private void doDeleteSelection(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doDeleteSelection
-		Object object = ticketViewerTable.deleteSelectedItem();
-		if (object != null) {
-			updateView();
+	private void doDeleteSelection() {// GEN-FIRST:event_doDeleteSelection
+		ticketViewerTable.deleteSelectedItem();
+		updateView();
 
-			if (object instanceof TicketItemModifier) {
-				ModifierView modifierView = OrderView.getInstance().getModifierView();
-				if (modifierView.isVisible()) {
-					modifierView.updateVisualRepresentation();
+	}// GEN-LAST:event_doDeleteSelection
+
+	private void doEditSelection() {// GEN-FIRST:event_doDeleteSelection
+		Object object = ticketViewerTable.getSelected();
+
+		if (object == null) {
+			return;
+		}
+		if (object instanceof TicketItem && ((TicketItem) object).isTreatAsSeat()) {
+			TicketItem ticketItem = (TicketItem) object;
+
+			SeatSelectionDialog seatDialog = new SeatSelectionDialog(ticket.getTableNumbers(), getSeatNumbers());
+			seatDialog.setTitle("Select Seat");
+			seatDialog.pack();
+			seatDialog.open();
+
+			if (seatDialog.isCanceled()) {
+				return;
+			}
+			int seatNumber = seatDialog.getSeatNumber();
+			if (seatNumber == -1) {
+				NumberSelectionDialog2 dialog = new NumberSelectionDialog2();
+				dialog.setTitle("Enter seat number");
+				dialog.setValue(ticketItem.getSeatNumber());
+				dialog.pack();
+				dialog.open();
+
+				if (dialog.isCanceled()) {
+					return;
 				}
+				seatNumber = (int) dialog.getValue();
+			}
+
+			ticketItem.setName("Seat** " + seatNumber);
+			ticketItem.setSeatNumber(seatNumber);
+			updateTicketItemsSeatNumber(ticketItem);
+		}
+		else
+			OrderController.openModifierDialog((ITicketItem) object);
+
+		updateView();
+
+	}// GEN-LAST:event_doDeleteSelection
+
+	protected List<Integer> getSeatNumbers() {
+		List<Integer> seatNumbers = new ArrayList<>();
+
+		for (TicketItem ticketItem : ticket.getTicketItems()) {
+			if (ticketItem.isTreatAsSeat() && !seatNumbers.contains(ticketItem.getSeatNumber())) {
+				seatNumbers.add(ticketItem.getSeatNumber());
 			}
 		}
+		return seatNumbers;
+	}
 
-	}//GEN-LAST:event_doDeleteSelection
+	private void updateTicketItemsSeatNumber(TicketItem ticketItem) {
+		boolean updateSeatNumber = false;
+		for (TicketItem item : ticket.getTicketItems()) {
+			if (item == ticketItem) {
+				updateSeatNumber = true;
+				continue;
+			}
+			if (updateSeatNumber) {
+				if (!item.isTreatAsSeat())
+					item.setSeatNumber(ticketItem.getSeatNumber());
+				else
+					break;
+			}
+		}
+	}
 
-	private void doIncreaseAmount(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doIncreaseAmount
+	private void doIncreaseAmount() {// GEN-FIRST:event_doIncreaseAmount
+		if (!checkStock(-1)) {
+			POSMessageDialog.showError("Items are not available in stock");
+			return;
+		}
+
 		if (ticketViewerTable.increaseItemAmount()) {
-			ModifierView modifierView = OrderView.getInstance().getModifierView();
-			if (modifierView.isVisible()) {
-				modifierView.updateVisualRepresentation();
-			}
 			updateView();
 		}
 
-	}//GEN-LAST:event_doIncreaseAmount
+	}// GEN-LAST:event_doIncreaseAmount
 
-	private void doDecreaseAmount(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doDecreaseAmount
+	private void doIncreaseFractionalUnit() {
+
+		double selectedQuantity = getNewItemQuantity();
+
+		if (selectedQuantity == -1) {
+			return;
+		}
+
+		if (!checkStock(selectedQuantity)) {
+			POSMessageDialog.showError("Items are not available in stock");
+			return;
+		}
+
+		if (ticketViewerTable.increaseFractionalUnit(selectedQuantity)) {
+			updateView();
+		}
+	}
+
+	private void doDecreaseAmount() {// GEN-FIRST:event_doDecreaseAmount
 		if (ticketViewerTable.decreaseItemAmount()) {
-			ModifierView modifierView = OrderView.getInstance().getModifierView();
-			if (modifierView.isVisible()) {
-				modifierView.updateVisualRepresentation();
-			}
 			updateView();
 		}
-	}//GEN-LAST:event_doDecreaseAmount
+	}// GEN-LAST:event_doDecreaseAmount
 
-	private void doScrollDown(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doScrollDown
+	private void doScrollDown() {// GEN-FIRST:event_doScrollDown
 		ticketViewerTable.scrollDown();
-	}//GEN-LAST:event_doScrollDown
+	}// GEN-LAST:event_doScrollDown
 
-	private void doScrollUp(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doScrollUp
+	private void doScrollUp() {// GEN-FIRST:event_doScrollUp
 		ticketViewerTable.scrollUp();
-	}//GEN-LAST:event_doScrollUp
-
-	// Variables declaration - do not modify//GEN-BEGIN:variables
-	private com.floreantpos.swing.TransparentPanel bottomPanel;
-	private com.floreantpos.swing.PosButton btnCancel;
-	private com.floreantpos.swing.PosButton btnDecreaseAmount;
-	private com.floreantpos.swing.PosButton btnDelete;
-	private com.floreantpos.swing.PosButton btnFinish;
-	private com.floreantpos.swing.PosButton btnIncreaseAmount;
-	private com.floreantpos.swing.PosButton btnPay;
-	private com.floreantpos.swing.PosButton btnScrollDown;
-	private com.floreantpos.swing.PosButton btnScrollUp;
-	private javax.swing.JCheckBox chkTaxExempt;
-	private javax.swing.JLabel jLabel1;
-	private javax.swing.JLabel jLabel2;
-	private javax.swing.JLabel jLabel5;
-	private javax.swing.JLabel jLabel6;
-	private com.floreantpos.swing.TransparentPanel jPanel1;
-	private com.floreantpos.swing.TransparentPanel jPanel2;
-	private com.floreantpos.swing.TransparentPanel jPanel3;
-	private com.floreantpos.swing.TransparentPanel jPanel5;
-	private javax.swing.JScrollPane jScrollPane1;
-	private javax.swing.JSeparator jSeparator1;
-	private javax.swing.JSeparator jSeparator2;
-	private javax.swing.JSeparator jSeparator3;
-	private javax.swing.JTextField tfDiscount;
-	private javax.swing.JTextField tfSubtotal;
-	private javax.swing.JTextField tfTax;
-	private javax.swing.JTextField tfTotal;
-	private com.floreantpos.ui.ticket.TicketViewerTable ticketViewerTable;
-
-	// End of variables declaration//GEN-END:variables
+	}// GEN-LAST:event_doScrollUp
 
 	public Ticket getTicket() {
 		return ticket;
@@ -474,8 +607,9 @@ public class TicketView extends JPanel {
 		this.ticket = _ticket;
 
 		ticketViewerTable.setTicket(_ticket);
-
 		updateView();
+		setCancelable(true);
+		setAllowToLogOut(true);
 	}
 
 	public void addTicketItem(TicketItem ticketItem) {
@@ -484,14 +618,9 @@ public class TicketView extends JPanel {
 	}
 
 	public void removeModifier(TicketItem parent, TicketItemModifier modifier) {
+		modifier.setItemCount(0);
+		//modifier.setModifierType(TicketItemModifier.MODIFIER_NOT_INITIALIZED);
 		ticketViewerTable.removeModifier(parent, modifier);
-	}
-
-	private NumberFormat numberFormat = new DecimalFormat("0.00");
-
-	public void updateAllView() {
-		ticketViewerTable.updateView();
-		updateView();
 	}
 
 	public void selectRow(int rowIndex) {
@@ -499,35 +628,61 @@ public class TicketView extends JPanel {
 	}
 
 	public void updateView() {
-		if (ticket == null || ticket.getTicketItems() == null || ticket.getTicketItems().size() <= 0) {
-			tfSubtotal.setText("");
-			tfDiscount.setText("");
-			tfTax.setText("");
-			tfTotal.setText("");
-
+		if (ticket == null) {
+			btnTotal.setText(POSConstants.TOTAL.toUpperCase() + " " + CurrencyUtil.getCurrencySymbol() + "0.00");
+			titledBorder.setTitle(ticket.getTicketType().toString() + "[New Ticket]"); //$NON-NLS-1$
 			return;
 		}
-
 		ticket.calculatePrice();
 
-		//		double calculatedSubtotalPrice = ticket.getCalculatedSubtotalPrice();
-		//		double discount = ticket.getCalculatedTotalDiscount();
-		//		double calculatedTax = ticket.getCalculatedTax();
-		//		double calculatedTotalPrice = ticket.getCalculatedTotalPrice();
+		ITicketItem selectedItem = (ITicketItem) ticketViewerTable.getSelected();
 
-		tfSubtotal.setText(numberFormat.format(ticket.getSubtotalAmount()));
-		tfDiscount.setText(numberFormat.format(ticket.getDiscountAmount()));
+		if (selectedItem != null) {
+			if (TerminalConfig.isActiveCustomerDisplay()) {
+				String sendMessageToCustomerDisplay = getDisplayMessage(selectedItem, ticket.getTotalAmount().toString());
+				DrawerUtil.setItemDisplay(TerminalConfig.getCustomerDisplayPort(), sendMessageToCustomerDisplay);
+			}
+		}
 
-		if (ticket.isTaxExempt()) {
-			tfTax.setText("0");
-			chkTaxExempt.setSelected(true);
+		btnTotal.setText(POSConstants.TOTAL.toUpperCase() + " " + CurrencyUtil.getCurrencySymbol() + NumberUtil.formatNumber(ticket.getTotalAmount()));
+		/*if (ticket.getTotalAmount() > 0) {
+			//btnTotal.setText("<html><h2>Total " + Application.getCurrencySymbol() + NumberUtil.formatNumber(ticket.getTotalAmount()) + "</h2></html>");
+			btnTotal.setText("Total " +Application.getCurrencySymbol() + NumberUtil.formatNumber(ticket.getTotalAmount()));
 		}
 		else {
-			tfTax.setText(numberFormat.format(ticket.getTaxAmount()));
-			chkTaxExempt.setSelected(false);
-		}
+			//btnTotal.setText("<html><h2>Total</h2></html>");
+			btnTotal.setText("<html><b>Total</b></html>");
+		}*/
 
-		tfTotal.setText(numberFormat.format(ticket.getTotalAmount()));
+		if (ticket.getId() == null) {
+			titledBorder.setTitle(ticket.getTicketType() + " [New Ticket]"); //$NON-NLS-1$
+		}
+		else {
+			titledBorder.setTitle(ticket.getTicketType() + " " + Messages.getString("TicketView.37") + ticket.getId() + " Table# " + getTableNumbers(ticket.getTableNumbers()));
+
+			/*	titledBorder.setTitle(ticket.getTicketType()
+						+ " Ticket ["+ ticket.getId()+"]," + "Table [" + getTableNumbers(ticket.getTableNumbers())+"]"); //$NON-NLS-1$ //$NON-NLS-2$	
+			*/}
+
+		ticketViewerTable.updateView();
+		showCustomerDisplayInfo(ticketViewerTable.getSelected());
+
+	}
+
+	private void showCustomerDisplayInfo(Object selected) {
+		if (TerminalConfig.isActiveCustomerDisplay()) {
+			TicketItem ticketItem = null;
+			if (selected instanceof TicketItemModifier) {
+				ticketItem = ((TicketItemModifier) selected).getTicketItem();
+			}
+			else if (selected instanceof TicketItem) {
+				ticketItem = (TicketItem) selected;
+			}
+			if (ticketItem != null) {
+				String sendMessageToCustomerDisplay = getDisplayMessage(ticketItem, NumberUtil.formatNumber(ticket.getTotalAmount(), true));
+				DrawerUtil.setItemDisplay(TerminalConfig.getCustomerDisplayPort(), sendMessageToCustomerDisplay);
+			}
+		}
 	}
 
 	public void addOrderListener(OrderListener listenre) {
@@ -546,60 +701,260 @@ public class TicketView extends JPanel {
 
 	public void setControlsVisible(boolean visible) {
 		if (visible) {
-			bottomPanel.setVisible(true);
 			btnIncreaseAmount.setEnabled(true);
 			btnDecreaseAmount.setEnabled(true);
 			btnDelete.setEnabled(true);
 		}
 		else {
-			bottomPanel.setVisible(false);
 			btnIncreaseAmount.setEnabled(false);
 			btnDecreaseAmount.setEnabled(false);
 			btnDelete.setEnabled(false);
 		}
 	}
 
-	private void updateSelectionView() {
-		Object selectedObject = ticketViewerTable.getSelected();
+	public com.floreantpos.ui.ticket.TicketViewerTable getTicketViewerTable() {
+		return ticketViewerTable;
+	}
 
-		OrderView orderView = OrderView.getInstance();
+	private class TicketItemSelectionListener implements ListSelectionListener {
 
-		TicketItem selectedItem = null;
-		if (selectedObject instanceof TicketItem) {
-			selectedItem = (TicketItem) selectedObject;
-			MenuItemDAO dao = new MenuItemDAO();
-			MenuItem menuItem = dao.get(selectedItem.getItemId());
-			MenuGroup menuGroup = menuItem.getParent();
-			MenuItemView itemView = OrderView.getInstance().getItemView();
-			if (!menuGroup.equals(itemView.getMenuGroup())) {
-				itemView.setMenuGroup(menuGroup);
-			}
-			orderView.showView(MenuItemView.VIEW_NAME);
-
-			MenuCategory menuCategory = menuGroup.getParent();
-			orderView.getCategoryView().setSelectedCategory(menuCategory);
-			return;
-		}
-		else if (selectedObject instanceof TicketItemModifier) {
-			selectedItem = ((TicketItemModifier) selectedObject).getParent().getParent();
-		}
-		if (selectedItem == null)
-			return;
-
-		ModifierView modifierView = orderView.getModifierView();
-
-		if (selectedItem.isHasModifiers()) {
-			MenuItemDAO dao = new MenuItemDAO();
-			MenuItem menuItem = dao.get(selectedItem.getItemId());
-			if (!menuItem.equals(modifierView.getMenuItem())) {
-				menuItem = dao.initialize(menuItem);
-				modifierView.setMenuItem(menuItem, selectedItem);
+		@Override
+		public void valueChanged(ListSelectionEvent e) {
+			Object selected = ticketViewerTable.getSelected();
+			if (!(selected instanceof ITicketItem)) {
+				return;
 			}
 
-			MenuCategory menuCategory = menuItem.getParent().getParent();
-			orderView.getCategoryView().setSelectedCategory(menuCategory);
+			ITicketItem iTicketItem = (ITicketItem) selected;
+			if (iTicketItem.isPrintedToKitchen()) {
+				btnIncreaseAmount.setEnabled(false);
+				btnDecreaseAmount.setEnabled(false);
+			}
 
-			orderView.showView(ModifierView.VIEW_NAME);
+			if (selected instanceof TicketItemModifier) {
+				btnIncreaseAmount.setEnabled(false);
+				btnDecreaseAmount.setEnabled(false);
+				btnEdit.setEnabled(true);
+				btnDelete.setEnabled(false);
+			}
+			else {
+				btnIncreaseAmount.setEnabled(true);
+				btnDecreaseAmount.setEnabled(true);
+				btnDelete.setEnabled(true);
+				btnEdit.setEnabled(false);
+
+				if (selected instanceof TicketItem) {
+					TicketItem ticketItem = (TicketItem) selected;
+					if (ticketItem.isPrintedToKitchen()) {
+						btnIncreaseAmount.setEnabled(false);
+						btnDecreaseAmount.setEnabled(false);
+						if (TerminalConfig.isAllowedToDeletePrintedTicketItem()) {
+							btnDelete.setEnabled(true);
+						}
+						else {
+							btnDelete.setEnabled(false);
+						}
+					}
+					if (ticketItem.isTreatAsSeat()) {
+						btnEdit.setEnabled(!ticketItem.isPrintedToKitchen());
+					}
+					else if (ticketItem.isHasModifiers()) {
+						btnIncreaseAmount.setEnabled(false);
+						btnDecreaseAmount.setEnabled(false);
+						btnEdit.setEnabled(true);
+					}
+					else if (ticketItem.isFractionalUnit()) {
+						btnIncreaseAmount.setEnabled(true);
+						btnDecreaseAmount.setEnabled(false);
+						btnDelete.setEnabled(true);
+					}
+				}
+			}
+			showCustomerDisplayInfo(selected);
 		}
+	}
+
+	/**
+	 * @return the txtSearchItem
+	 */
+	public JTextField getTxtSearchItem() {
+		return txtSearchItem;
+	}
+
+	private String getDisplayMessage(ITicketItem item, String totalPrice) {
+		String itemName = item.getNameDisplay();
+		if (itemName.length() > 10) {
+			itemName = item.getNameDisplay().substring(0, 10);
+		}
+		else {
+			itemName = item.getNameDisplay();
+		}
+		double itemPrice = item.getSubTotalAmountDisplay() == null ? 0 : item.getSubTotalAmountDisplay();
+		String line = String.format("%-10s %9s", itemName, NumberUtil.formatNumber(itemPrice, true)); //$NON-NLS-1$
+		if (line.length() > 20) {
+			line = line.substring(0, 20);
+		}
+
+		String total = "TOTAL" + CurrencyUtil.getCurrencySymbol(); //$NON-NLS-1$
+		String line2 = String.format("%-8s %11s", total, totalPrice); //$NON-NLS-1$
+		if (line2.length() > 20) {
+			line2 = line2.substring(0, 20);
+		}
+		return line + line2;
+	}
+
+	/**
+	 * @return the cancelable
+	 */
+	public boolean isCancelable() {
+		return cancelable;
+	}
+
+	/**
+	 * @param cancelable the cancelable to set
+	 */
+	public void setCancelable(boolean cancelable) {
+		this.cancelable = cancelable;
+	}
+
+	/**
+	 * @return the allowToLogOut
+	 */
+	public boolean isAllowToLogOut() {
+		return allowToLogOut;
+	}
+
+	/**
+	 * @param allowToLogOut the allowToLogOut to set
+	 */
+	public void setAllowToLogOut(boolean allowToLogOut) {
+		this.allowToLogOut = allowToLogOut;
+	}
+
+	private String getTableNumbers(List<Integer> numbers) {
+
+		String tableNumbers = "";
+		if (numbers != null && !numbers.isEmpty()) {
+			for (Iterator iterator = numbers.iterator(); iterator.hasNext();) {
+				Integer n = (Integer) iterator.next();
+				tableNumbers += n;
+
+				if (iterator.hasNext()) {
+					tableNumbers += ", ";
+				}
+			}
+			return tableNumbers;
+		}
+		return tableNumbers;
+	}
+
+	private double getNewItemQuantity() {
+		ITicketItem selectedTicketItem = ticketViewerTable.getSelected();
+		double selectedQuantity = 0;
+		if (TerminalConfig.getScaleActivationValue().equals("cas10")) {
+			selectedQuantity = AutomatedWeightInputDialog.takeDoubleInput(selectedTicketItem.getNameDisplay(), 1);
+		}
+		else {
+			selectedQuantity = BasicWeightInputDialog.takeDoubleInput("Please enter item weight or quantity.", 1);
+		}
+		if (selectedQuantity <= -1) {
+			return -1;
+		}
+
+		if (selectedQuantity == 0) {
+			POSMessageDialog.showError("Unit can not be zero");
+			return -1;
+		}
+		return selectedQuantity;
+	}
+
+	private boolean isFractionalUnit() {
+		Object object = ticketViewerTable.getSelected();
+
+		if (object instanceof TicketItem) {
+			TicketItem ticketItem = (TicketItem) object;
+			return ticketItem.isFractionalUnit();
+		}
+		return false;
+	}
+
+	private boolean checkStock(double selectedItemQuantity) {
+
+		TicketItem selectedTicketItem = (TicketItem) ticketViewerTable.getSelected();
+
+		MenuItemDAO dao = new MenuItemDAO();
+		MenuItem menuItem = dao.get(selectedTicketItem.getItemId());
+
+		return isStockAvailable(menuItem, selectedTicketItem, selectedItemQuantity);
+	}
+
+	public boolean isStockAvailable(MenuItem menuItem, TicketItem selectedTicketItem, double selectedItemQuantity) {
+
+		if (!menuItem.isDisableWhenStockAmountIsZero()) {
+			return true;
+		}
+
+		List<TicketItem> ticketItems = ticketViewerTable.getTicketItems();
+
+		if (menuItem.isFractionalUnit()) {// fractional unit start here
+
+			if (ticketItems == null || ticketItems.isEmpty()) {
+				if (menuItem.getStockAmount() < selectedTicketItem.getItemQuantity()) {
+					return false;
+				}
+				return true;
+			}
+
+			double totalItemQuantity = 0;
+
+			for (TicketItem tItem : ticketItems) {
+
+				if (menuItem.getName().equals(tItem.getName())) {
+
+					totalItemQuantity += tItem.getItemQuantity();
+
+					if (menuItem.getStockAmount() < totalItemQuantity) {
+						return false;
+					}
+				}
+			}
+
+			if (selectedItemQuantity != -1) {
+
+				totalItemQuantity -= selectedTicketItem.getItemQuantity();
+
+				totalItemQuantity += selectedItemQuantity;
+			}
+			else {
+				totalItemQuantity += selectedTicketItem.getItemQuantity();
+			}
+
+			if (menuItem.getStockAmount() < totalItemQuantity) {
+				return false;
+			}
+			return true;
+		} //fractional Unit end here
+
+		if (ticketItems == null || ticketItems.isEmpty()) {
+			if (menuItem.getStockAmount() < selectedTicketItem.getItemCount()) {
+				return false;
+			}
+			return true;
+		}
+
+		int totalItemCount = 0;
+
+		for (TicketItem tItem : ticketItems) {
+
+			if (tItem.getName().equals(menuItem.getName())) {
+
+				totalItemCount += tItem.getItemCount();
+
+				if (menuItem.getStockAmount() <= totalItemCount) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 }
