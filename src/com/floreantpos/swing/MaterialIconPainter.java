@@ -142,14 +142,53 @@ public final class MaterialIconPainter {
     // ── Cached parsed paths ────────────────────────────────────────────────
     private static final Map<String, Path2D.Double> CACHE = new HashMap<String, Path2D.Double>();
 
+    // ButtonStyleConfig category keys → MaterialIconPainter PATHS keys
+    private static final Map<String, String> ALIASES = new HashMap<String, String>();
+    static {
+        ALIASES.put("pizza",     "local_pizza");
+        ALIASES.put("burger",    "lunch_dining");
+        ALIASES.put("chicken",   "kebab_dining");
+        ALIASES.put("seafood",   "set_meal");
+        ALIASES.put("sushi",     "set_meal");
+        ALIASES.put("soup",      "set_meal");
+        ALIASES.put("salad",     "eco");
+        ALIASES.put("veggie",    "eco");
+        ALIASES.put("drink",     "local_drink");
+        ALIASES.put("beer",      "local_drink");
+        ALIASES.put("wine",      "local_drink");
+        ALIASES.put("cocktail",  "local_drink");
+        ALIASES.put("dessert",   "icecream");
+        ALIASES.put("donut",     "icecream");
+        ALIASES.put("coffee",    "local_cafe");
+        ALIASES.put("breakfast", "egg_alt");
+        ALIASES.put("bakery",    "egg_alt");
+        ALIASES.put("sides",     "tapas");
+        ALIASES.put("combo",     "room_service");
+        ALIASES.put("kids",      "room_service");
+        ALIASES.put("pasta",     "lunch_dining");
+        ALIASES.put("sandwich",  "lunch_dining");
+        ALIASES.put("tacos",     "kebab_dining");
+        ALIASES.put("steak",     "kebab_dining");
+        ALIASES.put("hotdog",    "kebab_dining");
+        ALIASES.put("bbq",       "kebab_dining");
+        ALIASES.put("product",   "inventory_2");
+    }
+
     /** Draw icon centred at (cx,cy) inside a square of side sz. */
     public static boolean paint(Graphics2D g2, String name, int cx, int cy, int sz) {
         return paint(g2, name, cx, cy, sz, g2.getColor());
     }
 
     public static boolean paint(Graphics2D g2, String name, int cx, int cy, int sz, Color color) {
+        if (name != null && !PATHS.containsKey(name) && ALIASES.containsKey(name)) {
+            name = ALIASES.get(name);
+        }
         String d = PATHS.get(name);
-        if (d == null) return false;
+        if (d == null) {
+            d = PATHS.get("inventory_2");
+            name = "inventory_2";
+            if (d == null) return false;
+        }
 
         Path2D.Double path;
         synchronized (CACHE) {
