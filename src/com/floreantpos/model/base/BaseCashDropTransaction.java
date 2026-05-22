@@ -15,8 +15,8 @@ import java.io.Serializable;
 
 public abstract class BaseCashDropTransaction extends com.floreantpos.model.PosTransaction  implements Comparable, Serializable {
 
-	public static String REF = "CashDropTransaction";
-	public static String PROP_ID = "id";
+	public static String REF = "CashDropTransaction"; //$NON-NLS-1$
+	public static String PROP_ID = "id"; //$NON-NLS-1$
 
 
 	// constructors
@@ -29,6 +29,20 @@ public abstract class BaseCashDropTransaction extends com.floreantpos.model.PosT
 	 */
 	public BaseCashDropTransaction (java.lang.Integer id) {
 		super(id);
+	}
+
+	/**
+	 * Constructor for required fields
+	 */
+	public BaseCashDropTransaction (
+		java.lang.Integer id,
+		java.lang.String transactionType,
+		java.lang.String paymentType) {
+
+		super (
+			id,
+			transactionType,
+			paymentType);
 	}
 
 

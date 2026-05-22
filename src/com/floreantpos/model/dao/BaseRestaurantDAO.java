@@ -2,9 +2,6 @@ package com.floreantpos.model.dao;
 
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
-
-import com.floreantpos.model.dao.RestaurantDAO;
-
 import org.hibernate.criterion.Order;
 
 /**
@@ -41,27 +38,27 @@ public abstract class BaseRestaurantDAO extends com.floreantpos.model.dao._RootD
 	}
 
 	public com.floreantpos.model.Restaurant get(java.lang.Integer key)
-	{
+		throws org.hibernate.HibernateException {
 		return (com.floreantpos.model.Restaurant) get(getReferenceClass(), key);
 	}
 
 	public com.floreantpos.model.Restaurant get(java.lang.Integer key, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		return (com.floreantpos.model.Restaurant) get(getReferenceClass(), key, s);
 	}
 
 	public com.floreantpos.model.Restaurant load(java.lang.Integer key)
-	{
+		throws org.hibernate.HibernateException {
 		return (com.floreantpos.model.Restaurant) load(getReferenceClass(), key);
 	}
 
 	public com.floreantpos.model.Restaurant load(java.lang.Integer key, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		return (com.floreantpos.model.Restaurant) load(getReferenceClass(), key, s);
 	}
 
 	public com.floreantpos.model.Restaurant loadInitialize(java.lang.Integer key, Session s) 
-	{ 
+			throws org.hibernate.HibernateException { 
 		com.floreantpos.model.Restaurant obj = load(key, s); 
 		if (!Hibernate.isInitialized(obj)) {
 			Hibernate.initialize(obj);
@@ -101,7 +98,7 @@ public abstract class BaseRestaurantDAO extends com.floreantpos.model.dao._RootD
 	 * @return the class identifier
 	 */
 	public java.lang.Integer save(com.floreantpos.model.Restaurant restaurant)
-	{
+		throws org.hibernate.HibernateException {
 		return (java.lang.Integer) super.save(restaurant);
 	}
 
@@ -114,7 +111,7 @@ public abstract class BaseRestaurantDAO extends com.floreantpos.model.dao._RootD
 	 * @return the class identifier
 	 */
 	public java.lang.Integer save(com.floreantpos.model.Restaurant restaurant, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		return (java.lang.Integer) save((Object) restaurant, s);
 	}
 
@@ -125,7 +122,7 @@ public abstract class BaseRestaurantDAO extends com.floreantpos.model.dao._RootD
 	 * @param restaurant a transient instance containing new or updated state 
 	 */
 	public void saveOrUpdate(com.floreantpos.model.Restaurant restaurant)
-	{
+		throws org.hibernate.HibernateException {
 		saveOrUpdate((Object) restaurant);
 	}
 
@@ -138,7 +135,7 @@ public abstract class BaseRestaurantDAO extends com.floreantpos.model.dao._RootD
 	 * @param s the Session.
 	 */
 	public void saveOrUpdate(com.floreantpos.model.Restaurant restaurant, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		saveOrUpdate((Object) restaurant, s);
 	}
 
@@ -148,7 +145,7 @@ public abstract class BaseRestaurantDAO extends com.floreantpos.model.dao._RootD
 	 * @param restaurant a transient instance containing updated state
 	 */
 	public void update(com.floreantpos.model.Restaurant restaurant) 
-	{
+		throws org.hibernate.HibernateException {
 		update((Object) restaurant);
 	}
 
@@ -160,7 +157,7 @@ public abstract class BaseRestaurantDAO extends com.floreantpos.model.dao._RootD
 	 * @param the Session
 	 */
 	public void update(com.floreantpos.model.Restaurant restaurant, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		update((Object) restaurant, s);
 	}
 
@@ -170,7 +167,7 @@ public abstract class BaseRestaurantDAO extends com.floreantpos.model.dao._RootD
 	 * @param id the instance ID to be removed
 	 */
 	public void delete(java.lang.Integer id)
-	{
+		throws org.hibernate.HibernateException {
 		delete((Object) load(id));
 	}
 
@@ -182,7 +179,7 @@ public abstract class BaseRestaurantDAO extends com.floreantpos.model.dao._RootD
 	 * @param s the Session
 	 */
 	public void delete(java.lang.Integer id, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		delete((Object) load(id, s), s);
 	}
 
@@ -192,7 +189,7 @@ public abstract class BaseRestaurantDAO extends com.floreantpos.model.dao._RootD
 	 * @param restaurant the instance to be removed
 	 */
 	public void delete(com.floreantpos.model.Restaurant restaurant)
-	{
+		throws org.hibernate.HibernateException {
 		delete((Object) restaurant);
 	}
 
@@ -204,7 +201,7 @@ public abstract class BaseRestaurantDAO extends com.floreantpos.model.dao._RootD
 	 * @param s the Session
 	 */
 	public void delete(com.floreantpos.model.Restaurant restaurant, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		delete((Object) restaurant, s);
 	}
 	
@@ -219,7 +216,7 @@ public abstract class BaseRestaurantDAO extends com.floreantpos.model.dao._RootD
 	 * </ul>
 	 */
 	public void refresh (com.floreantpos.model.Restaurant restaurant, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		refresh((Object) restaurant, s);
 	}
 

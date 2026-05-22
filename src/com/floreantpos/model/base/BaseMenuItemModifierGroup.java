@@ -1,3 +1,20 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.model.base;
 
 import java.io.Serializable;
@@ -14,12 +31,12 @@ import java.io.Serializable;
 
 public abstract class BaseMenuItemModifierGroup  implements Comparable, Serializable {
 
-	public static String REF = "MenuItemModifierGroup";
-	public static String PROP_MIN_QUANTITY = "minQuantity";
-	public static String PROP_ID = "id";
-	public static String PROP_MODIFIER_GROUP = "modifierGroup";
-	public static String PROP_PARENT_MENU_ITEM = "parentMenuItem";
-	public static String PROP_MAX_QUANTITY = "maxQuantity";
+	public static String REF = "MenuItemModifierGroup"; //$NON-NLS-1$
+	public static String PROP_MIN_QUANTITY = "minQuantity"; //$NON-NLS-1$
+	public static String PROP_SORT_ORDER = "sortOrder"; //$NON-NLS-1$
+	public static String PROP_ID = "id"; //$NON-NLS-1$
+	public static String PROP_MODIFIER_GROUP = "modifierGroup"; //$NON-NLS-1$
+	public static String PROP_MAX_QUANTITY = "maxQuantity"; //$NON-NLS-1$
 
 
 	// constructors
@@ -44,15 +61,13 @@ public abstract class BaseMenuItemModifierGroup  implements Comparable, Serializ
 	// primary key
 	private java.lang.Integer id;
 
-	private java.util.Date modifiedTime;
-
 	// fields
-	private java.lang.Integer minQuantity;
-	private java.lang.Integer maxQuantity;
+		protected java.lang.Integer minQuantity;
+		protected java.lang.Integer maxQuantity;
+		protected java.lang.Integer sortOrder;
 
 	// many to one
-	private com.floreantpos.model.MenuModifierGroup modifierGroup;
-	private com.floreantpos.model.MenuItem parentMenuItem;
+	private com.floreantpos.model.ModifierGroup modifierGroup;
 
 
 
@@ -77,30 +92,13 @@ public abstract class BaseMenuItemModifierGroup  implements Comparable, Serializ
 
 
 
-	/**
-	 * Return the value associated with the column: MODIFIED_TIME
-	 */
-	public java.util.Date getModifiedTime () {
-			return modifiedTime;
-	}
-
-	/**
-	 * Set the value related to the column: MODIFIED_TIME
-	 * @param modifiedTime the MODIFIED_TIME value
-	 */
-	public void setModifiedTime (java.util.Date modifiedTime) {
-		this.modifiedTime = modifiedTime;
-	}
-
-
-
 
 	/**
 	 * Return the value associated with the column: MIN_QUANTITY
 	 */
 	public java.lang.Integer getMinQuantity () {
-			return minQuantity == null ? Integer.valueOf(0) : minQuantity;
-	}
+					return minQuantity == null ? Integer.valueOf(0) : minQuantity;
+			}
 
 	/**
 	 * Set the value related to the column: MIN_QUANTITY
@@ -116,8 +114,8 @@ public abstract class BaseMenuItemModifierGroup  implements Comparable, Serializ
 	 * Return the value associated with the column: MAX_QUANTITY
 	 */
 	public java.lang.Integer getMaxQuantity () {
-			return maxQuantity == null ? Integer.valueOf(0) : maxQuantity;
-	}
+					return maxQuantity == null ? Integer.valueOf(0) : maxQuantity;
+			}
 
 	/**
 	 * Set the value related to the column: MAX_QUANTITY
@@ -130,35 +128,35 @@ public abstract class BaseMenuItemModifierGroup  implements Comparable, Serializ
 
 
 	/**
+	 * Return the value associated with the column: SORT_ORDER
+	 */
+	public java.lang.Integer getSortOrder () {
+					return sortOrder == null ? Integer.valueOf(0) : sortOrder;
+			}
+
+	/**
+	 * Set the value related to the column: SORT_ORDER
+	 * @param sortOrder the SORT_ORDER value
+	 */
+	public void setSortOrder (java.lang.Integer sortOrder) {
+		this.sortOrder = sortOrder;
+	}
+
+
+
+	/**
 	 * Return the value associated with the column: MODIFIER_GROUP
 	 */
-	public com.floreantpos.model.MenuModifierGroup getModifierGroup () {
-			return modifierGroup;
-	}
+	public com.floreantpos.model.ModifierGroup getModifierGroup () {
+					return modifierGroup;
+			}
 
 	/**
 	 * Set the value related to the column: MODIFIER_GROUP
 	 * @param modifierGroup the MODIFIER_GROUP value
 	 */
-	public void setModifierGroup (com.floreantpos.model.MenuModifierGroup modifierGroup) {
+	public void setModifierGroup (com.floreantpos.model.ModifierGroup modifierGroup) {
 		this.modifierGroup = modifierGroup;
-	}
-
-
-
-	/**
-	 * Return the value associated with the column: MENU_ITEM
-	 */
-	public com.floreantpos.model.MenuItem getParentMenuItem () {
-			return parentMenuItem;
-	}
-
-	/**
-	 * Set the value related to the column: MENU_ITEM
-	 * @param parentMenuItem the MENU_ITEM value
-	 */
-	public void setParentMenuItem (com.floreantpos.model.MenuItem parentMenuItem) {
-		this.parentMenuItem = parentMenuItem;
 	}
 
 
@@ -179,7 +177,7 @@ public abstract class BaseMenuItemModifierGroup  implements Comparable, Serializ
 		if (Integer.MIN_VALUE == this.hashCode) {
 			if (null == this.getId()) return super.hashCode();
 			else {
-				String hashStr = this.getClass().getName() + ":" + this.getId().hashCode();
+				String hashStr = this.getClass().getName() + ":" + this.getId().hashCode(); //$NON-NLS-1$
 				this.hashCode = hashStr.hashCode();
 			}
 		}

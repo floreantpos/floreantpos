@@ -1,3 +1,20 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.report;
 
 import java.util.ArrayList;
@@ -6,10 +23,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.floreantpos.bo.ui.explorer.ListTableModel;
-import com.floreantpos.model.CouponAndDiscount;
+import com.floreantpos.model.Discount;
 import com.floreantpos.model.Ticket;
-import com.floreantpos.model.TicketCouponAndDiscount;
+import com.floreantpos.model.TicketDiscount;
+import com.floreantpos.swing.ListTableModel;
 
 public class SalesExceptionReport {
 	private Date fromDate;
@@ -45,16 +62,16 @@ public class SalesExceptionReport {
 	}
 
 	public void addDiscountData(Ticket ticket) {
-		List<TicketCouponAndDiscount> discounts = ticket.getCouponAndDiscounts();
+		List<TicketDiscount> discounts = ticket.getDiscounts();
 		if (discounts != null) {
-			for (TicketCouponAndDiscount discount : discounts) {
+			for (TicketDiscount discount : discounts) {
 				String name = discount.getName();
-				DiscountData discountData = disountMap.get(discount.getCouponAndDiscountId());
+				DiscountData discountData = disountMap.get(discount.getDiscountId());
 				if (discountData == null) {
 					discountData = new DiscountData();
-					discountData.code = discount.getCouponAndDiscountId();
+					discountData.code = discount.getDiscountId();
 					discountData.name = name;
-					disountMap.put(discount.getCouponAndDiscountId(), discountData);
+					disountMap.put(discount.getDiscountId(), discountData);
 				}
 
 				discountData.totalCount = ++discountData.totalCount;
@@ -66,10 +83,10 @@ public class SalesExceptionReport {
 			}
 		}
 	}
-	
-	public void addEmptyDiscounts(List<CouponAndDiscount> discounts) {
-		if(discounts != null) {
-			for (CouponAndDiscount discount : discounts) {
+
+	public void addEmptyDiscounts(List<Discount> discounts) {
+		if (discounts != null) {
+			for (Discount discount : discounts) {
 				String name = discount.getName();
 				DiscountData discountData = disountMap.get(discount.getId());
 				if (discountData == null) {
@@ -256,27 +273,27 @@ public class SalesExceptionReport {
 
 	public class VoidTableModel extends ListTableModel {
 		public VoidTableModel() {
-			setColumnNames(new String[] { "code", "reason", "wast", "qty", "amount" });
+			setColumnNames(new String[] { "code", "reason", "wast", "qty", "amount" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 		}
 
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			VoidData data = (VoidData) rows.get(rowIndex);
 
 			switch (columnIndex) {
-			case 0:
-				return String.valueOf(data.id);
+				case 0:
+					return String.valueOf(data.id);
 
-			case 1:
-				return data.getReasonCode();
+				case 1:
+					return data.getReasonCode();
 
-			case 2:
-				return data.wasted ? "Y" : "N";
+				case 2:
+					return data.wasted ? "Y" : "N"; //$NON-NLS-1$ //$NON-NLS-2$
 
-			case 3:
-				return String.valueOf(data.getCount());
+				case 3:
+					return String.valueOf(data.getCount());
 
-			case 4:
-				return data.getAmount();
+				case 4:
+					return data.getAmount();
 			}
 
 			return null;
@@ -286,39 +303,40 @@ public class SalesExceptionReport {
 
 	public class DiscountTableModel extends ListTableModel {
 		public DiscountTableModel() {
-			setColumnNames(new String[] { "no", "name", "code", "totalCount", "totalDiscount", "totalNetSales", "totalGuests", "partySize", "checkSize", "countPercent", "ratioDnet" });
+			setColumnNames(new String[] {
+					"no", "name", "code", "totalCount", "totalDiscount", "totalNetSales", "totalGuests", "partySize", "checkSize", "countPercent", "ratioDnet" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
 		}
 
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			DiscountData data = (DiscountData) rows.get(rowIndex);
 
 			switch (columnIndex) {
-			case 0:
-				return data.code;
+				case 0:
+					return data.code;
 
-			case 1:
-				return data.name;
+				case 1:
+					return data.name;
 
-			case 2:
-				return data.code;
+				case 2:
+					return data.code;
 
-			case 3:
-				return data.totalCount;
+				case 3:
+					return data.totalCount;
 
-			case 4:
-				return data.totalDiscount;
-			case 5:
-				return data.totalNetSales;
-			case 6:
-				return data.totalGuest;
-			case 7:
-				return data.partySize;
-			case 8:
-				return data.checkSize;
-			case 9:
-				return data.countPercentage;
-			case 10:
-				return data.ratioDNet;
+				case 4:
+					return data.totalDiscount;
+				case 5:
+					return data.totalNetSales;
+				case 6:
+					return data.totalGuest;
+				case 7:
+					return data.partySize;
+				case 8:
+					return data.checkSize;
+				case 9:
+					return data.countPercentage;
+				case 10:
+					return data.ratioDNet;
 			}
 
 			return null;

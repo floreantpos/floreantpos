@@ -1,3 +1,20 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 /*
  * TaxEditor.java
  *
@@ -8,6 +25,7 @@ package com.floreantpos.ui.model;
 
 import com.floreantpos.model.Tax;
 import com.floreantpos.model.dao.TaxDAO;
+import com.floreantpos.swing.DoubleTextField;
 import com.floreantpos.swing.MessageDialog;
 import com.floreantpos.ui.BeanEditor;
 import com.floreantpos.util.POSUtil;
@@ -39,16 +57,16 @@ public class TaxForm extends BeanEditor {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         tfName = new com.floreantpos.swing.FixedLengthTextField();
-        tfRate = new javax.swing.JFormattedTextField();
+        tfRate = new DoubleTextField();
         jLabel3 = new javax.swing.JLabel();
 
-        jLabel1.setText("Name:");
+        jLabel1.setText(com.floreantpos.POSConstants.NAME + ":"); //$NON-NLS-1$
 
-        jLabel2.setText("Rate:");
+        jLabel2.setText(com.floreantpos.POSConstants.RATE + ":"); //$NON-NLS-1$
 
         tfRate.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
 
-        jLabel3.setText("%");
+        jLabel3.setText("%"); //$NON-NLS-1$
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
@@ -90,7 +108,7 @@ public class TaxForm extends BeanEditor {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private com.floreantpos.swing.FixedLengthTextField tfName;
-    private javax.swing.JFormattedTextField tfRate;
+    private DoubleTextField tfRate;
     // End of variables declaration//GEN-END:variables
 	@Override
 	public boolean save() {
@@ -110,14 +128,10 @@ public class TaxForm extends BeanEditor {
 	}
 
 	@Override
-	public void dispose() {
-	}
-
-	@Override
 	protected void updateView() {
 		Tax tax = (Tax) getBean();
 		tfName.setText(tax.getName());
-		tfRate.setValue(Double.valueOf(tax.getRate()));
+		tfRate.setText("" + tax.getRate()); //$NON-NLS-1$
 	}
 
 	@Override
@@ -126,12 +140,12 @@ public class TaxForm extends BeanEditor {
 		
 		String name = tfName.getText();
     	if(POSUtil.isBlankOrNull(name)) {
-    		MessageDialog.showError("Name is required");
+    		MessageDialog.showError(com.floreantpos.POSConstants.NAME_REQUIRED);
     		return false;
     	}
 		
 		tax.setName(name);
-		tax.setRate(new Double(tfRate.getValue().toString()).doubleValue());
+		tax.setRate(tfRate.getDouble());
 		
 		return true;
 	}
@@ -139,8 +153,8 @@ public class TaxForm extends BeanEditor {
 	public String getDisplayText() {
     	Tax tax = (Tax) getBean();
     	if(tax.getId() == null) {
-    		return "New tax rate";
+    		return com.floreantpos.POSConstants.NEW_TAX_RATE;
     	}
-    	return "Edit tax rate";
+    	return com.floreantpos.POSConstants.EDIT_TAX_RATE;
     }
 }

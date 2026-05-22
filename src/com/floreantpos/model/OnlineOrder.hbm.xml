@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.floreantpos.model">
+	<class lazy="false" name="com.floreantpos.model.OnlineOrder" table="ONLINE_ORDER">
+		<id column="ID" name="id" type="java.lang.String"  length="128">
+     	 <generator class="com.floreantpos.util.GlobalIdGenerator" />
+   		 </id>
+		<version name="version" column="VERSION_NO" type="long" />
+		
+		<property name="lastUpdateTime" column="LAST_UPDATE_TIME" type="java.util.Date" />
+		<property name="lastSyncTime" column="LAST_SYNC_TIME" type="java.util.Date" />
+		
+		<property column="ORDER_DATE" name="orderDate" type="java.util.Date" />
+		<property column="CUST_ID" name="customerId" type="string" length="128" />
+		<property column="STORE_ID" name="storeId" type="string" length="128" />
+		<property column="STORE_SCHEMA" name="storeSchema" type="string" length="128" />
+		<property column="STORE_NAME" name="storeName" type="string" length="128" />
+		<property column="OUTLET_ID" name="outletId" type="string" length="128" />
+		<property column="TICKET_ID" name="ticketId" type="string" length="128" />
+		<property column="ORDER_TYPE" name="orderType" type="string" length="128" />
+		<property column="ORDER_STATUS" name="orderStatus" type="string" length="128" />
+		<property column="PAID" name="paid" type="java.lang.Boolean" />
+		<property column="SETTLED" name="closed" type="java.lang.Boolean" />
+		<property column="EXPIRY_DATE" name="expiryDate" type="java.util.Date" />
+		<property column="SOURCE" name="source" type="string" length="128" />
+		<property column="TICKET_JSON" name="ticketJson" type="text" length="1000000"/>
+		<property column="PROPERTIES" name="properties" type="text" length="1000"/>
+
+	</class>
+</hibernate-mapping>

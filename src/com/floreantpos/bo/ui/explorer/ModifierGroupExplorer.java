@@ -1,3 +1,20 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.bo.ui.explorer;
 
 import java.awt.BorderLayout;
@@ -7,23 +24,25 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
-import com.floreantpos.main.Application;
-import com.floreantpos.model.MenuModifierGroup;
+import org.jdesktop.swingx.JXTable;
+
+import com.floreantpos.POSConstants;
+import com.floreantpos.bo.ui.BOMessageDialog;
+import com.floreantpos.model.ModifierGroup;
 import com.floreantpos.model.dao.ModifierGroupDAO;
-import com.floreantpos.swing.MessageDialog;
 import com.floreantpos.swing.TransparentPanel;
 import com.floreantpos.ui.PosTableRenderer;
 import com.floreantpos.ui.dialog.BeanEditorDialog;
 import com.floreantpos.ui.dialog.ConfirmDeleteDialog;
 import com.floreantpos.ui.model.MenuModifierGroupForm;
+import com.floreantpos.util.POSUtil;
 
 public class ModifierGroupExplorer extends TransparentPanel {
-	private List<MenuModifierGroup> mGroupList;
+	private List<ModifierGroup> mGroupList;
 
-	private JTable table;
+	private JXTable table;
 	private ModifierGroupExplorerTableModel tableModel;
 
 	public ModifierGroupExplorer() {
@@ -31,7 +50,7 @@ public class ModifierGroupExplorer extends TransparentPanel {
 		mGroupList = dao.findAll();
 
 		tableModel = new ModifierGroupExplorerTableModel();
-		table = new JTable(tableModel);
+		table = new JXTable(tableModel);
 		table.setDefaultRenderer(Object.class, new PosTableRenderer());
 
 		setLayout(new BorderLayout(5, 5));
@@ -50,17 +69,20 @@ public class ModifierGroupExplorer extends TransparentPanel {
 					int index = table.getSelectedRow();
 					if (index < 0)
 						return;
-					MenuModifierGroup category = mGroupList.get(index);
+
+					index = table.convertRowIndexToModel(index);
+
+					ModifierGroup category = mGroupList.get(index);
 
 					MenuModifierGroupForm editor = new MenuModifierGroupForm(category);
-					BeanEditorDialog dialog = new BeanEditorDialog(editor, Application.getInstance().getBackOfficeWindow(), true);
+					BeanEditorDialog dialog = new BeanEditorDialog(POSUtil.getBackOfficeWindow(), editor);
 					dialog.open();
 					if (dialog.isCanceled())
 						return;
 
 					table.repaint();
 				} catch (Throwable x) {
-					MessageDialog.showError("An error has occured, please restart the application", x);
+					BOMessageDialog.showError(com.floreantpos.POSConstants.ERROR_MESSAGE, x);
 				}
 			}
 
@@ -72,14 +94,14 @@ public class ModifierGroupExplorer extends TransparentPanel {
 
 				try {
 					MenuModifierGroupForm editor = new MenuModifierGroupForm();
-					BeanEditorDialog dialog = new BeanEditorDialog(editor, Application.getInstance().getBackOfficeWindow(), true);
+					BeanEditorDialog dialog = new BeanEditorDialog(POSUtil.getBackOfficeWindow(), editor);
 					dialog.open();
 					if (dialog.isCanceled())
 						return;
-					MenuModifierGroup modifierGroup = (MenuModifierGroup) editor.getBean();
+					ModifierGroup modifierGroup = (ModifierGroup) editor.getBean();
 					tableModel.addModifierGroup(modifierGroup);
 				} catch (Throwable x) {
-					MessageDialog.showError("An error has occured, please restart the application", x);
+					BOMessageDialog.showError(com.floreantpos.POSConstants.ERROR_MESSAGE, x);
 				}
 
 			}
@@ -93,14 +115,18 @@ public class ModifierGroupExplorer extends TransparentPanel {
 					int index = table.getSelectedRow();
 					if (index < 0)
 						return;
-					if (ConfirmDeleteDialog.showMessage(ModifierGroupExplorer.this, "Sure Want to Delete?", "Delete") != ConfirmDeleteDialog.NO) {
-						MenuModifierGroup category = mGroupList.get(index);
+
+					index = table.convertRowIndexToModel(index);
+
+					if (ConfirmDeleteDialog.showMessage(ModifierGroupExplorer.this, com.floreantpos.POSConstants.CONFIRM_DELETE,
+							com.floreantpos.POSConstants.DELETE) != ConfirmDeleteDialog.NO) {
+						ModifierGroup category = mGroupList.get(index);
 						ModifierGroupDAO modifierCategoryDAO = new ModifierGroupDAO();
 						modifierCategoryDAO.delete(category);
 						tableModel.deleteModifierGroup(category, index);
 					}
 				} catch (Throwable x) {
-					MessageDialog.showError("An error has occured, please restart the application", x);
+					BOMessageDialog.showError(com.floreantpos.POSConstants.ERROR_MESSAGE, x);
 				}
 
 			}
@@ -114,7 +140,7 @@ public class ModifierGroupExplorer extends TransparentPanel {
 	}
 
 	class ModifierGroupExplorerTableModel extends AbstractTableModel {
-		String[] columnNames = { "Id", "Name" };
+		String[] columnNames = { com.floreantpos.POSConstants.ID, com.floreantpos.POSConstants.NAME, POSConstants.TRANSLATED_NAME };
 
 		public int getRowCount() {
 			if (mGroupList == null) {
@@ -124,7 +150,7 @@ public class ModifierGroupExplorer extends TransparentPanel {
 		}
 
 		public int getColumnCount() {
-			return 2;
+			return columnNames.length;
 		}
 
 		@Override
@@ -139,9 +165,9 @@ public class ModifierGroupExplorer extends TransparentPanel {
 
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			if (mGroupList == null)
-				return "";
+				return ""; //$NON-NLS-1$
 
-			MenuModifierGroup mgroup = mGroupList.get(rowIndex);
+			ModifierGroup mgroup = mGroupList.get(rowIndex);
 
 			switch (columnIndex) {
 				case 0:
@@ -150,18 +176,21 @@ public class ModifierGroupExplorer extends TransparentPanel {
 				case 1:
 					return mgroup.getName();
 
+				case 2:
+					return mgroup.getTranslatedName();
+
 			}
 			return null;
 		}
 
-		public void addModifierGroup(MenuModifierGroup category) {
+		public void addModifierGroup(ModifierGroup category) {
 			int size = mGroupList.size();
 			mGroupList.add(category);
 			fireTableRowsInserted(size, size);
 
 		}
 
-		public void deleteModifierGroup(MenuModifierGroup category, int index) {
+		public void deleteModifierGroup(ModifierGroup category, int index) {
 			mGroupList.remove(category);
 			fireTableRowsDeleted(index, index);
 		}

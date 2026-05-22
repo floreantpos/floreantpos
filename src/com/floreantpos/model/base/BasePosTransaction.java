@@ -15,18 +15,43 @@ import java.io.Serializable;
 
 public abstract class BasePosTransaction  implements Comparable, Serializable {
 
-	public static String REF = "PosTransaction";
-	public static String PROP_TRANSACTION_TIME = "transactionTime";
-	public static String PROP_DRAWER_RESETTED = "drawerResetted";
-	public static String PROP_TICKET = "ticket";
-	public static String PROP_DISCOUNT_AMOUNT = "discountAmount";
-	public static String PROP_TAX_AMOUNT = "taxAmount";
-	public static String PROP_USER = "user";
-	public static String PROP_GRATUITY_AMOUNT = "gratuityAmount";
-	public static String PROP_SUBTOTAL_AMOUNT = "subtotalAmount";
-	public static String PROP_TOTAL_AMOUNT = "totalAmount";
-	public static String PROP_ID = "id";
-	public static String PROP_TERMINAL = "terminal";
+	public static String REF = "PosTransaction"; //$NON-NLS-1$
+	public static String PROP_USER = "user"; //$NON-NLS-1$
+	public static String PROP_CARD_A_I_D = "cardAID"; //$NON-NLS-1$
+	public static String PROP_CUSTOM_PAYMENT_FIELD_NAME = "customPaymentFieldName"; //$NON-NLS-1$
+	public static String PROP_RECEPIENT = "recepient"; //$NON-NLS-1$
+	public static String PROP_GIFT_CERT_CASH_BACK_AMOUNT = "giftCertCashBackAmount"; //$NON-NLS-1$
+	public static String PROP_CUSTOM_PAYMENT_REF = "customPaymentRef"; //$NON-NLS-1$
+	public static String PROP_TRANSACTION_TYPE = "transactionType"; //$NON-NLS-1$
+	public static String PROP_AUTHORIZABLE = "authorizable"; //$NON-NLS-1$
+	public static String PROP_GIFT_CERT_NUMBER = "giftCertNumber"; //$NON-NLS-1$
+	public static String PROP_CARD_READER = "cardReader"; //$NON-NLS-1$
+	public static String PROP_TICKET = "ticket"; //$NON-NLS-1$
+	public static String PROP_CARD_EXT_DATA = "cardExtData"; //$NON-NLS-1$
+	public static String PROP_CARD_A_R_Q_C = "cardARQC"; //$NON-NLS-1$
+	public static String PROP_CARD_HOLDER_NAME = "cardHolderName"; //$NON-NLS-1$
+	public static String PROP_CARD_MERCHANT_GATEWAY = "cardMerchantGateway"; //$NON-NLS-1$
+	public static String PROP_CARD_TYPE = "cardType"; //$NON-NLS-1$
+	public static String PROP_DRAWER_RESETTED = "drawerResetted"; //$NON-NLS-1$
+	public static String PROP_TRANSACTION_TIME = "transactionTime"; //$NON-NLS-1$
+	public static String PROP_CARD_AUTH_CODE = "cardAuthCode"; //$NON-NLS-1$
+	public static String PROP_REASON = "reason"; //$NON-NLS-1$
+	public static String PROP_GIFT_CERT_FACE_VALUE = "giftCertFaceValue"; //$NON-NLS-1$
+	public static String PROP_CARD_NUMBER = "cardNumber"; //$NON-NLS-1$
+	public static String PROP_GLOBAL_ID = "globalId"; //$NON-NLS-1$
+	public static String PROP_AMOUNT = "amount"; //$NON-NLS-1$
+	public static String PROP_CAPTURED = "captured"; //$NON-NLS-1$
+	public static String PROP_TERMINAL = "terminal"; //$NON-NLS-1$
+	public static String PROP_NOTE = "note"; //$NON-NLS-1$
+	public static String PROP_CUSTOM_PAYMENT_NAME = "customPaymentName"; //$NON-NLS-1$
+	public static String PROP_TIPS_EXCEED_AMOUNT = "tipsExceedAmount"; //$NON-NLS-1$
+	public static String PROP_PAYMENT_TYPE = "paymentType"; //$NON-NLS-1$
+	public static String PROP_TIPS_AMOUNT = "tipsAmount"; //$NON-NLS-1$
+	public static String PROP_TENDER_AMOUNT = "tenderAmount"; //$NON-NLS-1$
+	public static String PROP_CARD_TRANSACTION_ID = "cardTransactionId"; //$NON-NLS-1$
+	public static String PROP_ID = "id"; //$NON-NLS-1$
+	public static String PROP_VOIDED = "voided"; //$NON-NLS-1$
+	public static String PROP_GIFT_CERT_PAID_AMOUNT = "giftCertPaidAmount"; //$NON-NLS-1$
 
 
 	// constructors
@@ -42,6 +67,20 @@ public abstract class BasePosTransaction  implements Comparable, Serializable {
 		initialize();
 	}
 
+	/**
+	 * Constructor for required fields
+	 */
+	public BasePosTransaction (
+		java.lang.Integer id,
+		java.lang.String transactionType,
+		java.lang.String paymentType) {
+
+		this.setId(id);
+		this.setTransactionType(transactionType);
+		this.setPaymentType(paymentType);
+		initialize();
+	}
+
 	protected void initialize () {}
 
 
@@ -51,21 +90,47 @@ public abstract class BasePosTransaction  implements Comparable, Serializable {
 	// primary key
 	private java.lang.Integer id;
 
-	 java.util.Date modifiedTime;
-
 	// fields
-	private java.util.Date transactionTime;
-	private java.lang.Double subtotalAmount;
-	private java.lang.Double discountAmount;
-	private java.lang.Double taxAmount;
-	private java.lang.Double totalAmount;
-	private java.lang.Double gratuityAmount;
-	private java.lang.Boolean drawerResetted;
+		protected java.lang.String globalId;
+		protected java.util.Date transactionTime;
+		protected java.lang.Double amount;
+		protected java.lang.Double tipsAmount;
+		protected java.lang.Double tipsExceedAmount;
+		protected java.lang.Double tenderAmount;
+		protected java.lang.String transactionType;
+		protected java.lang.String customPaymentName;
+		protected java.lang.String customPaymentRef;
+		protected java.lang.String customPaymentFieldName;
+		protected java.lang.String paymentType;
+		protected java.lang.Boolean captured;
+		protected java.lang.Boolean voided;
+		protected java.lang.Boolean authorizable;
+		protected java.lang.String cardHolderName;
+		protected java.lang.String cardNumber;
+		protected java.lang.String cardAuthCode;
+		protected java.lang.String cardType;
+		protected java.lang.String cardTransactionId;
+		protected java.lang.String cardMerchantGateway;
+		protected java.lang.String cardReader;
+		protected java.lang.String cardAID;
+		protected java.lang.String cardARQC;
+		protected java.lang.String cardExtData;
+		protected java.lang.String giftCertNumber;
+		protected java.lang.Double giftCertFaceValue;
+		protected java.lang.Double giftCertPaidAmount;
+		protected java.lang.Double giftCertCashBackAmount;
+		protected java.lang.Boolean drawerResetted;
+		protected java.lang.String note;
 
 	// many to one
 	private com.floreantpos.model.Terminal terminal;
 	private com.floreantpos.model.Ticket ticket;
 	private com.floreantpos.model.User user;
+	private com.floreantpos.model.PayoutReason reason;
+	private com.floreantpos.model.PayoutRecepient recepient;
+
+	// collections
+	private java.util.Map<String, String> properties;
 
 
 
@@ -90,21 +155,21 @@ public abstract class BasePosTransaction  implements Comparable, Serializable {
 
 
 
-	/**
-	 * Return the value associated with the column: MODIFIED_TIME
-	 */
-	public java.util.Date getModifiedTime () {
-			return modifiedTime;
-	}
 
 	/**
-	 * Set the value related to the column: MODIFIED_TIME
-	 * @param modifiedTime the MODIFIED_TIME value
+	 * Return the value associated with the column: GLOBAL_ID
 	 */
-	public void setModifiedTime (java.util.Date modifiedTime) {
-		this.modifiedTime = modifiedTime;
-	}
+	public java.lang.String getGlobalId () {
+					return globalId;
+			}
 
+	/**
+	 * Set the value related to the column: GLOBAL_ID
+	 * @param globalId the GLOBAL_ID value
+	 */
+	public void setGlobalId (java.lang.String globalId) {
+		this.globalId = globalId;
+	}
 
 
 
@@ -112,8 +177,8 @@ public abstract class BasePosTransaction  implements Comparable, Serializable {
 	 * Return the value associated with the column: TRANSACTION_TIME
 	 */
 	public java.util.Date getTransactionTime () {
-			return transactionTime;
-	}
+					return transactionTime;
+			}
 
 	/**
 	 * Set the value related to the column: TRANSACTION_TIME
@@ -126,86 +191,443 @@ public abstract class BasePosTransaction  implements Comparable, Serializable {
 
 
 	/**
-	 * Return the value associated with the column: SUB_TOTAL
+	 * Return the value associated with the column: AMOUNT
 	 */
-	public java.lang.Double getSubtotalAmount () {
-					return subtotalAmount == null ? Double.valueOf(0) : subtotalAmount;
-			}
+	public java.lang.Double getAmount () {
+									return amount == null ? Double.valueOf(0) : amount;
+					}
 
 	/**
-	 * Set the value related to the column: SUB_TOTAL
-	 * @param subtotalAmount the SUB_TOTAL value
+	 * Set the value related to the column: AMOUNT
+	 * @param amount the AMOUNT value
 	 */
-	public void setSubtotalAmount (java.lang.Double subtotalAmount) {
-		this.subtotalAmount = subtotalAmount;
+	public void setAmount (java.lang.Double amount) {
+		this.amount = amount;
 	}
 
 
 
 	/**
-	 * Return the value associated with the column: TOTAL_DISCOUNT
+	 * Return the value associated with the column: TIPS_AMOUNT
 	 */
-	public java.lang.Double getDiscountAmount () {
-					return discountAmount == null ? Double.valueOf(0) : discountAmount;
-			}
+	public java.lang.Double getTipsAmount () {
+									return tipsAmount == null ? Double.valueOf(0) : tipsAmount;
+					}
 
 	/**
-	 * Set the value related to the column: TOTAL_DISCOUNT
-	 * @param discountAmount the TOTAL_DISCOUNT value
+	 * Set the value related to the column: TIPS_AMOUNT
+	 * @param tipsAmount the TIPS_AMOUNT value
 	 */
-	public void setDiscountAmount (java.lang.Double discountAmount) {
-		this.discountAmount = discountAmount;
+	public void setTipsAmount (java.lang.Double tipsAmount) {
+		this.tipsAmount = tipsAmount;
 	}
 
 
 
 	/**
-	 * Return the value associated with the column: TOTAL_TAX
+	 * Return the value associated with the column: TIPS_EXCEED_AMOUNT
 	 */
-	public java.lang.Double getTaxAmount () {
-					return taxAmount == null ? Double.valueOf(0) : taxAmount;
-			}
+	public java.lang.Double getTipsExceedAmount () {
+									return tipsExceedAmount == null ? Double.valueOf(0) : tipsExceedAmount;
+					}
 
 	/**
-	 * Set the value related to the column: TOTAL_TAX
-	 * @param taxAmount the TOTAL_TAX value
+	 * Set the value related to the column: TIPS_EXCEED_AMOUNT
+	 * @param tipsExceedAmount the TIPS_EXCEED_AMOUNT value
 	 */
-	public void setTaxAmount (java.lang.Double taxAmount) {
-		this.taxAmount = taxAmount;
+	public void setTipsExceedAmount (java.lang.Double tipsExceedAmount) {
+		this.tipsExceedAmount = tipsExceedAmount;
 	}
 
 
 
 	/**
-	 * Return the value associated with the column: TOTAL_PRICE
+	 * Return the value associated with the column: TENDER_AMOUNT
 	 */
-	public java.lang.Double getTotalAmount () {
-					return totalAmount == null ? Double.valueOf(0) : totalAmount;
-			}
+	public java.lang.Double getTenderAmount () {
+									return tenderAmount == null ? Double.valueOf(0) : tenderAmount;
+					}
 
 	/**
-	 * Set the value related to the column: TOTAL_PRICE
-	 * @param totalAmount the TOTAL_PRICE value
+	 * Set the value related to the column: TENDER_AMOUNT
+	 * @param tenderAmount the TENDER_AMOUNT value
 	 */
-	public void setTotalAmount (java.lang.Double totalAmount) {
-		this.totalAmount = totalAmount;
+	public void setTenderAmount (java.lang.Double tenderAmount) {
+		this.tenderAmount = tenderAmount;
 	}
 
 
 
 	/**
-	 * Return the value associated with the column: GRATUITY_AMOUNT
+	 * Return the value associated with the column: TRANSACTION_TYPE
 	 */
-	public java.lang.Double getGratuityAmount () {
-					return gratuityAmount == null ? Double.valueOf(0) : gratuityAmount;
+	public java.lang.String getTransactionType () {
+					return transactionType;
 			}
 
 	/**
-	 * Set the value related to the column: GRATUITY_AMOUNT
-	 * @param gratuityAmount the GRATUITY_AMOUNT value
+	 * Set the value related to the column: TRANSACTION_TYPE
+	 * @param transactionType the TRANSACTION_TYPE value
 	 */
-	public void setGratuityAmount (java.lang.Double gratuityAmount) {
-		this.gratuityAmount = gratuityAmount;
+	public void setTransactionType (java.lang.String transactionType) {
+		this.transactionType = transactionType;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: CUSTOM_PAYMENT_NAME
+	 */
+	public java.lang.String getCustomPaymentName () {
+					return customPaymentName;
+			}
+
+	/**
+	 * Set the value related to the column: CUSTOM_PAYMENT_NAME
+	 * @param customPaymentName the CUSTOM_PAYMENT_NAME value
+	 */
+	public void setCustomPaymentName (java.lang.String customPaymentName) {
+		this.customPaymentName = customPaymentName;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: CUSTOM_PAYMENT_REF
+	 */
+	public java.lang.String getCustomPaymentRef () {
+					return customPaymentRef;
+			}
+
+	/**
+	 * Set the value related to the column: CUSTOM_PAYMENT_REF
+	 * @param customPaymentRef the CUSTOM_PAYMENT_REF value
+	 */
+	public void setCustomPaymentRef (java.lang.String customPaymentRef) {
+		this.customPaymentRef = customPaymentRef;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: CUSTOM_PAYMENT_FIELD_NAME
+	 */
+	public java.lang.String getCustomPaymentFieldName () {
+					return customPaymentFieldName;
+			}
+
+	/**
+	 * Set the value related to the column: CUSTOM_PAYMENT_FIELD_NAME
+	 * @param customPaymentFieldName the CUSTOM_PAYMENT_FIELD_NAME value
+	 */
+	public void setCustomPaymentFieldName (java.lang.String customPaymentFieldName) {
+		this.customPaymentFieldName = customPaymentFieldName;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: PAYMENT_SUB_TYPE
+	 */
+	public java.lang.String getPaymentType () {
+					return paymentType;
+			}
+
+	/**
+	 * Set the value related to the column: PAYMENT_SUB_TYPE
+	 * @param paymentType the PAYMENT_SUB_TYPE value
+	 */
+	public void setPaymentType (java.lang.String paymentType) {
+		this.paymentType = paymentType;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: CAPTURED
+	 */
+	public java.lang.Boolean isCaptured () {
+								return captured == null ? Boolean.FALSE : captured;
+					}
+
+	/**
+	 * Set the value related to the column: CAPTURED
+	 * @param captured the CAPTURED value
+	 */
+	public void setCaptured (java.lang.Boolean captured) {
+		this.captured = captured;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: VOIDED
+	 */
+	public java.lang.Boolean isVoided () {
+								return voided == null ? Boolean.FALSE : voided;
+					}
+
+	/**
+	 * Set the value related to the column: VOIDED
+	 * @param voided the VOIDED value
+	 */
+	public void setVoided (java.lang.Boolean voided) {
+		this.voided = voided;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: AUTHORIZABLE
+	 */
+	public java.lang.Boolean isAuthorizable () {
+								return authorizable == null ? Boolean.FALSE : authorizable;
+					}
+
+	/**
+	 * Set the value related to the column: AUTHORIZABLE
+	 * @param authorizable the AUTHORIZABLE value
+	 */
+	public void setAuthorizable (java.lang.Boolean authorizable) {
+		this.authorizable = authorizable;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: CARD_HOLDER_NAME
+	 */
+	public java.lang.String getCardHolderName () {
+					return cardHolderName;
+			}
+
+	/**
+	 * Set the value related to the column: CARD_HOLDER_NAME
+	 * @param cardHolderName the CARD_HOLDER_NAME value
+	 */
+	public void setCardHolderName (java.lang.String cardHolderName) {
+		this.cardHolderName = cardHolderName;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: CARD_NUMBER
+	 */
+	public java.lang.String getCardNumber () {
+					return cardNumber;
+			}
+
+	/**
+	 * Set the value related to the column: CARD_NUMBER
+	 * @param cardNumber the CARD_NUMBER value
+	 */
+	public void setCardNumber (java.lang.String cardNumber) {
+		this.cardNumber = cardNumber;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: CARD_AUTH_CODE
+	 */
+	public java.lang.String getCardAuthCode () {
+					return cardAuthCode;
+			}
+
+	/**
+	 * Set the value related to the column: CARD_AUTH_CODE
+	 * @param cardAuthCode the CARD_AUTH_CODE value
+	 */
+	public void setCardAuthCode (java.lang.String cardAuthCode) {
+		this.cardAuthCode = cardAuthCode;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: CARD_TYPE
+	 */
+	public java.lang.String getCardType () {
+					return cardType;
+			}
+
+	/**
+	 * Set the value related to the column: CARD_TYPE
+	 * @param cardType the CARD_TYPE value
+	 */
+	public void setCardType (java.lang.String cardType) {
+		this.cardType = cardType;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: CARD_TRANSACTION_ID
+	 */
+	public java.lang.String getCardTransactionId () {
+					return cardTransactionId;
+			}
+
+	/**
+	 * Set the value related to the column: CARD_TRANSACTION_ID
+	 * @param cardTransactionId the CARD_TRANSACTION_ID value
+	 */
+	public void setCardTransactionId (java.lang.String cardTransactionId) {
+		this.cardTransactionId = cardTransactionId;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: CARD_MERCHANT_GATEWAY
+	 */
+	public java.lang.String getCardMerchantGateway () {
+					return cardMerchantGateway;
+			}
+
+	/**
+	 * Set the value related to the column: CARD_MERCHANT_GATEWAY
+	 * @param cardMerchantGateway the CARD_MERCHANT_GATEWAY value
+	 */
+	public void setCardMerchantGateway (java.lang.String cardMerchantGateway) {
+		this.cardMerchantGateway = cardMerchantGateway;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: CARD_READER
+	 */
+	public java.lang.String getCardReader () {
+					return cardReader;
+			}
+
+	/**
+	 * Set the value related to the column: CARD_READER
+	 * @param cardReader the CARD_READER value
+	 */
+	public void setCardReader (java.lang.String cardReader) {
+		this.cardReader = cardReader;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: CARD_AID
+	 */
+	public java.lang.String getCardAID () {
+					return cardAID;
+			}
+
+	/**
+	 * Set the value related to the column: CARD_AID
+	 * @param cardAID the CARD_AID value
+	 */
+	public void setCardAID (java.lang.String cardAID) {
+		this.cardAID = cardAID;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: CARD_ARQC
+	 */
+	public java.lang.String getCardARQC () {
+					return cardARQC;
+			}
+
+	/**
+	 * Set the value related to the column: CARD_ARQC
+	 * @param cardARQC the CARD_ARQC value
+	 */
+	public void setCardARQC (java.lang.String cardARQC) {
+		this.cardARQC = cardARQC;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: CARD_EXT_DATA
+	 */
+	public java.lang.String getCardExtData () {
+					return cardExtData;
+			}
+
+	/**
+	 * Set the value related to the column: CARD_EXT_DATA
+	 * @param cardExtData the CARD_EXT_DATA value
+	 */
+	public void setCardExtData (java.lang.String cardExtData) {
+		this.cardExtData = cardExtData;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: GIFT_CERT_NUMBER
+	 */
+	public java.lang.String getGiftCertNumber () {
+					return giftCertNumber;
+			}
+
+	/**
+	 * Set the value related to the column: GIFT_CERT_NUMBER
+	 * @param giftCertNumber the GIFT_CERT_NUMBER value
+	 */
+	public void setGiftCertNumber (java.lang.String giftCertNumber) {
+		this.giftCertNumber = giftCertNumber;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: GIFT_CERT_FACE_VALUE
+	 */
+	public java.lang.Double getGiftCertFaceValue () {
+									return giftCertFaceValue == null ? Double.valueOf(0) : giftCertFaceValue;
+					}
+
+	/**
+	 * Set the value related to the column: GIFT_CERT_FACE_VALUE
+	 * @param giftCertFaceValue the GIFT_CERT_FACE_VALUE value
+	 */
+	public void setGiftCertFaceValue (java.lang.Double giftCertFaceValue) {
+		this.giftCertFaceValue = giftCertFaceValue;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: GIFT_CERT_PAID_AMOUNT
+	 */
+	public java.lang.Double getGiftCertPaidAmount () {
+									return giftCertPaidAmount == null ? Double.valueOf(0) : giftCertPaidAmount;
+					}
+
+	/**
+	 * Set the value related to the column: GIFT_CERT_PAID_AMOUNT
+	 * @param giftCertPaidAmount the GIFT_CERT_PAID_AMOUNT value
+	 */
+	public void setGiftCertPaidAmount (java.lang.Double giftCertPaidAmount) {
+		this.giftCertPaidAmount = giftCertPaidAmount;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: GIFT_CERT_CASH_BACK_AMOUNT
+	 */
+	public java.lang.Double getGiftCertCashBackAmount () {
+									return giftCertCashBackAmount == null ? Double.valueOf(0) : giftCertCashBackAmount;
+					}
+
+	/**
+	 * Set the value related to the column: GIFT_CERT_CASH_BACK_AMOUNT
+	 * @param giftCertCashBackAmount the GIFT_CERT_CASH_BACK_AMOUNT value
+	 */
+	public void setGiftCertCashBackAmount (java.lang.Double giftCertCashBackAmount) {
+		this.giftCertCashBackAmount = giftCertCashBackAmount;
 	}
 
 
@@ -214,8 +636,8 @@ public abstract class BasePosTransaction  implements Comparable, Serializable {
 	 * Return the value associated with the column: DRAWER_RESETTED
 	 */
 	public java.lang.Boolean isDrawerResetted () {
-					return drawerResetted == null ? Boolean.FALSE : drawerResetted;
-			}
+								return drawerResetted == null ? Boolean.FALSE : drawerResetted;
+					}
 
 	/**
 	 * Set the value related to the column: DRAWER_RESETTED
@@ -228,11 +650,28 @@ public abstract class BasePosTransaction  implements Comparable, Serializable {
 
 
 	/**
+	 * Return the value associated with the column: NOTE
+	 */
+	public java.lang.String getNote () {
+					return note;
+			}
+
+	/**
+	 * Set the value related to the column: NOTE
+	 * @param note the NOTE value
+	 */
+	public void setNote (java.lang.String note) {
+		this.note = note;
+	}
+
+
+
+	/**
 	 * Return the value associated with the column: TERMINAL_ID
 	 */
 	public com.floreantpos.model.Terminal getTerminal () {
-			return terminal;
-	}
+					return terminal;
+			}
 
 	/**
 	 * Set the value related to the column: TERMINAL_ID
@@ -248,8 +687,8 @@ public abstract class BasePosTransaction  implements Comparable, Serializable {
 	 * Return the value associated with the column: TICKET_ID
 	 */
 	public com.floreantpos.model.Ticket getTicket () {
-			return ticket;
-	}
+					return ticket;
+			}
 
 	/**
 	 * Set the value related to the column: TICKET_ID
@@ -265,8 +704,8 @@ public abstract class BasePosTransaction  implements Comparable, Serializable {
 	 * Return the value associated with the column: USER_ID
 	 */
 	public com.floreantpos.model.User getUser () {
-			return user;
-	}
+					return user;
+			}
 
 	/**
 	 * Set the value related to the column: USER_ID
@@ -274,6 +713,57 @@ public abstract class BasePosTransaction  implements Comparable, Serializable {
 	 */
 	public void setUser (com.floreantpos.model.User user) {
 		this.user = user;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: PAYOUT_REASON_ID
+	 */
+	public com.floreantpos.model.PayoutReason getReason () {
+					return reason;
+			}
+
+	/**
+	 * Set the value related to the column: PAYOUT_REASON_ID
+	 * @param reason the PAYOUT_REASON_ID value
+	 */
+	public void setReason (com.floreantpos.model.PayoutReason reason) {
+		this.reason = reason;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: PAYOUT_RECEPIENT_ID
+	 */
+	public com.floreantpos.model.PayoutRecepient getRecepient () {
+					return recepient;
+			}
+
+	/**
+	 * Set the value related to the column: PAYOUT_RECEPIENT_ID
+	 * @param recepient the PAYOUT_RECEPIENT_ID value
+	 */
+	public void setRecepient (com.floreantpos.model.PayoutRecepient recepient) {
+		this.recepient = recepient;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: properties
+	 */
+	public java.util.Map<String, String> getProperties () {
+					return properties;
+			}
+
+	/**
+	 * Set the value related to the column: properties
+	 * @param properties the properties value
+	 */
+	public void setProperties (java.util.Map<String, String> properties) {
+		this.properties = properties;
 	}
 
 

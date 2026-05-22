@@ -1,3 +1,20 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.report;
 
 import java.util.ArrayList;
@@ -11,15 +28,14 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRTableModelDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.view.JasperViewer;
 
 import org.jdesktop.swingx.calendar.DateUtils;
 
-import com.floreantpos.main.Application;
 import com.floreantpos.model.Ticket;
 import com.floreantpos.model.TicketItem;
 import com.floreantpos.model.dao.TicketDAO;
+import com.floreantpos.util.CurrencyUtil;
 
 public class SalesReportModelFactory {
 	private Date startDate;
@@ -48,8 +64,8 @@ public class SalesReportModelFactory {
 		HashMap<String, ReportItem> modifierMap = new HashMap<String, ReportItem>();
 		
 		for (Iterator iter = tickets.iterator(); iter.hasNext();) {
-			Ticket ticket = (Ticket) iter.next();
-			ticket = TicketDAO.getInstance().initializeTicket(ticket);
+			Ticket t = (Ticket) iter.next();
+			Ticket ticket = TicketDAO.getInstance().loadFullTicket(t.getId());
 			
 			List<TicketItem> ticketItems = ticket.getTicketItems();
 			if(ticketItems == null) continue;
@@ -121,19 +137,19 @@ public class SalesReportModelFactory {
 		SalesReportModel itemReportModel = factory.getItemReportModel();
 		SalesReportModel modifierReportModel = factory.getModifierReportModel();
 		
-		JasperReport itemReport = (JasperReport) JRLoader.loadObject(SalesReportModelFactory.class.getResource("/com/floreantpos/ui/report/SalesSubReport.jasper"));
-		JasperReport modifierReport = (JasperReport) JRLoader.loadObject(SalesReportModelFactory.class.getResource("/com/floreantpos/ui/report/SalesSubReport.jasper"));
+		JasperReport itemReport = ReportUtil.getReport("SalesSubReport"); //$NON-NLS-1$
+		JasperReport modifierReport = ReportUtil.getReport("SalesSubReport"); //$NON-NLS-1$
 		
 		HashMap map = new HashMap();
-		map.put("itemDataSource", new  JRTableModelDataSource(itemReportModel));
-		map.put("modifierDataSource", new  JRTableModelDataSource(modifierReportModel));
-		map.put("currencySymbol", Application.getCurrencySymbol());
-		map.put("itemGrandTotal", itemReportModel.getGrandTotalAsString());
-		map.put("modifierGrandTotal", modifierReportModel.getGrandTotalAsString());
-		map.put("itemReport", itemReport);
-		map.put("modifierReport", modifierReport);
+		map.put("itemDataSource", new  JRTableModelDataSource(itemReportModel)); //$NON-NLS-1$
+		map.put("modifierDataSource", new  JRTableModelDataSource(modifierReportModel)); //$NON-NLS-1$
+		map.put("currencySymbol", CurrencyUtil.getCurrencySymbol()); //$NON-NLS-1$
+		map.put("itemGrandTotal", itemReportModel.getGrandTotalAsString()); //$NON-NLS-1$
+		map.put("modifierGrandTotal", modifierReportModel.getGrandTotalAsString()); //$NON-NLS-1$
+		map.put("itemReport", itemReport); //$NON-NLS-1$
+		map.put("modifierReport", modifierReport); //$NON-NLS-1$
 		
-		JasperReport masterReport = (JasperReport) JRLoader.loadObject(SalesReportModelFactory.class.getResource("/com/floreantpos/ui/report/SalesReport.jasper"));
+		JasperReport masterReport = ReportUtil.getReport("SalesReport"); //$NON-NLS-1$
 		
 		JasperPrint print = JasperFillManager.fillReport(masterReport, map, new JREmptyDataSource());
 		JasperViewer.viewReport(print, false);

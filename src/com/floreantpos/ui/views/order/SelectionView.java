@@ -1,247 +1,268 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.ui.views.order;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.FlowLayout;
+import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.util.List;
 
 import javax.swing.AbstractButton;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.jdesktop.swingx.JXTitledSeparator;
+
+import com.floreantpos.POSConstants;
+import com.floreantpos.config.TerminalConfig;
 import com.floreantpos.swing.PosButton;
 
-public abstract class SelectionView extends JPanel {
-	private static final Dimension buttonSize = new Dimension(85, 60);
+public abstract class SelectionView extends JPanel implements ComponentListener {
+	private final static int HORIZONTAL_GAP = 5;
+	private final static int VERTICAL_GAP = 5;
 
-	private JPanel buttonsPanel;
+	protected List items;
 
-	private com.floreantpos.swing.PosButton btnBack;
-	private com.floreantpos.swing.PosButton btnNext;
-	private com.floreantpos.swing.PosButton btnPrev;
-	private JScrollBar verticalScrollBar;
+	private Dimension buttonSize;
 
-	private JScrollPane buttonScrollPane;
+	protected CardLayout cardLayout = new CardLayout();
+	private JPanel cardLayoutContainer = new JPanel(cardLayout);
+	protected JPanel buttonPanelContainer = new JPanel(new BorderLayout());
 
-	public SelectionView(String title) {
-		TitledBorder border = new TitledBorder(title);
+	protected TitledBorder border;
+
+	protected JPanel actionButtonPanel = new JPanel(new MigLayout("fill,hidemode 3, ins 2", "sg, fill", "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+	protected com.floreantpos.swing.PosButton btnNext;
+	protected com.floreantpos.swing.PosButton btnPrev;
+
+	private boolean initialized = true;
+
+	@SuppressWarnings("unused")
+	private String title;
+
+	public SelectionView(String title, int buttonWidth, int buttonHeight) {
+		this.title = title;
+		this.buttonSize = new Dimension(buttonWidth, buttonHeight);
+
+		border = new TitledBorder(title);
 		border.setTitleJustification(TitledBorder.CENTER);
+		setBorder(new CompoundBorder(border, new EmptyBorder(2, 2, 2, 2)));
 
-		setBorder(border);
+		setLayout(new BorderLayout(HORIZONTAL_GAP, VERTICAL_GAP));
 
-		setLayout(new BorderLayout(5, 5));
-
-		MigLayout migLayout = new MigLayout("wrap 3", "fill,grow,shrink", "");
-		buttonsPanel = new JPanel(migLayout);
-
-		buttonScrollPane = new JScrollPane(buttonsPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		//JScrollPane scrollPane = new JScrollPane(buttonsPanel);
-		buttonScrollPane.setBorder(null);
-		buttonScrollPane.setOpaque(false);
-		buttonScrollPane.getViewport().setOpaque(false);
-		verticalScrollBar = buttonScrollPane.getVerticalScrollBar();
-		verticalScrollBar.setBlockIncrement(250);
-		add(buttonScrollPane);
-
-		buttonsPanel.addComponentListener(new ComponentListener() {
-
-			public void componentResized(ComponentEvent e) {
-				int value = verticalScrollBar.getValue();
-				int min = verticalScrollBar.getMinimum();
-				int max = verticalScrollBar.getMaximum();
-				int inc = verticalScrollBar.getBlockIncrement(0);
-
-				if (value <= min) {
-					btnPrev.setEnabled(false);
-				}
-				else {
-					btnPrev.setEnabled(true);
-				}
-				if ((value + inc) >= max) {
-					btnNext.setEnabled(false);
-				}
-				else {
-					btnNext.setEnabled(true);
-				}
-			}
-
-			public void componentMoved(ComponentEvent e) {
-			}
-
-			public void componentShown(ComponentEvent e) {
-			}
-
-			public void componentHidden(ComponentEvent e) {
-			}
-
-		});
-
-		MigLayout migLayout2 = new MigLayout("fill,hidemode 3", "grow", "");
-		JPanel southPanel = new JPanel(migLayout2);
-		southPanel.add(new JSeparator(JSeparator.HORIZONTAL), "wrap, span, grow, gaptop 5");
-
-		btnBack = new PosButton();
-		btnBack.setText("BACK");
-		southPanel.add(btnBack, "grow,shrink, align center, height 50");
+		buttonPanelContainer.add(cardLayoutContainer);
+		add(buttonPanelContainer);
 
 		btnPrev = new PosButton();
-		btnPrev.setText("PREV");
-		southPanel.add(btnPrev, "grow, align center, height 50");
+		btnPrev.setText(POSConstants.CAPITAL_PREV);
+		actionButtonPanel.add(btnPrev, "grow, align center"); //$NON-NLS-1$
 
 		btnNext = new PosButton();
-		btnNext.setText("NEXT");
-		southPanel.add(btnNext, "grow, align center, height 50");
+		btnNext.setText(POSConstants.CAPITAL_NEXT);
+		actionButtonPanel.add(btnNext, "grow, align center"); //$NON-NLS-1$
 
-		add(southPanel, BorderLayout.SOUTH);
+		add(actionButtonPanel, BorderLayout.SOUTH);
 
 		ScrollAction action = new ScrollAction();
-		btnBack.addActionListener(action);
 		btnPrev.addActionListener(action);
 		btnNext.addActionListener(action);
+
+		addComponentListener(this);
+
+		btnNext.setVisible(false);
+		btnPrev.setVisible(false);
 	}
 
-	public void reset() {
-		Component[] components = buttonsPanel.getComponents();
-		for (int i = 0; i < components.length; i++) {
-			Component c = components[i];
-			if (c instanceof JButton) {
-				JButton button = (JButton) c;
-				//button.setIcon(null);
-				button.setPreferredSize(null);
+	public SelectionView(String title) {
+		this(title, 120, TerminalConfig.getMenuItemButtonHeight());
+	}
 
-				ActionListener[] actionListeners = button.getActionListeners();
-				if (actionListeners != null) {
-					for (int j = 0; j < actionListeners.length; j++) {
-						button.removeActionListener(actionListeners[j]);
-					}
+	public void setTitle(String title) {
+		border.setTitle(title);
+	}
+
+	public void setItems(List items) {
+		this.items = items;
+		renderItems();
+	}
+
+	public List getItems() {
+		return items;
+	}
+
+	public Dimension getButtonSize() {
+		return buttonSize;
+	}
+
+	public void setButtonSize(Dimension buttonSize) {
+		this.buttonSize = buttonSize;
+	}
+
+	protected abstract AbstractButton createItemButton(Object item);
+
+	public void reset() {
+		cardLayoutContainer.removeAll();
+		//		btnNext.setEnabled(false);
+		//		btnPrev.setEnabled(false);
+		//		
+		//		Component[] components = buttonsPanel.getComponents();
+		//		for (int i = 0; i < components.length; i++) {
+		//			Component c = components[i];
+		//			if (c instanceof AbstractButton) {
+		//				AbstractButton button = (AbstractButton) c;
+		//				button.setPreferredSize(null);
+		//
+		//				ActionListener[] actionListeners = button.getActionListeners();
+		//				if (actionListeners != null) {
+		//					for (int j = 0; j < actionListeners.length; j++) {
+		//						button.removeActionListener(actionListeners[j]);
+		//					}
+		//				}
+		//			}
+		//		}
+		//		buttonsPanel.removeAll();
+		//		buttonsPanel.revalidate();
+		//		buttonsPanel.repaint();
+	}
+
+	protected int getHorizontalButtonCount() {
+		Dimension size = buttonPanelContainer.getSize();
+		Dimension itemButtonSize = getButtonSize();
+
+		return getButtonCount(size.width, itemButtonSize.width);
+	}
+
+	protected int getFitableButtonCount() {
+		Dimension size = buttonPanelContainer.getSize();
+		Dimension itemButtonSize = getButtonSize();
+
+		int horizontalButtonCount = getButtonCount(size.width, itemButtonSize.width);
+		int verticalButtonCount = getButtonCount(size.height, itemButtonSize.height);
+
+		int totalItem = horizontalButtonCount * verticalButtonCount;
+
+		return totalItem;
+	}
+
+	protected void renderItems() {
+		reset();
+
+		if (this.items == null || items.size() == 0) {
+			revalidate();
+			repaint();
+			return;
+		}
+
+		Dimension itemButtonSize = getButtonSize();
+
+		//buttonsPanel.setLayout(new MigLayout("alignx 50%, wrap " + horizontalButtonCount)); //$NON-NLS-1$
+
+		int totalItem = getFitableButtonCount();
+
+		try {
+			ButtonPanel buttonPanel = null;
+			for (int i = 0; i < items.size(); i++) {
+				if (i % totalItem == 0) {
+					buttonPanel = new ButtonPanel("buttonpanel-" + i);
+					buttonPanel.setLayout(createButtonPanelLayout());
+					cardLayoutContainer.add(buttonPanel, buttonPanel.getName());
 				}
+
+				Object item = items.get(i);
+
+				AbstractButton itemButton = createItemButton(item);
+				if (itemButton == null) {
+					continue;
+				}
+
+				itemButton.setPreferredSize(itemButtonSize);
+				buttonPanel.add(itemButton);
+			}
+		} catch (Exception e) {
+			initialized = false;
+			// TODO: fix it.
+		}
+
+		cardLayout.first(cardLayoutContainer);
+		if (cardLayoutContainer.getComponentCount() > 1) {
+			btnPrev.setVisible(true);
+			btnNext.setVisible(true);
+		}
+		else {
+			btnPrev.setVisible(false);
+			btnNext.setVisible(false);
+		}
+
+		revalidate();
+		repaint();
+	}
+
+	protected LayoutManager createButtonPanelLayout() {
+		return new FlowLayout(FlowLayout.CENTER);
+	}
+
+	public ButtonPanel getActivePanel() {
+		Component[] components = cardLayoutContainer.getComponents();
+		for (Component component : components) {
+			if (component instanceof ButtonPanel && component.isVisible()) {
+				return (ButtonPanel) component;
 			}
 		}
-		buttonsPanel.removeAll();
+
+		return null;
 	}
 
 	public void addButton(AbstractButton button) {
 		button.setPreferredSize(buttonSize);
-		button.setText("<html><body><center>" + button.getText() + "</center></body></html>");
-		buttonsPanel.add(button, "height 60px");
-	}
-
-	public void addButton(JButton button, String text) {
-		button.setText("<html><body><center>" + text + "</center></body></html>");
-		button.setPreferredSize(buttonSize);
-		buttonsPanel.add(button, "height 50px");
+		button.setText("<html><body><center>" + button.getText() + "</center></body></html>"); //$NON-NLS-1$ //$NON-NLS-2$
+		cardLayoutContainer.add(button);
 	}
 
 	public void addSeparator(String text) {
-		JLabel label = new JLabel(text);
-		//label.setForeground(Color.RED);
-		label.setFont(label.getFont().deriveFont(Font.BOLD));
-		buttonsPanel.add(new JSeparator(), "newline, span, split 3, growx");
-		buttonsPanel.add(label, "gapbottom 1");
-		buttonsPanel.add(new JSeparator(), "gapleft rel, growx");
-	}
-
-	private int scrollByBlock(JScrollBar scrollbar, int direction) {
-		// This method is called from BasicScrollPaneUI to implement wheel
-		// scrolling, and also from scrollByBlock().
-		int oldValue = scrollbar.getValue();
-		int blockIncrement = scrollbar.getBlockIncrement();
-		int delta = blockIncrement * ((direction > 0) ? +1 : -1);
-		int newValue = oldValue + delta;
-
-		// Check for overflow.
-		if (delta > 0 && newValue < oldValue) {
-			newValue = scrollbar.getMaximum();
-		}
-		else if (delta < 0 && newValue > oldValue) {
-			newValue = scrollbar.getMinimum();
-		}
-
-		return newValue;
-
+		cardLayoutContainer.add(new JXTitledSeparator(text, JLabel.CENTER), "alignx 50%, newline, span, growx, height 30!"); //$NON-NLS-1$
 	}
 
 	private void scrollDown() {
-		int scrollUnit = scrollByBlock(verticalScrollBar, 1);
-		verticalScrollBar.setValue(scrollUnit);
-		//scrollUnit = scrollByBlock(verticalScrollBar, 1);
-
-		int value = verticalScrollBar.getValue();
-		int min = verticalScrollBar.getMinimum();
-
-		if (value < scrollUnit) {
-			btnNext.setEnabled(false);
-		}
-		else {
-			btnNext.setEnabled(true);
-		}
-
-		if (value <= min) {
-			btnPrev.setEnabled(false);
-		}
-		else {
-			btnPrev.setEnabled(true);
-		}
-		/*
-		 if ((value + inc) >= max) {
-		 btnNext.setEnabled(false);
-		 }
-		 else {
-		 btnNext.setEnabled(true);
-		 }*/
+		cardLayout.next(cardLayoutContainer);
 	}
 
 	private void scrollUp() {
-		int scrollUnit = scrollByBlock(verticalScrollBar, 0);
-		verticalScrollBar.setValue(scrollUnit);
-
-		int value = verticalScrollBar.getValue();
-		int min = verticalScrollBar.getMinimum();
-		int max = verticalScrollBar.getMaximum();
-		int inc = verticalScrollBar.getBlockIncrement(0);
-
-		if (value <= min) {
-			btnPrev.setEnabled(false);
-		}
-		else {
-			btnPrev.setEnabled(true);
-		}
-		if ((value + inc) >= max) {
-			btnNext.setEnabled(false);
-		}
-		else {
-			btnNext.setEnabled(true);
-		}
+		cardLayout.previous(cardLayoutContainer);
 	}
-
-	public void setBackEnable(boolean enable) {
-		btnBack.setEnabled(enable);
-	}
-	public void setBackVisible(boolean enable) {
-		btnBack.setVisible(enable);
-	}
-
-	public abstract void doGoBack();
 
 	private class ScrollAction implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
 			Object source = e.getSource();
-			if (source == btnBack) {
-				doGoBack();
-			}
-			else if (source == btnPrev) {
+			if (source == btnPrev) {
 				scrollUp();
 			}
 			else if (source == btnNext) {
@@ -252,22 +273,60 @@ public abstract class SelectionView extends JPanel {
 	}
 
 	public JPanel getButtonsPanel() {
-		return buttonsPanel;
+		return cardLayoutContainer;
 	}
 
-	public JScrollPane getButtonScrollPane() {
-		return buttonScrollPane;
+	public AbstractButton getFirstItemButton() {
+		int componentCount = cardLayoutContainer.getComponentCount();
+		if (componentCount == 0) {
+			return null;
+		}
+
+		ButtonPanel buttonPanel = (ButtonPanel) cardLayoutContainer.getComponent(0);
+		if (buttonPanel.getComponentCount() == 0) {
+			return null;
+		}
+
+		return (AbstractButton) buttonPanel.getComponent(0);
 	}
 
-	//	public static void main(String[] args) throws Exception {
-	//		javax.swing.ImageIcon image = new javax.swing.ImageIcon(ButtonsView.class.getResource("/images/noModifier.png"));
-	//		//BufferedImage image = ImageIO.read(ButtonsView.class.getResourceAsStream("/images/noModifier.png"));
-	//		BufferedImage image2 = new BufferedImage(image.getIconWidth() / 2, image.getIconHeight() / 2, BufferedImage.TYPE_INT_ARGB);
-	//		Graphics graphics = image2.getGraphics();
-	//		//graphics.drawImage(image.getImage(),0,0,image.getIconWidth() / 2, image.getIconHeight() / 2, null);
-	//		
-	//		FileOutputStream out = new FileOutputStream("src/images/empty16.png");
-	//		ImageIO.write(image2, "png", out);
-	//		out.close();
-	//	}
+	protected int getButtonCount(int containerSize, int itemSize) {
+		int buttonCount = containerSize / (itemSize + 5);
+		//buttonCount = (containerSize - ((containerSize / itemSize) * 5)) / itemSize;
+		return buttonCount;
+	}
+
+	public void componentResized(ComponentEvent e) {
+		int totalItem = getFitableButtonCount();
+		if (totalItem == cardLayoutContainer.getComponentCount()) {
+			return;
+		}
+
+		renderItems();
+	}
+
+	public void componentMoved(ComponentEvent e) {
+	}
+
+	public void componentShown(ComponentEvent e) {
+	}
+
+	public void componentHidden(ComponentEvent e) {
+	}
+
+	public boolean isInitialized() {
+		return initialized;
+	}
+
+	public void setInitialized(boolean initialized) {
+		this.initialized = initialized;
+	}
+
+	private class ButtonPanel extends JPanel {
+
+		public ButtonPanel(String name) {
+			setName(name);
+			setBorder(null);
+		}
+	}
 }

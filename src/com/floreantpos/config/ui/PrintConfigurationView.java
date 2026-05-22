@@ -1,3 +1,20 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -11,25 +28,47 @@
 
 package com.floreantpos.config.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
+import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 
-import com.floreantpos.config.ApplicationConfig;
-import com.floreantpos.config.PrintConfig;
-import com.floreantpos.print.PrinterType;
+import net.miginfocom.swing.MigLayout;
+
+import com.floreantpos.Messages;
+import com.floreantpos.config.AppConfig;
+import com.floreantpos.config.TerminalConfig;
+import com.floreantpos.model.PosPrinters;
+import com.floreantpos.ui.dialog.POSMessageDialog;
 
 /**
  *
  * @author mshahriar
  */
 public class PrintConfigurationView extends ConfigurationView {
+
+	// Variables declaration - do not modify//GEN-BEGIN:variables
+	private JComboBox cbReceiptPrinterName;
+	private JComboBox cbReportPrinterName;
+	private JCheckBox chkKitchenBtn = new JCheckBox("Show KDS button on login screen");
+	private JTextField txtYellowTime;
+	private JTextField txtRedTime;
+
+	// End of variables declaration//GEN-END:variables
+
+	PosPrinters printers = PosPrinters.load();
 
 	/** Creates new form PrintConfiguration */
 	public PrintConfigurationView() {
@@ -38,49 +77,54 @@ public class PrintConfigurationView extends ConfigurationView {
 
 	@Override
 	public String getName() {
-		return "Print Configuration";
+		return com.floreantpos.POSConstants.CONFIG_TAB_PRINT;
 	}
 
 	@Override
 	public void initialize() throws Exception {
-		PrinterType[] values = PrinterType.values();
-		cbReceiptPrinterType.setModel(new DefaultComboBoxModel(values));
-		cbKitchenPrinterType.setModel(new DefaultComboBoxModel(values));
-
 		PrintService[] printServices = PrintServiceLookup.lookupPrintServices(null, null);
+
+		cbReportPrinterName.setModel(new DefaultComboBoxModel(printServices));
 		cbReceiptPrinterName.setModel(new DefaultComboBoxModel(printServices));
-		cbKitchenPrinterName.setModel(new DefaultComboBoxModel(printServices));
-		
+
 		PrintServiceComboRenderer comboRenderer = new PrintServiceComboRenderer();
+		cbReportPrinterName.setRenderer(comboRenderer);
 		cbReceiptPrinterName.setRenderer(comboRenderer);
-		cbKitchenPrinterName.setRenderer(comboRenderer);
-		
-		cbReceiptPrinterType.setSelectedItem(PrinterType.fromString(ApplicationConfig.getString(PrintConfig.P_RECEIPT_PRINTER_TYPE, PrinterType.OS_PRINTER.getName())));
-		cbKitchenPrinterType.setSelectedItem(PrinterType.fromString(ApplicationConfig.getString(PrintConfig.P_KITCHEN_PRINTER_TYPE, PrinterType.OS_PRINTER.getName())));
-		
-		tfReceiptPrinterName.setText(ApplicationConfig.getString(PrintConfig.P_JAVAPOS_PRINTER_FOR_RECEIPT, "POSPrinter"));
-		tfReceiptCashDrawerName.setText(ApplicationConfig.getString(PrintConfig.P_CASH_DRAWER_NAME, "CashDrawer"));
-		tfKitchenPrinterName.setText(ApplicationConfig.getString(PrintConfig.P_JAVAPOS_PRINTER_FOR_KITCHEN, "KitchenPrinter"));
-		
-		setSelectedPrinter(cbReceiptPrinterName, PrintConfig.P_OS_PRINTER_FOR_RECEIPT);
-		setSelectedPrinter(cbKitchenPrinterName, PrintConfig.P_OS_PRINTER_FOR_KITCHEN);
-		
-		chkPrintReceiptWhenTicketSettled.setSelected(ApplicationConfig.getBoolean(PrintConfig.P_PRINT_RECEIPT_WHEN_SETTELED, true));
-		chkPrintReceiptWhenTicketPaid.setSelected(ApplicationConfig.getBoolean(PrintConfig.P_PRINT_RECEIPT_WHEN_PAID, false));
-		chkPrintKitchenWhenTicketSettled.setSelected(ApplicationConfig.getBoolean(PrintConfig.P_PRINT_KITCHEN_WHEN_SETTELED, false));
-		chkPrintKitchenWhenTicketPaid.setSelected(ApplicationConfig.getBoolean(PrintConfig.P_PRINT_KITCHEN_WHEN_PAID, false));
-		
+		//cbFullscreenMode.setSelected(TerminalConfig.isFullscreenMode());
+		chkKitchenBtn.setSelected(TerminalConfig.isShowKitchenBtnOnLoginScreen());
+		setSelectedPrinter(cbReportPrinterName, printers.getReportPrinter());
+		setSelectedPrinter(cbReceiptPrinterName, printers.getReceiptPrinter());
+
+		String yellowTimeOut = AppConfig.getString("YellowTimeOut"); //$NON-NLS-1$
+		String redTimeOut = AppConfig.getString("RedTimeOut"); //$NON-NLS-1$
+
+		if (yellowTimeOut != null) {
+			txtYellowTime.setText(yellowTimeOut);
+		}
+		if (redTimeOut != null) {
+			txtRedTime.setText(redTimeOut);
+		}
+
 		setInitialized(true);
+
+		if (printServices == null || printServices.length == 0) {
+			POSMessageDialog.showMessage(com.floreantpos.util.POSUtil.getFocusedWindow(), Messages.getString("PrintConfigurationView.0")); //$NON-NLS-1$
+		}
 	}
 
-	private void setSelectedPrinter(JComboBox whichPrinter, String propertyName) {
-		PrintService osDefaultPrinter = PrintServiceLookup.lookupDefaultPrintService();
-		String receiptPrinterName = ApplicationConfig.getString(propertyName, osDefaultPrinter.getName());
-		
+	private void setSelectedPrinter(JComboBox whichPrinter, String printerName) {
+		//		PrintService osDefaultPrinter = PrintServiceLookup.lookupDefaultPrintService();
+		//
+		//		if (osDefaultPrinter == null) {
+		//			return;
+		//		}
+
+		//String printerName = AppConfig.getString(propertyName, osDefaultPrinter.getName());
+
 		int printerCount = whichPrinter.getItemCount();
-		for(int i = 0; i < printerCount; i++) {
+		for (int i = 0; i < printerCount; i++) {
 			PrintService printService = (PrintService) whichPrinter.getItemAt(i);
-			if(printService.getName().equals(receiptPrinterName)) {
+			if (printService.getName().equals(printerName)) {
 				whichPrinter.setSelectedIndex(i);
 				return;
 			}
@@ -89,77 +133,26 @@ public class PrintConfigurationView extends ConfigurationView {
 
 	@Override
 	public boolean save() throws Exception {
-		ApplicationConfig.put(PrintConfig.P_RECEIPT_PRINTER_TYPE, cbReceiptPrinterType.getSelectedItem().toString());
-		ApplicationConfig.put(PrintConfig.P_KITCHEN_PRINTER_TYPE, cbKitchenPrinterType.getSelectedItem().toString());
-		
-		PrintService printService = (PrintService) cbReceiptPrinterName.getSelectedItem();
-		ApplicationConfig.put(PrintConfig.P_OS_PRINTER_FOR_RECEIPT, printService == null ? null : printService.getName());
-		printService = (PrintService) cbKitchenPrinterName.getSelectedItem();
-		ApplicationConfig.put(PrintConfig.P_OS_PRINTER_FOR_KITCHEN, printService == null ? null : printService.getName());
-		ApplicationConfig.put(PrintConfig.P_JAVAPOS_PRINTER_FOR_RECEIPT, tfReceiptPrinterName.getText());
-		ApplicationConfig.put(PrintConfig.P_CASH_DRAWER_NAME, tfReceiptCashDrawerName.getText());
-		ApplicationConfig.put(PrintConfig.P_JAVAPOS_PRINTER_FOR_KITCHEN, tfKitchenPrinterName.getText());
-		ApplicationConfig.put(PrintConfig.P_PRINT_KITCHEN_WHEN_PAID, chkPrintKitchenWhenTicketPaid.isSelected());
-		ApplicationConfig.put(PrintConfig.P_PRINT_KITCHEN_WHEN_SETTELED, chkPrintKitchenWhenTicketSettled.isSelected());
-		ApplicationConfig.put(PrintConfig.P_PRINT_RECEIPT_WHEN_PAID, chkPrintReceiptWhenTicketPaid.isSelected());
-		ApplicationConfig.put(PrintConfig.P_PRINT_RECEIPT_WHEN_SETTELED, chkPrintReceiptWhenTicketSettled.isSelected());
-		
+		PrintService printService = (PrintService) cbReportPrinterName.getSelectedItem();
+		printers.setReportPrinter(printService == null ? null : printService.getName());
+		//AppConfig.put(PrintConfig.REPORT_PRINTER_NAME, printService == null ? null : printService.getName());
+
+		printService = (PrintService) cbReceiptPrinterName.getSelectedItem();
+		printers.setReceiptPrinter(printService == null ? null : printService.getName());
+		//AppConfig.put(PrintConfig.RECEIPT_PRINTER_NAME, printService == null ? null : printService.getName());
+
+		//printService = (PrintService) cbKitchenPrinterName.getSelectedItem();
+		//AppConfig.put(PrintConfig.KITCHEN_PRINTER_NAME, printService == null ? null : printService.getName());
+
+		AppConfig.put("YellowTimeOut", txtYellowTime.getText()); //$NON-NLS-1$
+		AppConfig.put("RedTimeOut", txtRedTime.getText()); //$NON-NLS-1$
+
+		TerminalConfig.setShowKitchenBtnOnLoginScreen(chkKitchenBtn.isSelected());
+
+		//Application.getPrinters().save();
+
 		return true;
 	}
-
-	private void setReceiptPrinterType(PrinterType printerType) {
-		switch (printerType) {
-			case OS_PRINTER:
-				lblReceiptPrinterName.setEnabled(true);
-				lblSelectReceiptPrinter.setEnabled(true);
-				cbReceiptPrinterName.setEnabled(true);
-				lblReceiptPrinterName.setEnabled(false);
-				tfReceiptPrinterName.setEnabled(false);
-				lblReceiptCashDrawerName.setEnabled(false);
-				tfReceiptCashDrawerName.setEnabled(false);
-				break;
-				
-			case JAVAPOS:
-				lblReceiptPrinterName.setEnabled(false);
-				lblSelectReceiptPrinter.setEnabled(false);
-				cbReceiptPrinterName.setEnabled(false);
-				lblReceiptPrinterName.setEnabled(true);
-				tfReceiptPrinterName.setEnabled(true);
-				lblReceiptCashDrawerName.setEnabled(true);
-				tfReceiptCashDrawerName.setEnabled(true);
-				break;
-		}
-	}
-	
-	private void setKitchenPrinterType(PrinterType printerType) {
-		switch (printerType) {
-			case OS_PRINTER:
-				lblKitchenPrinterName.setEnabled(true);
-				lblSelectKitchenPrinter.setEnabled(true);
-				cbKitchenPrinterName.setEnabled(true);
-				lblKitchenPrinterName.setEnabled(false);
-				tfKitchenPrinterName.setEnabled(false);
-				break;
-				
-			case JAVAPOS:
-				lblKitchenPrinterName.setEnabled(false);
-				lblSelectKitchenPrinter.setEnabled(false);
-				cbKitchenPrinterName.setEnabled(false);
-				lblKitchenPrinterName.setEnabled(true);
-				tfKitchenPrinterName.setEnabled(true);
-				break;
-		}
-	}
-
-	private void receiptPrinterSelectionChanged(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_receiptPrinterSelectionChanged
-		setReceiptPrinterType((PrinterType) cbReceiptPrinterType.getSelectedItem());
-	}//GEN-LAST:event_receiptPrinterSelectionChanged
-	
-	private void kitchenPrinterTypeSelectionChanged(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_kitchenPrinterTypeSelectionChanged
-		setKitchenPrinterType((PrinterType) cbKitchenPrinterType.getSelectedItem());
-	}//GEN-LAST:event_kitchenPrinterTypeSelectionChanged
-	
-	
 
 	/** This method is called from within the constructor to
 	 * initialize the form.
@@ -167,226 +160,73 @@ public class PrintConfigurationView extends ConfigurationView {
 	 * always regenerated by the Form Editor.
 	 */
 	@SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+	// <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+	private void initComponents() {
+		setLayout(new BorderLayout());
+		JPanel contentPanel = new JPanel();
+		contentPanel.setLayout(new MigLayout("", "[][grow,fill]", "[][][][18px,grow][][]")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-        chkPrintReceiptWhenTicketSettled = new javax.swing.JCheckBox();
-        chkPrintReceiptWhenTicketPaid = new javax.swing.JCheckBox();
-        chkPrintKitchenWhenTicketSettled = new javax.swing.JCheckBox();
-        chkPrintKitchenWhenTicketPaid = new javax.swing.JCheckBox();
-        jPanel1 = new javax.swing.JPanel();
-        lblReceiptCashDrawerName = new javax.swing.JLabel();
-        tfReceiptCashDrawerName = new javax.swing.JTextField();
-        lblReceiptPrinterName = new javax.swing.JLabel();
-        tfReceiptPrinterName = new javax.swing.JTextField();
-        cbReceiptPrinterName = new javax.swing.JComboBox();
-        cbReceiptPrinterType = new javax.swing.JComboBox();
-        javax.swing.JLabel jLabel1 = new javax.swing.JLabel();
-        lblSelectReceiptPrinter = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
-        lblKitchenPrinterName = new javax.swing.JLabel();
-        tfKitchenPrinterName = new javax.swing.JTextField();
-        cbKitchenPrinterName = new javax.swing.JComboBox();
-        cbKitchenPrinterType = new javax.swing.JComboBox();
-        javax.swing.JLabel jLabel2 = new javax.swing.JLabel();
-        lblSelectKitchenPrinter = new javax.swing.JLabel();
+		JLabel lblReportPrinter = new JLabel(Messages.getString("PrintConfigurationView.4")); //$NON-NLS-1$
+		//add(lblReportPrinter, "cell 0 0,alignx trailing"); //$NON-NLS-1$
 
-        chkPrintReceiptWhenTicketSettled.setText("Print receipt when ticket settled");
+		cbReportPrinterName = new JComboBox();
+		//add(cbReportPrinterName, "cell 1 0,growx"); //$NON-NLS-1$
+		javax.swing.JLabel jLabel1 = new javax.swing.JLabel();
+		//add(jLabel1, "cell 0 1,alignx right"); //$NON-NLS-1$
 
-        chkPrintReceiptWhenTicketPaid.setText("Print receipt when ticket paid");
+		jLabel1.setText(Messages.getString("PrintConfigurationView.8")); //$NON-NLS-1$
+		cbReceiptPrinterName = new javax.swing.JComboBox();
+		//add(cbReceiptPrinterName, "cell 1 1,growx"); //$NON-NLS-1$
+		javax.swing.JLabel jLabel2 = new javax.swing.JLabel();
+		//add(jLabel2, "cell 0 2,alignx right"); //$NON-NLS-1$
 
-        chkPrintKitchenWhenTicketSettled.setText("Print to kitchen when ticket settled");
+		MultiPrinterPane multiPrinterPane = new MultiPrinterPane("Printers", printers.getKitchenPrinters()); //$NON-NLS-1$
+		contentPanel.add(multiPrinterPane, "cell 0 1 2 1,growx,h 200!"); //$NON-NLS-1$
 
-        chkPrintKitchenWhenTicketPaid.setText("Print to kitchen when ticket paid");
+		PrinterGroupView printerGroupView = new PrinterGroupView(Messages.getString("PrintConfigurationView.13")); //$NON-NLS-1$
+		printerGroupView.setPreferredSize(new Dimension(0, 400));
+		contentPanel.add(printerGroupView, "cell 0 2 2 2,growx,,h 200!,wrap"); //$NON-NLS-1$
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Receipt Printer", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.TOP));
+		JPanel footerPanel = new JPanel(new MigLayout());
 
-        lblReceiptCashDrawerName.setText("CashDrawer:");
+		txtYellowTime = new JTextField(5);
+		txtRedTime = new JTextField(5);
 
-        tfReceiptCashDrawerName.setText("CashDrawer");
+		txtYellowTime.setText("90"); //$NON-NLS-1$
+		txtRedTime.setText("120"); //$NON-NLS-1$
 
-        lblReceiptPrinterName.setText("Printer name:");
+		footerPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("PrintConfigurationView.6"))); //$NON-NLS-1$
 
-        tfReceiptPrinterName.setText("PosPrinter");
+		JLabel lblYellowTime = new JLabel(Messages.getString("PrintConfigurationView.7")); //$NON-NLS-1$
+		JLabel lblRedTime = new JLabel(Messages.getString("PrintConfigurationView.9")); //$NON-NLS-1$
 
-        cbReceiptPrinterType.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                receiptPrinterSelectionChanged(evt);
-            }
-        });
+		footerPanel.add(lblYellowTime, "grow"); //$NON-NLS-1$
+		footerPanel.add(txtYellowTime, "grow"); //$NON-NLS-1$
+		footerPanel.add(new JLabel(Messages.getString("PrintConfigurationView.1")), "grow, wrap"); //$NON-NLS-1$ //$NON-NLS-2$
+		footerPanel.add(lblRedTime, "grow"); //$NON-NLS-1$
+		footerPanel.add(txtRedTime, "grow"); //$NON-NLS-1$
+		footerPanel.add(new JLabel("sec"), "grow,wrap"); //$NON-NLS-1$ //$NON-NLS-2$
+		footerPanel.add(chkKitchenBtn);
+		contentPanel.add(footerPanel, "newline, grow, span 2,wrap"); //$NON-NLS-1$
 
-        jLabel1.setText("Printer Type:");
+		JScrollPane scrollPane = new JScrollPane(contentPanel);
+		scrollPane.setBorder(null);
+		add(scrollPane);
 
-        lblSelectReceiptPrinter.setText("Select Printer:");
+	}// </editor-fold>//GEN-END:initComponents
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(lblReceiptPrinterName)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfReceiptPrinterName))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cbReceiptPrinterType, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblSelectReceiptPrinter)
-                    .addComponent(lblReceiptCashDrawerName))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tfReceiptCashDrawerName, javax.swing.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE)
-                    .addComponent(cbReceiptPrinterName, 0, 178, Short.MAX_VALUE))
-                .addContainerGap())
-        );
+	private class PrintServiceComboRenderer extends DefaultListCellRenderer {
+		@Override
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			JLabel listCellRendererComponent = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			PrintService printService = (PrintService) value;
 
-        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jLabel1, lblReceiptPrinterName});
+			if (printService != null) {
+				listCellRendererComponent.setText(printService.getName());
+			}
 
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(cbReceiptPrinterType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblSelectReceiptPrinter)
-                    .addComponent(cbReceiptPrinterName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblReceiptPrinterName)
-                    .addComponent(tfReceiptPrinterName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblReceiptCashDrawerName)
-                    .addComponent(tfReceiptCashDrawerName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
-
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Kitchen Printer", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.TOP));
-
-        lblKitchenPrinterName.setText("Printer name:");
-
-        tfKitchenPrinterName.setText("KitchenPrinter");
-
-        cbKitchenPrinterType.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                kitchenPrinterTypeSelectionChanged(evt);
-            }
-        });
-
-        jLabel2.setText("Printer Type:");
-
-        lblSelectKitchenPrinter.setText("Select Printer:");
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
-                        .addComponent(lblKitchenPrinterName)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tfKitchenPrinterName))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cbKitchenPrinterType, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
-                .addComponent(lblSelectKitchenPrinter)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cbKitchenPrinterName, 0, 178, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        jPanel2Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jLabel2, lblKitchenPrinterName});
-
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(cbKitchenPrinterType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblSelectKitchenPrinter)
-                    .addComponent(cbKitchenPrinterName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblKitchenPrinterName)
-                    .addComponent(tfKitchenPrinterName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(102, 102, 102)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(chkPrintReceiptWhenTicketSettled)
-                            .addComponent(chkPrintReceiptWhenTicketPaid)
-                            .addComponent(chkPrintKitchenWhenTicketSettled)
-                            .addComponent(chkPrintKitchenWhenTicketPaid))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(chkPrintReceiptWhenTicketSettled)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(chkPrintReceiptWhenTicketPaid)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(chkPrintKitchenWhenTicketSettled)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(chkPrintKitchenWhenTicketPaid)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-    }// </editor-fold>//GEN-END:initComponents
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox cbKitchenPrinterName;
-    private javax.swing.JComboBox cbKitchenPrinterType;
-    private javax.swing.JComboBox cbReceiptPrinterName;
-    private javax.swing.JComboBox cbReceiptPrinterType;
-    private javax.swing.JCheckBox chkPrintKitchenWhenTicketPaid;
-    private javax.swing.JCheckBox chkPrintKitchenWhenTicketSettled;
-    private javax.swing.JCheckBox chkPrintReceiptWhenTicketPaid;
-    private javax.swing.JCheckBox chkPrintReceiptWhenTicketSettled;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JLabel lblKitchenPrinterName;
-    private javax.swing.JLabel lblReceiptCashDrawerName;
-    private javax.swing.JLabel lblReceiptPrinterName;
-    private javax.swing.JLabel lblSelectKitchenPrinter;
-    private javax.swing.JLabel lblSelectReceiptPrinter;
-    private javax.swing.JTextField tfKitchenPrinterName;
-    private javax.swing.JTextField tfReceiptCashDrawerName;
-    private javax.swing.JTextField tfReceiptPrinterName;
-    // End of variables declaration//GEN-END:variables
-    
-    private class PrintServiceComboRenderer extends DefaultListCellRenderer {
-    	@Override
-    	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-    		JLabel listCellRendererComponent = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-    		listCellRendererComponent.setText(((PrintService) value).getName());
-    		
-    		return listCellRendererComponent;
-    	}
-    }
+			return listCellRendererComponent;
+		}
+	}
 
 }

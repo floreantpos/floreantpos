@@ -1,3 +1,20 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 /*
  * UserListDialog.java
  *
@@ -8,6 +25,7 @@ package com.floreantpos.ui.dialog;
 
 import java.util.List;
 
+import com.floreantpos.IconFactory;
 import com.floreantpos.model.User;
 import com.floreantpos.model.dao.UserDAO;
 import com.floreantpos.swing.ListComboBoxModel;
@@ -19,10 +37,9 @@ import com.floreantpos.swing.ListComboBoxModel;
 public class UserListDialog extends POSDialog {
     
     /** Creates new form UserListDialog */
-    public UserListDialog(java.awt.Frame parent, boolean modal) {
-        super(parent, modal, false);
+    public UserListDialog() {
         initComponents();
-        setTitle("User list");
+        setTitle(com.floreantpos.POSConstants.USER_LIST);
         
         List<User> userList = UserDAO.instance.findAll();
         cbUserList.setModel(new ListComboBoxModel(userList));
@@ -48,13 +65,13 @@ public class UserListDialog extends POSDialog {
         cbUserList = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        titlePanel1.setTitle("PLEASE SELECT A USER");
+        titlePanel1.setTitle(com.floreantpos.POSConstants.SELECT_USER);
         getContentPane().add(titlePanel1, java.awt.BorderLayout.NORTH);
 
         transparentPanel1.setLayout(new java.awt.BorderLayout());
 
-        btnOk.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/finish_32.png")));
-        btnOk.setText("OK");
+        btnOk.setIcon(IconFactory.getIcon("/ui_icons/", "finish.png")); //$NON-NLS-1$ //$NON-NLS-2$
+        btnOk.setText(com.floreantpos.POSConstants.OK);
         btnOk.setPreferredSize(new java.awt.Dimension(120, 50));
         btnOk.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -64,8 +81,8 @@ public class UserListDialog extends POSDialog {
 
         transparentPanel2.add(btnOk);
 
-        btnCancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/cancel_32.png")));
-        btnCancel.setText("CANCEL");
+        btnCancel.setIcon(IconFactory.getIcon("/ui_icons/", "cancel.png")); //$NON-NLS-1$ //$NON-NLS-2$
+        btnCancel.setText(com.floreantpos.POSConstants.CANCEL);
         btnCancel.setPreferredSize(new java.awt.Dimension(120, 50));
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -81,7 +98,7 @@ public class UserListDialog extends POSDialog {
 
         getContentPane().add(transparentPanel1, java.awt.BorderLayout.SOUTH);
 
-        cbUserList.setFont(new java.awt.Font("Tahoma", 1, 18));
+        cbUserList.setFont(new java.awt.Font("Tahoma", 1, 18)); //$NON-NLS-1$
 
         org.jdesktop.layout.GroupLayout transparentPanel3Layout = new org.jdesktop.layout.GroupLayout(transparentPanel3);
         transparentPanel3.setLayout(transparentPanel3Layout);
@@ -116,17 +133,6 @@ public class UserListDialog extends POSDialog {
     
     public User getSelectedUser() {
     	return (User) cbUserList.getSelectedItem();
-    }
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new UserListDialog(new javax.swing.JFrame(), true).setVisible(true);
-            }
-        });
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

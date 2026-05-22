@@ -38,27 +38,27 @@ public abstract class BaseTerminalDAO extends com.floreantpos.model.dao._RootDAO
 	}
 
 	public com.floreantpos.model.Terminal get(java.lang.Integer key)
-	{
+		throws org.hibernate.HibernateException {
 		return (com.floreantpos.model.Terminal) get(getReferenceClass(), key);
 	}
 
 	public com.floreantpos.model.Terminal get(java.lang.Integer key, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		return (com.floreantpos.model.Terminal) get(getReferenceClass(), key, s);
 	}
 
 	public com.floreantpos.model.Terminal load(java.lang.Integer key)
-	{
+		throws org.hibernate.HibernateException {
 		return (com.floreantpos.model.Terminal) load(getReferenceClass(), key);
 	}
 
 	public com.floreantpos.model.Terminal load(java.lang.Integer key, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		return (com.floreantpos.model.Terminal) load(getReferenceClass(), key, s);
 	}
 
 	public com.floreantpos.model.Terminal loadInitialize(java.lang.Integer key, Session s) 
-	{ 
+			throws org.hibernate.HibernateException { 
 		com.floreantpos.model.Terminal obj = load(key, s); 
 		if (!Hibernate.isInitialized(obj)) {
 			Hibernate.initialize(obj);
@@ -98,7 +98,7 @@ public abstract class BaseTerminalDAO extends com.floreantpos.model.dao._RootDAO
 	 * @return the class identifier
 	 */
 	public java.lang.Integer save(com.floreantpos.model.Terminal terminal)
-	{
+		throws org.hibernate.HibernateException {
 		return (java.lang.Integer) super.save(terminal);
 	}
 
@@ -111,7 +111,7 @@ public abstract class BaseTerminalDAO extends com.floreantpos.model.dao._RootDAO
 	 * @return the class identifier
 	 */
 	public java.lang.Integer save(com.floreantpos.model.Terminal terminal, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		return (java.lang.Integer) save((Object) terminal, s);
 	}
 
@@ -122,7 +122,7 @@ public abstract class BaseTerminalDAO extends com.floreantpos.model.dao._RootDAO
 	 * @param terminal a transient instance containing new or updated state 
 	 */
 	public void saveOrUpdate(com.floreantpos.model.Terminal terminal)
-	{
+		throws org.hibernate.HibernateException {
 		saveOrUpdate((Object) terminal);
 	}
 
@@ -135,7 +135,7 @@ public abstract class BaseTerminalDAO extends com.floreantpos.model.dao._RootDAO
 	 * @param s the Session.
 	 */
 	public void saveOrUpdate(com.floreantpos.model.Terminal terminal, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		saveOrUpdate((Object) terminal, s);
 	}
 
@@ -145,7 +145,7 @@ public abstract class BaseTerminalDAO extends com.floreantpos.model.dao._RootDAO
 	 * @param terminal a transient instance containing updated state
 	 */
 	public void update(com.floreantpos.model.Terminal terminal) 
-	{
+		throws org.hibernate.HibernateException {
 		update((Object) terminal);
 	}
 
@@ -157,7 +157,7 @@ public abstract class BaseTerminalDAO extends com.floreantpos.model.dao._RootDAO
 	 * @param the Session
 	 */
 	public void update(com.floreantpos.model.Terminal terminal, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		update((Object) terminal, s);
 	}
 
@@ -167,7 +167,7 @@ public abstract class BaseTerminalDAO extends com.floreantpos.model.dao._RootDAO
 	 * @param id the instance ID to be removed
 	 */
 	public void delete(java.lang.Integer id)
-	{
+		throws org.hibernate.HibernateException {
 		delete((Object) load(id));
 	}
 
@@ -179,7 +179,7 @@ public abstract class BaseTerminalDAO extends com.floreantpos.model.dao._RootDAO
 	 * @param s the Session
 	 */
 	public void delete(java.lang.Integer id, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		delete((Object) load(id, s), s);
 	}
 
@@ -189,7 +189,7 @@ public abstract class BaseTerminalDAO extends com.floreantpos.model.dao._RootDAO
 	 * @param terminal the instance to be removed
 	 */
 	public void delete(com.floreantpos.model.Terminal terminal)
-	{
+		throws org.hibernate.HibernateException {
 		delete((Object) terminal);
 	}
 
@@ -201,7 +201,7 @@ public abstract class BaseTerminalDAO extends com.floreantpos.model.dao._RootDAO
 	 * @param s the Session
 	 */
 	public void delete(com.floreantpos.model.Terminal terminal, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		delete((Object) terminal, s);
 	}
 	
@@ -216,7 +216,7 @@ public abstract class BaseTerminalDAO extends com.floreantpos.model.dao._RootDAO
 	 * </ul>
 	 */
 	public void refresh (com.floreantpos.model.Terminal terminal, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		refresh((Object) terminal, s);
 	}
 

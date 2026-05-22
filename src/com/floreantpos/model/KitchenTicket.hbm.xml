@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.floreantpos.model">
+	<class lazy="false" name="com.floreantpos.model.KitchenTicket"  table="KITCHEN_TICKET">
+		<id column="ID" name="id" type="java.lang.Integer">
+			<generator class="identity" />
+		</id>
+		
+		
+		<property column="TICKET_ID" name="ticketId" type="java.lang.Integer" />
+		
+		<property column="CREATE_DATE" length="10" name="createDate" type="java.util.Date" />
+		<property column="CLOSE_DATE" length="10" name="closingDate" type="java.util.Date" />
+		<property column="VOIDED" name="voided" type="java.lang.Boolean" />
+		<!-- a ticket is marked as closed it is either paid or voided -->
+		<property column="SEQUENCE_NUMBER" name="sequenceNumber" type="java.lang.Integer" />
+		<property column="STATUS" name="status" type="string" length="30" />
+		<property column="SERVER_NAME" name="serverName" type="string" length="30" />
+		
+		<property name="ticketType" column="TICKET_TYPE" length="20" type="string" />
+		
+		<bag name="tableNumbers" table="KIT_TICKET_TABLE_NUM" lazy="false" cascade="all">
+			<key column="kit_ticket_id" />
+			<element column="TABLE_ID" type="java.lang.Integer" />
+		</bag>
+
+		<!-- Associations -->
+		<!-- bi-directional one-to-many association to TicketItem -->
+		<list cascade="all" inverse="false" lazy="false" name="ticketItems">
+			<key>
+				<column name="KITHEN_TICKET_ID" />
+			</key>
+			<list-index column="ITEM_ORDER" />
+			<one-to-many class="com.floreantpos.model.KitchenTicketItem" />
+		</list>
+		
+		<many-to-one class="com.floreantpos.model.PrinterGroup" lazy="false" cascade="none" name="printerGroup">
+			<column name="PG_ID" />
+		</many-to-one>
+		
+	</class>
+</hibernate-mapping>

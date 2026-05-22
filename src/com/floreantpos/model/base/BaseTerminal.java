@@ -14,11 +14,18 @@ import java.io.Serializable;
 
 public abstract class BaseTerminal  implements Comparable, Serializable {
 
-	public static String REF = "Terminal";
-	public static String PROP_NAME = "name";
-	public static String PROP_OPENING_BALANCE = "openingBalance";
-	public static String PROP_CURRENT_BALANCE = "currentBalance";
-	public static String PROP_ID = "id";
+	public static String REF = "Terminal"; //$NON-NLS-1$
+	public static String PROP_NAME = "name"; //$NON-NLS-1$
+	public static String PROP_ACTIVE = "active"; //$NON-NLS-1$
+	public static String PROP_OPENING_BALANCE = "openingBalance"; //$NON-NLS-1$
+	public static String PROP_TERMINAL_KEY = "terminalKey"; //$NON-NLS-1$
+	public static String PROP_ASSIGNED_USER = "assignedUser"; //$NON-NLS-1$
+	public static String PROP_HAS_CASH_DRAWER = "hasCashDrawer"; //$NON-NLS-1$
+	public static String PROP_CURRENT_BALANCE = "currentBalance"; //$NON-NLS-1$
+	public static String PROP_LOCATION = "location"; //$NON-NLS-1$
+	public static String PROP_ID = "id"; //$NON-NLS-1$
+	public static String PROP_FLOOR_ID = "floorId"; //$NON-NLS-1$
+	public static String PROP_IN_USE = "inUse"; //$NON-NLS-1$
 
 
 	// constructors
@@ -43,12 +50,22 @@ public abstract class BaseTerminal  implements Comparable, Serializable {
 	// primary key
 	private java.lang.Integer id;
 
-	private java.util.Date modifiedTime;
-
 	// fields
-	private java.lang.String name;
-	private java.lang.Double openingBalance;
-	private java.lang.Double currentBalance;
+		protected java.lang.String name;
+		protected java.lang.String terminalKey;
+		protected java.lang.Double openingBalance;
+		protected java.lang.Double currentBalance;
+		protected java.lang.Boolean hasCashDrawer;
+		protected java.lang.Boolean inUse;
+		protected java.lang.Boolean active;
+		protected java.lang.String location;
+		protected java.lang.Integer floorId;
+
+	// many to one
+	private com.floreantpos.model.User assignedUser;
+
+	// collections
+	private java.util.Map<String, String> properties;
 
 
 
@@ -73,30 +90,13 @@ public abstract class BaseTerminal  implements Comparable, Serializable {
 
 
 
-	/**
-	 * Return the value associated with the column: MODIFIED_TIME
-	 */
-	public java.util.Date getModifiedTime () {
-			return modifiedTime;
-	}
-
-	/**
-	 * Set the value related to the column: MODIFIED_TIME
-	 * @param modifiedTime the MODIFIED_TIME value
-	 */
-	public void setModifiedTime (java.util.Date modifiedTime) {
-		this.modifiedTime = modifiedTime;
-	}
-
-
-
 
 	/**
 	 * Return the value associated with the column: NAME
 	 */
 	public java.lang.String getName () {
-			return name;
-	}
+					return name;
+			}
 
 	/**
 	 * Set the value related to the column: NAME
@@ -109,11 +109,28 @@ public abstract class BaseTerminal  implements Comparable, Serializable {
 
 
 	/**
+	 * Return the value associated with the column: TERMINAL_KEY
+	 */
+	public java.lang.String getTerminalKey () {
+					return terminalKey;
+			}
+
+	/**
+	 * Set the value related to the column: TERMINAL_KEY
+	 * @param terminalKey the TERMINAL_KEY value
+	 */
+	public void setTerminalKey (java.lang.String terminalKey) {
+		this.terminalKey = terminalKey;
+	}
+
+
+
+	/**
 	 * Return the value associated with the column: OPENING_BALANCE
 	 */
 	public java.lang.Double getOpeningBalance () {
-			return openingBalance == null ? Double.valueOf(0) : openingBalance;
-	}
+									return openingBalance == null ? Double.valueOf(0) : openingBalance;
+					}
 
 	/**
 	 * Set the value related to the column: OPENING_BALANCE
@@ -129,8 +146,8 @@ public abstract class BaseTerminal  implements Comparable, Serializable {
 	 * Return the value associated with the column: CURRENT_BALANCE
 	 */
 	public java.lang.Double getCurrentBalance () {
-			return currentBalance == null ? Double.valueOf(0) : currentBalance;
-	}
+									return currentBalance == null ? Double.valueOf(0) : currentBalance;
+					}
 
 	/**
 	 * Set the value related to the column: CURRENT_BALANCE
@@ -138,6 +155,125 @@ public abstract class BaseTerminal  implements Comparable, Serializable {
 	 */
 	public void setCurrentBalance (java.lang.Double currentBalance) {
 		this.currentBalance = currentBalance;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: HAS_CASH_DRAWER
+	 */
+	public java.lang.Boolean isHasCashDrawer () {
+								return hasCashDrawer == null ? Boolean.FALSE : hasCashDrawer;
+					}
+
+	/**
+	 * Set the value related to the column: HAS_CASH_DRAWER
+	 * @param hasCashDrawer the HAS_CASH_DRAWER value
+	 */
+	public void setHasCashDrawer (java.lang.Boolean hasCashDrawer) {
+		this.hasCashDrawer = hasCashDrawer;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: IN_USE
+	 */
+	public java.lang.Boolean isInUse () {
+								return inUse == null ? Boolean.FALSE : inUse;
+					}
+
+	/**
+	 * Set the value related to the column: IN_USE
+	 * @param inUse the IN_USE value
+	 */
+	public void setInUse (java.lang.Boolean inUse) {
+		this.inUse = inUse;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: ACTIVE
+	 */
+	public java.lang.Boolean isActive () {
+								return active == null ? Boolean.FALSE : active;
+					}
+
+	/**
+	 * Set the value related to the column: ACTIVE
+	 * @param active the ACTIVE value
+	 */
+	public void setActive (java.lang.Boolean active) {
+		this.active = active;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: LOCATION
+	 */
+	public java.lang.String getLocation () {
+					return location;
+			}
+
+	/**
+	 * Set the value related to the column: LOCATION
+	 * @param location the LOCATION value
+	 */
+	public void setLocation (java.lang.String location) {
+		this.location = location;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: FLOOR_ID
+	 */
+	public java.lang.Integer getFloorId () {
+									return floorId == null ? Integer.valueOf(0) : floorId;
+					}
+
+	/**
+	 * Set the value related to the column: FLOOR_ID
+	 * @param floorId the FLOOR_ID value
+	 */
+	public void setFloorId (java.lang.Integer floorId) {
+		this.floorId = floorId;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: ASSIGNED_USER
+	 */
+	public com.floreantpos.model.User getAssignedUser () {
+					return assignedUser;
+			}
+
+	/**
+	 * Set the value related to the column: ASSIGNED_USER
+	 * @param assignedUser the ASSIGNED_USER value
+	 */
+	public void setAssignedUser (com.floreantpos.model.User assignedUser) {
+		this.assignedUser = assignedUser;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: properties
+	 */
+	public java.util.Map<String, String> getProperties () {
+					return properties;
+			}
+
+	/**
+	 * Set the value related to the column: properties
+	 * @param properties the properties value
+	 */
+	public void setProperties (java.util.Map<String, String> properties) {
+		this.properties = properties;
 	}
 
 

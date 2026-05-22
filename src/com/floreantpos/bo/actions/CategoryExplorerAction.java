@@ -1,3 +1,20 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.bo.actions;
 
 import java.awt.event.ActionEvent;
@@ -7,13 +24,12 @@ import javax.swing.Icon;
 import javax.swing.JTabbedPane;
 
 import com.floreantpos.bo.ui.BackOfficeWindow;
-import com.floreantpos.bo.ui.explorer.CategoryExplorer;
-import com.floreantpos.main.Application;
+import com.floreantpos.bo.ui.explorer.MenuCategoryExplorer;
 
 public class CategoryExplorerAction extends AbstractAction {
 
 	public CategoryExplorerAction() {
-		super("Menu Categories");
+		super(com.floreantpos.POSConstants.MENU_CATEGORIES);
 	}
 
 	public CategoryExplorerAction(String name) {
@@ -25,17 +41,17 @@ public class CategoryExplorerAction extends AbstractAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		BackOfficeWindow backOfficeWindow = Application.getInstance().getBackOfficeWindow();
+		BackOfficeWindow backOfficeWindow = com.floreantpos.util.POSUtil.getBackOfficeWindow();
 		
-		CategoryExplorer explorer = null;
+		MenuCategoryExplorer explorer = null;
 		JTabbedPane tabbedPane = backOfficeWindow.getTabbedPane();
-		int index = tabbedPane.indexOfTab("Category explorer");
+		int index = tabbedPane.indexOfTab(com.floreantpos.POSConstants.CATEGORY_EXPLORER);
 		if (index == -1) {
-			explorer = new CategoryExplorer();
-			tabbedPane.addTab("Category explorer", explorer);
+			explorer = new MenuCategoryExplorer();
+			tabbedPane.addTab(com.floreantpos.POSConstants.CATEGORY_EXPLORER, explorer);
 		}
 		else {
-			explorer = (CategoryExplorer) tabbedPane.getComponentAt(index);
+			explorer = (MenuCategoryExplorer) tabbedPane.getComponentAt(index);
 		}
 		tabbedPane.setSelectedComponent(explorer);
 	}

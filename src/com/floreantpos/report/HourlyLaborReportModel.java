@@ -1,10 +1,27 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.report;
 
 import java.util.List;
 
-import com.floreantpos.bo.ui.explorer.ListTableModel;
-import com.floreantpos.main.Application;
-import com.floreantpos.ui.report.HourlyLaborReportView.LaborReportData;
+import com.floreantpos.report.HourlyLaborReportView.LaborReportData;
+import com.floreantpos.swing.ListTableModel;
+import com.floreantpos.util.NumberUtil;
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,7 +31,7 @@ import com.floreantpos.ui.report.HourlyLaborReportView.LaborReportData;
  * To change this template use File | Settings | File Templates.
  */
 public class HourlyLaborReportModel extends ListTableModel {
-	private String[] columnNames = { "period", "checks", "guests", "sales", "manHour", "labor", "salesPerMHr", "guestsPerMHr", "checksPerMHr", "laborCost" };
+	private String[] columnNames = { "period", "checks", "guests", "sales", "manHour", "labor", "salesPerMHr", "guestsPerMHr", "checksPerMHr", "laborCost" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
 
 	public HourlyLaborReportModel() {
 		setColumnNames(columnNames);
@@ -39,25 +56,25 @@ public class HourlyLaborReportModel extends ListTableModel {
 				return String.valueOf(reportData.getNoOfGuests());
 				
 			case 3:
-				return Application.formatNumber(reportData.getSales());
+				return NumberUtil.formatNumber(reportData.getSales());
 				
 			case 4:
-				return Application.formatNumber(reportData.getManHour());
+				return NumberUtil.formatNumber(reportData.getManHour());
 				
 			case 5:
-				return Application.formatNumber(reportData.getLabor());
+				return NumberUtil.formatNumber(reportData.getLabor());
 				
 			case 6:
-				return Application.formatNumber(reportData.getSalesPerMHr());
+				return NumberUtil.formatNumber(reportData.getSalesPerMHr());
 				
 			case 7:
-				return Application.formatNumber(reportData.getGuestsPerMHr());
+				return NumberUtil.formatNumber(reportData.getGuestsPerMHr());
 				
 			case 8:
-				return Application.formatNumber(reportData.getCheckPerMHr());
+				return NumberUtil.formatNumber(reportData.getCheckPerMHr());
 				
 			case 9:
-				return Application.formatNumber(reportData.getLaborCost());
+				return NumberUtil.formatNumber(reportData.getLaborCost());
 		}
 		return null; 
 	}

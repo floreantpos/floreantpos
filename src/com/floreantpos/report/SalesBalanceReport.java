@@ -1,3 +1,20 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.report;
 
 import java.util.Date;
@@ -32,6 +49,11 @@ public class SalesBalanceReport {
 	private double coCurrentAmount;
 	private double coPreviousAmount;
 	private double overShortAmount;
+
+	private double visaCreditCardAmount;
+	private double masterCardAmount;
+	private double amexAmount;
+	private double discoveryAmount;
 
 	public double getArReceiptsAmount() {
 		return arReceiptsAmount;
@@ -256,19 +278,48 @@ public class SalesBalanceReport {
 	public void setTotalRevenueAmount(double totalRevenueAmount) {
 		this.totalRevenueAmount = totalRevenueAmount;
 	}
-	
+
 	public void calculate() {
 		netSalesAmount = (grossTaxableSalesAmount + grossNonTaxableSalesAmount) - discountAmount;
 		totalRevenueAmount = netSalesAmount + salesTaxAmount;
 		grossReceiptsAmount = totalRevenueAmount + payInsAmount + chargedTipsAmount;
-		receiptDiffAmount = grossReceiptsAmount - cashReceiptsAmount - creditCardReceiptsAmount 
-						- arReceiptsAmount - giftCertReturnAmount + giftCertChangeAmount
-						+ cashBackAmount;
-		cashAccountableAmount = cashReceiptsAmount - grossTipsPaidAmount +
-						tipsDiscountAmount - cashPayoutAmount - giftCertChangeAmount - 
-						cashBackAmount;
-		overShortAmount = cashAccountableAmount - drawerPullsAmount -
-						coCurrentAmount + coPreviousAmount;
-						
+		receiptDiffAmount = grossReceiptsAmount - cashReceiptsAmount - creditCardReceiptsAmount - arReceiptsAmount - giftCertReturnAmount
+				+ giftCertChangeAmount + cashBackAmount;
+		cashAccountableAmount = cashReceiptsAmount - grossTipsPaidAmount + tipsDiscountAmount - cashPayoutAmount - giftCertChangeAmount - cashBackAmount;
+		overShortAmount = cashAccountableAmount - drawerPullsAmount - coCurrentAmount + coPreviousAmount;
+
 	}
+
+	public double getVisaCreditCardAmount() {
+		return visaCreditCardAmount;
+	}
+
+	public void setVisaCreditCardAmount(double visaCreditCardAmount) {
+		this.visaCreditCardAmount = visaCreditCardAmount;
+	}
+
+	public double getMasterCardAmount() {
+		return masterCardAmount;
+	}
+
+	public void setMasterCardAmount(double masterCardAmount) {
+		this.masterCardAmount = masterCardAmount;
+	}
+
+	public double getAmexAmount() {
+		return amexAmount;
+	}
+
+	public void setAmexAmount(double amexAmount) {
+		this.amexAmount = amexAmount;
+	}
+
+	public double getDiscoveryAmount() {
+		return discoveryAmount;
+	}
+
+	public void setDiscoveryAmount(double discoveryAmount) {
+		this.discoveryAmount = discoveryAmount;
+	}
+
 }

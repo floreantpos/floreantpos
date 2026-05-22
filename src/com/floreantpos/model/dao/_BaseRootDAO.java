@@ -1,3 +1,20 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.model.dao;
 
 import java.io.Serializable;
@@ -10,9 +27,8 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.hibernate.SessionFactory;
-
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
@@ -66,7 +82,7 @@ public abstract class _BaseRootDAO {
 	/**
 	 * Set the session factory
 	 */
-	protected static void setSessionFactory (SessionFactory sessionFactory) {
+	public static void setSessionFactory (SessionFactory sessionFactory) {
 		setSessionFactory(
 			(String) null,
 			sessionFactory);
@@ -75,7 +91,7 @@ public abstract class _BaseRootDAO {
 	/**
 	 * Set the session factory
 	 */
-	protected static void setSessionFactory (String configFileName, SessionFactory sf) {
+	public static void setSessionFactory (String configFileName, SessionFactory sf) {
 		if (null == configFileName) {
 			sessionFactory = sf;
 		}
@@ -100,17 +116,17 @@ public abstract class _BaseRootDAO {
 	protected SessionFactory getSessionFactory(String configFile) {
 		if (null == configFile) {
 			if (null == sessionFactory)
-				throw new RuntimeException("The session factory has not been initialized (or an error occured during initialization)");
+				throw new RuntimeException("The session factory has not been initialized (or an error occured during initialization)"); //$NON-NLS-1$
 			else
 				return sessionFactory;
 		}
 		else {
 			if (null == sessionFactoryMap)
-				throw new RuntimeException("The session factory for '" + configFile + "' has not been initialized (or an error occured during initialization)");
+				throw new RuntimeException("The session factory for '" + configFile + "' has not been initialized (or an error occured during initialization)"); //$NON-NLS-1$ //$NON-NLS-2$
 			else {
 				SessionFactory sf = (SessionFactory) sessionFactoryMap.get(configFile);
 				if (null == sf)
-					throw new RuntimeException("The session factory for '" + configFile + "' has not been initialized (or an error occured during initialization)");
+					throw new RuntimeException("The session factory for '" + configFile + "' has not been initialized (or an error occured during initialization)"); //$NON-NLS-1$ //$NON-NLS-2$
 				else
 					return sf;
 			}

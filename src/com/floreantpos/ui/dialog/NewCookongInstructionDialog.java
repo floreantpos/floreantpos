@@ -1,7 +1,22 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.ui.dialog;
 
-import java.awt.Dialog;
-import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,33 +41,17 @@ public class NewCookongInstructionDialog extends POSDialog implements ActionList
 		super();
 	}
 
-	public NewCookongInstructionDialog(Dialog owner, boolean modal) {
-		super(owner, modal);
-	}
-
-	public NewCookongInstructionDialog(Dialog owner, String title, boolean modal) {
-		super(owner, title, modal);
-	}
-
-	public NewCookongInstructionDialog(Frame owner, boolean modal, boolean unDecorated) throws HeadlessException {
-		super(owner, modal, unDecorated);
-	}
-
-	public NewCookongInstructionDialog(Frame owner, boolean modal) throws HeadlessException {
-		super(owner, modal);
-	}
-	
 	@Override
 	protected void initUI() {
 		setLayout(new MigLayout());
 		
 		noteView = new NoteView();
-		btnOk = new PosButton("OK");
-		btnCancel = new PosButton("CANCEL");
-		add(noteView, "wrap, span, grow");
-		add(new JSeparator(), "wrap, span, grow");
-		add(btnOk, "al right,width 120, height 50");
-		add(btnCancel, "width 120, height 50");
+		btnOk = new PosButton(com.floreantpos.POSConstants.OK);
+		btnCancel = new PosButton(com.floreantpos.POSConstants.CANCEL);
+		add(noteView, "wrap, span, grow"); //$NON-NLS-1$
+		add(new JSeparator(), "wrap, span, grow"); //$NON-NLS-1$
+		add(btnOk, "al right,width 120, height 50"); //$NON-NLS-1$
+		add(btnCancel, "width 120, height 50"); //$NON-NLS-1$
 		
 		btnOk.addActionListener(this);
 		btnCancel.addActionListener(this);
@@ -83,10 +82,10 @@ public class NewCookongInstructionDialog extends POSDialog implements ActionList
 	public void actionPerformed(ActionEvent e) {
 		String actionCommand = e.getActionCommand();
 		
-		if("OK".equalsIgnoreCase(actionCommand)) {
+		if(com.floreantpos.POSConstants.OK.equalsIgnoreCase(actionCommand)) {
 			doOk();
 		}
-		else if("CANCEL".equalsIgnoreCase(actionCommand)) {
+		else if(com.floreantpos.POSConstants.CANCEL.equalsIgnoreCase(actionCommand)) {
 			doCancel();
 		}
 	}

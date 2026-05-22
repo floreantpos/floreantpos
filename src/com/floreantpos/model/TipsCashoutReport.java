@@ -1,11 +1,28 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.model;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.floreantpos.bo.ui.explorer.ListTableModel;
-import com.floreantpos.main.Application;
+import com.floreantpos.Messages;
+
 
 public class TipsCashoutReport {
 	private String server;
@@ -76,7 +93,7 @@ public class TipsCashoutReport {
 			return;
 		}
 		for (TipsCashoutReportData data : datas) {
-			if("*CASH*".equals(data.getSaleType())) {
+			if(Messages.getString("TipsCashoutReport.0").equals(data.getSaleType())) { //$NON-NLS-1$
 				++cashTipsCount;
 				cashTipsAmount += data.getTips();
 			}
@@ -95,90 +112,6 @@ public class TipsCashoutReport {
 		averageTips = totalTips / datas.size();
 	}
 	
-	public static class TipsCashoutReportData {
-		private Integer ticketId;
-
-		private String saleType;
-
-		private Double ticketTotal;
-
-		private Double tips;
-		
-		private boolean paid;
-
-		public String getSaleType() {
-			return saleType;
-		}
-
-		public void setSaleType(String saleType) {
-			this.saleType = saleType;
-			if(this.saleType == null) {
-				this.saleType = "*CASH*";
-			}
-			else {
-				this.saleType = this.saleType.replaceAll("_", " ");
-			}
-		}
-
-		public Integer getTicketId() {
-			return ticketId;
-		}
-
-		public void setTicketId(Integer ticketId) {
-			this.ticketId = ticketId;
-		}
-
-		public Double getTicketTotal() {
-			return ticketTotal;
-		}
-
-		public void setTicketTotal(Double ticketTotal) {
-			this.ticketTotal = ticketTotal;
-		}
-
-		public Double getTips() {
-			return tips;
-		}
-
-		public void setTips(Double tips) {
-			this.tips = tips;
-		}
-
-		public boolean isPaid() {
-			return paid;
-		}
-
-		public void setPaid(boolean paid) {
-			this.paid = paid;
-		}
-	}
-	
-	public static class TipsCashoutReportTableModel extends ListTableModel {
-		public TipsCashoutReportTableModel(List<TipsCashoutReportData> datas) {
-			super(new String[] {"Ref#", "CD Type", "Total", "Tips"}, datas);
-		}
-
-		public Object getValueAt(int rowIndex, int columnIndex) {
-			TipsCashoutReportData data = (TipsCashoutReportData) rows.get(rowIndex);
-			
-			switch(columnIndex) {
-			case 0:
-				return data.getTicketId();
-				
-			case 1:
-				return data.getSaleType();
-				
-			case 2:
-				return Application.formatNumber(data.getTicketTotal());
-				
-			case 3:
-				return Application.formatNumber(data.getTips());
-			}
-			
-			return null;
-		}
-	}
-
 	public double getAverageTips() {
 		return averageTips;
 	}

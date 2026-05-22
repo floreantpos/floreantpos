@@ -2,6 +2,7 @@ package com.floreantpos.model.dao;
 
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
+import com.floreantpos.model.dao.TicketItemModifierDAO;
 import org.hibernate.criterion.Order;
 
 /**
@@ -38,27 +39,27 @@ public abstract class BaseTicketItemModifierDAO extends com.floreantpos.model.da
 	}
 
 	public com.floreantpos.model.TicketItemModifier get(java.lang.Integer key)
-	{
+		throws org.hibernate.HibernateException {
 		return (com.floreantpos.model.TicketItemModifier) get(getReferenceClass(), key);
 	}
 
 	public com.floreantpos.model.TicketItemModifier get(java.lang.Integer key, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		return (com.floreantpos.model.TicketItemModifier) get(getReferenceClass(), key, s);
 	}
 
 	public com.floreantpos.model.TicketItemModifier load(java.lang.Integer key)
-	{
+		throws org.hibernate.HibernateException {
 		return (com.floreantpos.model.TicketItemModifier) load(getReferenceClass(), key);
 	}
 
 	public com.floreantpos.model.TicketItemModifier load(java.lang.Integer key, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		return (com.floreantpos.model.TicketItemModifier) load(getReferenceClass(), key, s);
 	}
 
 	public com.floreantpos.model.TicketItemModifier loadInitialize(java.lang.Integer key, Session s) 
-	{ 
+			throws org.hibernate.HibernateException { 
 		com.floreantpos.model.TicketItemModifier obj = load(key, s); 
 		if (!Hibernate.isInitialized(obj)) {
 			Hibernate.initialize(obj);
@@ -98,7 +99,7 @@ public abstract class BaseTicketItemModifierDAO extends com.floreantpos.model.da
 	 * @return the class identifier
 	 */
 	public java.lang.Integer save(com.floreantpos.model.TicketItemModifier ticketItemModifier)
-	{
+		throws org.hibernate.HibernateException {
 		return (java.lang.Integer) super.save(ticketItemModifier);
 	}
 
@@ -111,7 +112,7 @@ public abstract class BaseTicketItemModifierDAO extends com.floreantpos.model.da
 	 * @return the class identifier
 	 */
 	public java.lang.Integer save(com.floreantpos.model.TicketItemModifier ticketItemModifier, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		return (java.lang.Integer) save((Object) ticketItemModifier, s);
 	}
 
@@ -122,7 +123,7 @@ public abstract class BaseTicketItemModifierDAO extends com.floreantpos.model.da
 	 * @param ticketItemModifier a transient instance containing new or updated state 
 	 */
 	public void saveOrUpdate(com.floreantpos.model.TicketItemModifier ticketItemModifier)
-	{
+		throws org.hibernate.HibernateException {
 		saveOrUpdate((Object) ticketItemModifier);
 	}
 
@@ -135,7 +136,7 @@ public abstract class BaseTicketItemModifierDAO extends com.floreantpos.model.da
 	 * @param s the Session.
 	 */
 	public void saveOrUpdate(com.floreantpos.model.TicketItemModifier ticketItemModifier, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		saveOrUpdate((Object) ticketItemModifier, s);
 	}
 
@@ -145,7 +146,7 @@ public abstract class BaseTicketItemModifierDAO extends com.floreantpos.model.da
 	 * @param ticketItemModifier a transient instance containing updated state
 	 */
 	public void update(com.floreantpos.model.TicketItemModifier ticketItemModifier) 
-	{
+		throws org.hibernate.HibernateException {
 		update((Object) ticketItemModifier);
 	}
 
@@ -157,7 +158,7 @@ public abstract class BaseTicketItemModifierDAO extends com.floreantpos.model.da
 	 * @param the Session
 	 */
 	public void update(com.floreantpos.model.TicketItemModifier ticketItemModifier, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		update((Object) ticketItemModifier, s);
 	}
 
@@ -167,7 +168,7 @@ public abstract class BaseTicketItemModifierDAO extends com.floreantpos.model.da
 	 * @param id the instance ID to be removed
 	 */
 	public void delete(java.lang.Integer id)
-	{
+		throws org.hibernate.HibernateException {
 		delete((Object) load(id));
 	}
 
@@ -179,7 +180,7 @@ public abstract class BaseTicketItemModifierDAO extends com.floreantpos.model.da
 	 * @param s the Session
 	 */
 	public void delete(java.lang.Integer id, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		delete((Object) load(id, s), s);
 	}
 
@@ -189,7 +190,7 @@ public abstract class BaseTicketItemModifierDAO extends com.floreantpos.model.da
 	 * @param ticketItemModifier the instance to be removed
 	 */
 	public void delete(com.floreantpos.model.TicketItemModifier ticketItemModifier)
-	{
+		throws org.hibernate.HibernateException {
 		delete((Object) ticketItemModifier);
 	}
 
@@ -201,7 +202,7 @@ public abstract class BaseTicketItemModifierDAO extends com.floreantpos.model.da
 	 * @param s the Session
 	 */
 	public void delete(com.floreantpos.model.TicketItemModifier ticketItemModifier, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		delete((Object) ticketItemModifier, s);
 	}
 	
@@ -216,7 +217,7 @@ public abstract class BaseTicketItemModifierDAO extends com.floreantpos.model.da
 	 * </ul>
 	 */
 	public void refresh (com.floreantpos.model.TicketItemModifier ticketItemModifier, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		refresh((Object) ticketItemModifier, s);
 	}
 

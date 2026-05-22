@@ -1,10 +1,28 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.report;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.floreantpos.bo.ui.explorer.ListTableModel;
-import com.floreantpos.main.Application;
+import com.floreantpos.POSConstants;
+import com.floreantpos.swing.ListTableModel;
+import com.floreantpos.util.NumberUtil;
 
 public class SalesStatistics {
 	private int capacity;
@@ -405,7 +423,16 @@ public class SalesStatistics {
 
 	public static class ShiftwiseDataTableModel extends ListTableModel {
 		public ShiftwiseDataTableModel(List<ShiftwiseSalesTableData> list) {
-			super(new String[] { "DayPart", "profitCenter", "Check", "Guest", "Entre", "Sales", "AvgChk", "AvgGst", "Percentage" }, list);
+			super(new String[] { POSConstants.DAYPART,
+					"profitCenter", //$NON-NLS-1$
+					POSConstants.CHECK,
+					"Guest", //$NON-NLS-1$
+					POSConstants.ENTER,
+					POSConstants.SALES,
+					POSConstants.AVGCHK,
+					POSConstants.AVERAGE_GUEST,
+					POSConstants.PERCENTAGE },
+					list);
 		}
 
 		public Object getValueAt(int rowIndex, int columnIndex) {
@@ -425,19 +452,19 @@ public class SalesStatistics {
 					return String.valueOf(data.getGuestCount());
 
 				case 4:
-					return " ";
+					return " "; //$NON-NLS-1$
 
 				case 5:
-					return Application.formatNumber(data.getTotalSales());
+					return NumberUtil.formatNumber(data.getTotalSales());
 
 				case 6:
-					return Application.formatNumber(data.getAvgChecks());
+					return NumberUtil.formatNumber(data.getAvgChecks());
 
 				case 7:
-					return Application.formatNumber(data.getAvgGuests());
+					return NumberUtil.formatNumber(data.getAvgGuests());
 
 				case 8:
-					return Application.formatNumber(data.getPercentage());
+					return NumberUtil.formatNumber(data.getPercentage());
 			}
 			return null;
 		}

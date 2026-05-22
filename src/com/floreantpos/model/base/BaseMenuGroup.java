@@ -17,8 +17,12 @@ public abstract class BaseMenuGroup  implements Comparable, Serializable {
 	public static String REF = "MenuGroup";
 	public static String PROP_NAME = "name";
 	public static String PROP_PARENT = "parent";
+	public static String PROP_TEXT_COLOR_CODE = "textColorCode";
 	public static String PROP_VISIBLE = "visible";
+	public static String PROP_SORT_ORDER = "sortOrder";
+	public static String PROP_BUTTON_COLOR_CODE = "buttonColorCode";
 	public static String PROP_ID = "id";
+	public static String PROP_TRANSLATED_NAME = "translatedName";
 
 
 	// constructors
@@ -55,14 +59,19 @@ public abstract class BaseMenuGroup  implements Comparable, Serializable {
 	// primary key
 	private java.lang.Integer id;
 
-	private java.util.Date modifiedTime;
-
 	// fields
-	private java.lang.String name;
-	private java.lang.Boolean visible;
+		protected java.lang.String name;
+		protected java.lang.String translatedName;
+		protected java.lang.Boolean visible;
+		protected java.lang.Integer sortOrder;
+		protected java.lang.Integer buttonColorCode;
+		protected java.lang.Integer textColorCode;
 
 	// many to one
 	private com.floreantpos.model.MenuCategory parent;
+
+	// collections
+	private java.util.List<com.floreantpos.model.Discount> discounts;
 
 
 
@@ -87,30 +96,13 @@ public abstract class BaseMenuGroup  implements Comparable, Serializable {
 
 
 
-	/**
-	 * Return the value associated with the column: MODIFIED_TIME
-	 */
-	public java.util.Date getModifiedTime () {
-			return modifiedTime;
-	}
-
-	/**
-	 * Set the value related to the column: MODIFIED_TIME
-	 * @param modifiedTime the MODIFIED_TIME value
-	 */
-	public void setModifiedTime (java.util.Date modifiedTime) {
-		this.modifiedTime = modifiedTime;
-	}
-
-
-
 
 	/**
 	 * Return the value associated with the column: NAME
 	 */
 	public java.lang.String getName () {
-			return name;
-	}
+					return name;
+			}
 
 	/**
 	 * Set the value related to the column: NAME
@@ -123,11 +115,28 @@ public abstract class BaseMenuGroup  implements Comparable, Serializable {
 
 
 	/**
+	 * Return the value associated with the column: TRANSLATED_NAME
+	 */
+	public java.lang.String getTranslatedName () {
+					return translatedName;
+			}
+
+	/**
+	 * Set the value related to the column: TRANSLATED_NAME
+	 * @param translatedName the TRANSLATED_NAME value
+	 */
+	public void setTranslatedName (java.lang.String translatedName) {
+		this.translatedName = translatedName;
+	}
+
+
+
+	/**
 	 * Return the value associated with the column: VISIBLE
 	 */
 	public java.lang.Boolean isVisible () {
-			return visible == null ? Boolean.FALSE : visible;
-	}
+								return visible == null ? Boolean.FALSE : visible;
+					}
 
 	/**
 	 * Set the value related to the column: VISIBLE
@@ -140,11 +149,62 @@ public abstract class BaseMenuGroup  implements Comparable, Serializable {
 
 
 	/**
+	 * Return the value associated with the column: SORT_ORDER
+	 */
+	public java.lang.Integer getSortOrder () {
+									return sortOrder == null ? Integer.valueOf(0) : sortOrder;
+					}
+
+	/**
+	 * Set the value related to the column: SORT_ORDER
+	 * @param sortOrder the SORT_ORDER value
+	 */
+	public void setSortOrder (java.lang.Integer sortOrder) {
+		this.sortOrder = sortOrder;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: BTN_COLOR
+	 */
+	public java.lang.Integer getButtonColorCode () {
+									return buttonColorCode == null ? Integer.valueOf(0) : buttonColorCode;
+					}
+
+	/**
+	 * Set the value related to the column: BTN_COLOR
+	 * @param buttonColorCode the BTN_COLOR value
+	 */
+	public void setButtonColorCode (java.lang.Integer buttonColorCode) {
+		this.buttonColorCode = buttonColorCode;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: TEXT_COLOR
+	 */
+	public java.lang.Integer getTextColorCode () {
+									return textColorCode == null ? Integer.valueOf(0) : textColorCode;
+					}
+
+	/**
+	 * Set the value related to the column: TEXT_COLOR
+	 * @param textColorCode the TEXT_COLOR value
+	 */
+	public void setTextColorCode (java.lang.Integer textColorCode) {
+		this.textColorCode = textColorCode;
+	}
+
+
+
+	/**
 	 * Return the value associated with the column: CATEGORY_ID
 	 */
 	public com.floreantpos.model.MenuCategory getParent () {
-			return parent;
-	}
+					return parent;
+			}
 
 	/**
 	 * Set the value related to the column: CATEGORY_ID
@@ -152,6 +212,28 @@ public abstract class BaseMenuGroup  implements Comparable, Serializable {
 	 */
 	public void setParent (com.floreantpos.model.MenuCategory parent) {
 		this.parent = parent;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: discounts
+	 */
+	public java.util.List<com.floreantpos.model.Discount> getDiscounts () {
+					return discounts;
+			}
+
+	/**
+	 * Set the value related to the column: discounts
+	 * @param discounts the discounts value
+	 */
+	public void setDiscounts (java.util.List<com.floreantpos.model.Discount> discounts) {
+		this.discounts = discounts;
+	}
+
+	public void addTodiscounts (com.floreantpos.model.Discount discount) {
+		if (null == getDiscounts()) setDiscounts(new java.util.ArrayList<com.floreantpos.model.Discount>());
+		getDiscounts().add(discount);
 	}
 
 

@@ -1,3 +1,20 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 /*
  * SwitchboardView.java
  *
@@ -6,413 +23,609 @@
 
 package com.floreantpos.ui.views;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.ComponentOrientation;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.Timer;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 
-import com.floreantpos.bo.ui.BackOfficeWindow;
+import org.apache.commons.logging.LogFactory;
+import org.jdesktop.swingx.JXCollapsiblePane;
+
+import com.floreantpos.ITicketList;
+import com.floreantpos.Messages;
+import com.floreantpos.POSConstants;
+import com.floreantpos.PosException;
+import com.floreantpos.PosLog;
+import com.floreantpos.actions.GroupSettleTicketAction;
+import com.floreantpos.actions.NewBarTabAction;
+import com.floreantpos.actions.RefundAction;
+import com.floreantpos.actions.SettleTicketAction;
+import com.floreantpos.actions.VoidTicketAction;
+import com.floreantpos.config.TerminalConfig;
+import com.floreantpos.extension.ExtensionManager;
+import com.floreantpos.extension.FloorLayoutPlugin;
+import com.floreantpos.extension.FloreantPlugin;
+import com.floreantpos.extension.OnlineOrderPlugin;
+import com.floreantpos.extension.OrderServiceExtension;
 import com.floreantpos.main.Application;
-import com.floreantpos.model.ActionHistory;
-import com.floreantpos.model.AttendenceHistory;
-import com.floreantpos.model.Shift;
+import com.floreantpos.model.OrderType;
+import com.floreantpos.model.PaymentStatusFilter;
 import com.floreantpos.model.Ticket;
 import com.floreantpos.model.User;
 import com.floreantpos.model.UserPermission;
 import com.floreantpos.model.UserType;
-import com.floreantpos.model.dao.ActionHistoryDAO;
-import com.floreantpos.model.dao.AttendenceHistoryDAO;
 import com.floreantpos.model.dao.TicketDAO;
-import com.floreantpos.model.util.POSConstants;
-import com.floreantpos.print.PosPrintService;
-import com.floreantpos.services.PosTransactionService;
-import com.floreantpos.ui.dialog.ManagerDialog;
+import com.floreantpos.services.TicketService;
+import com.floreantpos.swing.OrderTypeButton;
+import com.floreantpos.swing.PosButton;
+import com.floreantpos.swing.PosUIManager;
+import com.floreantpos.ui.RefreshableView;
+import com.floreantpos.ui.TicketListUpdateListener;
 import com.floreantpos.ui.dialog.NumberSelectionDialog2;
 import com.floreantpos.ui.dialog.POSMessageDialog;
-import com.floreantpos.ui.dialog.PaymentTypeSelectionDialog;
-import com.floreantpos.ui.dialog.PayoutDialog;
-import com.floreantpos.ui.dialog.TicketDetailDialog;
-import com.floreantpos.ui.dialog.VoidTicketDialog;
+import com.floreantpos.ui.views.order.DefaultOrderServiceExtension;
+import com.floreantpos.ui.views.order.OrderController;
+import com.floreantpos.ui.views.order.OrderTypeSelectionDialog;
 import com.floreantpos.ui.views.order.OrderView;
 import com.floreantpos.ui.views.order.RootView;
+import com.floreantpos.ui.views.order.ViewPanel;
+import com.floreantpos.util.POSUtil;
+
+import net.miginfocom.swing.MigLayout;
 
 /**
- *
- * @author  MShahriar
+ * 
+ * @author MShahriar
  */
-public class SwitchboardView extends JPanel implements ActionListener {
-	public final static String VIEW_NAME = "SWITCHBOARD";
+public class SwitchboardView extends ViewPanel implements ActionListener, ITicketList, TicketListUpdateListener {
 
-	private Timer ticketListUpdater;
+	//public final static String VIEW_NAME = com.floreantpos.POSConstants.SWITCHBOARD;
+	public final static String VIEW_NAME = com.floreantpos.POSConstants.ORDERS;
 
+	private OrderServiceExtension orderServiceExtension;
+
+	private static SwitchboardView instance;
+
+	private JPanel orderPanel;
+
+	private JPanel onlineOrderActionsButtonPanel;
+	private JPanel woocomOrderActionsButtonPanel;
+
+	//TicketListView tickteListViewObj;
 	/** Creates new form SwitchboardView */
-	public SwitchboardView() {
+	private SwitchboardView() {
 		initComponents();
 
-		btnBackOffice.addActionListener(this);
-		btnClockOut.addActionListener(this);
+		ticketList.addTicketListUpateListener(this);
+
+		//		btnBarTab.addActionListener(this);
+
 		btnEditTicket.addActionListener(this);
 		btnGroupSettle.addActionListener(this);
-		btnInfo.addActionListener(this);
-		btnLogout.addActionListener(this);
-		btnManager.addActionListener(this);
-		btnNewTicket.addActionListener(this);
-		btnPayout.addActionListener(this);
-		btnPrintTicket.addActionListener(this);
+		btnOrderInfo.addActionListener(this);
 		btnReopenTicket.addActionListener(this);
 		btnSettleTicket.addActionListener(this);
-		btnShutdown.addActionListener(this);
 		btnSplitTicket.addActionListener(this);
-		btnTakeout.addActionListener(this);
-		btnVoidTicket.addActionListener(this);
+		btnVoidTicket.setAction(new VoidTicketAction(this));
 
-		ticketListUpdater = new Timer(30 * 1000, new TicketListUpdaterTask());
+		orderServiceExtension = (OrderServiceExtension) ExtensionManager.getPlugin(OrderServiceExtension.class);
+
+		if (orderServiceExtension == null) {
+			btnAssignDriver.setEnabled(false);
+
+			orderServiceExtension = new DefaultOrderServiceExtension();
+		}
+
+		applyComponentOrientation(ComponentOrientation.getOrientation(Locale.getDefault()));
 	}
 
-	/** This method is called from within the constructor to
-	 * initialize the form.
-	 * WARNING: Do NOT modify this code. The content of this method is
-	 * always regenerated by the Form Editor.
+	public static SwitchboardView getInstance() {
+		if (instance == null) {
+			instance = new SwitchboardView();
+		}
+
+		return instance;
+	}
+
+	/**
+	 * This method is called from within the constructor to initialize the form.
+	 * WARNING: Do NOT modify this code. The content of this method is always
+	 * regenerated by the Form Editor.final DataUpdateInfo
 	 */
 	// <editor-fold defaultstate="collapsed" desc=" Generated Code
-	// <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
+	// <editor-fold defaultstate="collapsed"
+	// desc=" Generated Code ">//GEN-BEGIN:initComponents
 	private void initComponents() {
+		setLayout(new java.awt.BorderLayout(10, 10));
 
-		javax.swing.JPanel statusPanel = new javax.swing.JPanel();
-		lblUserName = new javax.swing.JLabel();
-		javax.swing.JPanel bottomPanel = new javax.swing.JPanel();
-		javax.swing.JPanel bottomLeftPanel = new javax.swing.JPanel();
-		openTicketList = new com.floreantpos.ui.TicketListView();
-		javax.swing.JPanel activityPanel = new javax.swing.JPanel();
-		btnInfo = new com.floreantpos.swing.PosButton();
-		btnNewTicket = new com.floreantpos.swing.PosButton();
-		btnEditTicket = new com.floreantpos.swing.PosButton();
-		btnSplitTicket = new com.floreantpos.swing.PosButton();
-		btnVoidTicket = new com.floreantpos.swing.PosButton();
-		btnReopenTicket = new com.floreantpos.swing.PosButton();
-		btnSettleTicket = new com.floreantpos.swing.PosButton();
-		btnGroupSettle = new com.floreantpos.swing.PosButton();
-		btnPayout = new com.floreantpos.swing.PosButton();
-		btnTakeout = new com.floreantpos.swing.PosButton();
-		btnPrintTicket = new com.floreantpos.swing.PosButton();
-		javax.swing.JPanel bottomRightPanel = new javax.swing.JPanel();
-		btnShutdown = new com.floreantpos.swing.PosButton();
-		btnLogout = new com.floreantpos.swing.PosButton();
-		btnBackOffice = new com.floreantpos.swing.PosButton();
-		btnManager = new com.floreantpos.swing.PosButton();
-		btnClockOut = new com.floreantpos.swing.PosButton();
+		javax.swing.JPanel centerPanel = new javax.swing.JPanel(new java.awt.BorderLayout(5, 5));
+		javax.swing.JPanel ticketsAndActivityPanel = new javax.swing.JPanel(new java.awt.BorderLayout(5, 5));
 
-		setLayout(new java.awt.BorderLayout());
+		ticketsListPanelBorder = BorderFactory.createTitledBorder(null, POSConstants.OPEN_TICKETS_AND_ACTIVITY, TitledBorder.CENTER,
+				TitledBorder.DEFAULT_POSITION);
 
-		statusPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "CURRENT USER STATUS", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
-		statusPanel.setPreferredSize(new java.awt.Dimension(100, 80));
-		statusPanel.setLayout(new java.awt.BorderLayout());
+		ticketsAndActivityPanel.setBorder(new CompoundBorder(ticketsListPanelBorder, new EmptyBorder(2, 2, 2, 2)));
 
-		lblUserName.setFont(new java.awt.Font("Tahoma", 1, 18));
-		lblUserName.setForeground(new java.awt.Color(0, 102, 102));
-		lblUserName.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-		lblUserName.setText("USER NAME");
-		statusPanel.add(lblUserName, java.awt.BorderLayout.PAGE_START);
+		ticketsAndActivityPanel.add(ticketList, java.awt.BorderLayout.CENTER);
 
-		add(statusPanel, java.awt.BorderLayout.NORTH);
+		JPanel activityPanel = createActivityPanel();
 
-		bottomPanel.setLayout(new java.awt.BorderLayout());
+		ticketsAndActivityPanel.add(activityPanel, java.awt.BorderLayout.SOUTH);
 
-		bottomLeftPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "OPEN TICKETS AND ACTIVITY", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
-		bottomLeftPanel.setLayout(new java.awt.BorderLayout(5, 5));
-		bottomLeftPanel.add(openTicketList, java.awt.BorderLayout.CENTER);
+		btnAssignDriver.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				doAssignDriver();
+			}
+		});
 
-		activityPanel.setPreferredSize(new java.awt.Dimension(655, 160));
-		activityPanel.setLayout(new java.awt.GridLayout(3, 0, 5, 5));
+		btnCloseOrder.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				doCloseOrder();
+			}
+		});
 
-		btnInfo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/settle_ticket_32.png")));
-		btnInfo.setText("INFO");
-		btnInfo.setPreferredSize(new java.awt.Dimension(160, 60));
-		activityPanel.add(btnInfo);
+		centerPanel.add(ticketsAndActivityPanel, java.awt.BorderLayout.CENTER);
 
-		btnNewTicket.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/new_ticket_32.png")));
-		btnNewTicket.setText("NEW");
-		btnNewTicket.setPreferredSize(new java.awt.Dimension(120, 50));
-		activityPanel.add(btnNewTicket);
+		JPanel rightPanel = new JPanel(new BorderLayout(20, 20));
+		TitledBorder titledBorder2 = BorderFactory.createTitledBorder(null, "-", TitledBorder.CENTER, TitledBorder.DEFAULT_POSITION); //$NON-NLS-1$
+		rightPanel.setBorder(new CompoundBorder(titledBorder2, new EmptyBorder(2, 2, 6, 2)));
 
-		btnEditTicket.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/edit_ticket_32.png")));
-		btnEditTicket.setText("EDIT");
-		btnEditTicket.setPreferredSize(new java.awt.Dimension(120, 50));
-		activityPanel.add(btnEditTicket);
+		orderPanel = new JPanel(new MigLayout("ins 2 2 0 2, fill, hidemode 3, flowy", "fill, grow", "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-		btnSplitTicket.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/split_32.png")));
-		btnSplitTicket.setText("SPLIT");
-		btnSplitTicket.setPreferredSize(new java.awt.Dimension(120, 50));
-		activityPanel.add(btnSplitTicket);
+		rendererOrderPanel();
 
-		btnVoidTicket.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/void_ticket_32.png")));
-		btnVoidTicket.setText("VOID");
-		btnVoidTicket.setPreferredSize(new java.awt.Dimension(120, 50));
-		activityPanel.add(btnVoidTicket);
+		rightPanel.add(orderPanel);
+		rightPanel.setMinimumSize(PosUIManager.getSize(120, 0));
 
-		btnReopenTicket.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/edit_ticket_32.png")));
-		btnReopenTicket.setText("RE-OPEN");
-		btnReopenTicket.setPreferredSize(new java.awt.Dimension(120, 50));
-		activityPanel.add(btnReopenTicket);
+		centerPanel.add(rightPanel, java.awt.BorderLayout.EAST);
 
-		btnSettleTicket.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/settle_ticket_32.png")));
-		btnSettleTicket.setText("SETTLE");
-		btnSettleTicket.setPreferredSize(new java.awt.Dimension(160, 60));
-		activityPanel.add(btnSettleTicket);
+		add(centerPanel, java.awt.BorderLayout.CENTER);
+	}
 
-		btnGroupSettle.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/settle_ticket_32.png")));
-		btnGroupSettle.setText("<html><body>GROUP<br>SETTLE</body></html>");
-		btnGroupSettle.setPreferredSize(new java.awt.Dimension(160, 60));
-		activityPanel.add(btnGroupSettle);
+	public void rendererOrderPanel() {
+		orderPanel.removeAll();
+		List<com.floreantpos.model.OrderType> orderTypes = new ArrayList<>();
+		orderTypes.addAll(Application.getInstance().getOrderTypes());
+		if (RootView.getInstance().isMaintenanceMode()) {
+			OrderType newOrderType = new OrderType();
+			newOrderType.setName("");
+			newOrderType.setShowInLoginScreen(true);
+			newOrderType.setEnabled(true);
+			orderTypes.add(newOrderType);
+		}
+		//		int buttonCount = 0;
+		for (com.floreantpos.model.OrderType orderType : orderTypes) {
+			//			++buttonCount;
+			//			if (buttonCount >= 6) {
+			//				break;
+			//			}
+			orderPanel.add(new OrderTypeButton(orderType), "grow");
+		}
 
-		btnPayout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/pay_32.png")));
-		btnPayout.setText("PAY OUT");
-		btnPayout.setPreferredSize(new java.awt.Dimension(160, 60));
-		activityPanel.add(btnPayout);
+		FloorLayoutPlugin floorLayoutPlugin = (FloorLayoutPlugin) ExtensionManager.getPlugin(FloorLayoutPlugin.class);
+		if (floorLayoutPlugin != null) {
+			orderPanel.add(createBarTabButton(orderTypes), "grow");
+		}
+		orderPanel.repaint();
+	}
 
-		btnTakeout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/pay_32.png")));
-		btnTakeout.setText("TAKE OUT");
-		btnTakeout.setPreferredSize(new java.awt.Dimension(160, 60));
-		activityPanel.add(btnTakeout);
+	private Component createBarTabButton(List<OrderType> orderTypes) {
+		PosButton btnNewBarTab = new PosButton("NEW BAR TAB");
+		List<OrderType> barTabOrders = new ArrayList<>();
+		for (OrderType orderType : orderTypes) {
+			if (orderType.isBarTab())
+				barTabOrders.add(orderType);
+		}
+		if (barTabOrders.isEmpty()) {
+			btnNewBarTab.setEnabled(false);
+		}
+		btnNewBarTab.addActionListener(new ActionListener() {
 
-		btnPrintTicket.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/print_32.png")));
-		btnPrintTicket.setText("PRINT");
-		btnPrintTicket.setPreferredSize(new java.awt.Dimension(120, 50));
-		activityPanel.add(btnPrintTicket);
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				List<OrderType> orderTypes = Application.getInstance().getOrderTypes();
+				List<OrderType> barTabOrders = new ArrayList<>();
+				for (OrderType orderType : orderTypes) {
+					if (orderType.isBarTab())
+						barTabOrders.add(orderType);
+				}
+				OrderType orderType = null;
+				if (barTabOrders.size() > 1) {
+					OrderTypeSelectionDialog dialog = new OrderTypeSelectionDialog();
+					dialog.setTitle("SELECT ORDER TYPE");
+					dialog.setSize(400, 200);
+					dialog.open();
+					if (dialog.isCanceled())
+						return;
 
-		bottomLeftPanel.add(activityPanel, java.awt.BorderLayout.SOUTH);
+					orderType = dialog.getSelectedOrderType();
+				}
+				else {
+					orderType = barTabOrders.get(0);
+				}
+				if (!orderType.isBarTab()) {
+					POSMessageDialog.showMessage("Selected order type is not bar.");
+					return;
+				}
+				new NewBarTabAction(orderType, null, Application.getPosWindow()).actionPerformed(e);
+			}
+		});
+		return btnNewBarTab;
+	}
 
-		bottomPanel.add(bottomLeftPanel, java.awt.BorderLayout.CENTER);
+	private JPanel createActivityPanel() {
+		JPanel activityPanel = new JPanel(new BorderLayout(5, 5));
+		JPanel activityPanel2 = new JPanel(new MigLayout("hidemode 3, fill, ins 0", "fill, grow", ""));
+		innerActivityPanel = new JPanel(new MigLayout("hidemode 3, fill, ins 0", "fill, grow", ""));
 
-		bottomRightPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "OTHERS", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
-		bottomRightPanel.setPreferredSize(new java.awt.Dimension(200, 10));
+		JPanel firstRowButtonPanel = new JPanel(new GridLayout(1, 0, 5, 5));
+		JXCollapsiblePane secondRowButtonPanel = new JXCollapsiblePane();
+		secondRowButtonPanel.setAnimated(false);
+		secondRowButtonPanel.setCollapsed(true);
+		secondRowButtonPanel.setVisible(false);
+		secondRowButtonPanel.getContentPane().setLayout(new GridLayout(1, 0, 5, 5));
 
-		btnShutdown.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/shut_down_32.png")));
-		btnShutdown.setText("SHUTDOWN");
+		if (Application.getInstance().getTerminal().isHasCashDrawer()) {
+			firstRowButtonPanel.add(btnOrderInfo);
+			firstRowButtonPanel.add(btnEditTicket);
+			firstRowButtonPanel.add(btnSettleTicket);
+			firstRowButtonPanel.add(btnGroupSettle);
+			firstRowButtonPanel.add(btnCloseOrder);
 
-		btnLogout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/log_out_32.png")));
-		btnLogout.setText("LOGOUT");
+			secondRowButtonPanel.getContentPane().add(btnSplitTicket);
+			secondRowButtonPanel.getContentPane().add(btnReopenTicket);
+			secondRowButtonPanel.getContentPane().add(btnVoidTicket);
+			secondRowButtonPanel.getContentPane().add(btnRefundTicket);
+			secondRowButtonPanel.getContentPane().add(btnAssignDriver);
+		}
+		else {
+			firstRowButtonPanel.add(btnOrderInfo);
+			firstRowButtonPanel.add(btnEditTicket);
+			firstRowButtonPanel.add(btnCloseOrder);
+			firstRowButtonPanel.add(btnSplitTicket);
 
-		btnBackOffice.setText("BACK-OFFICE");
+			secondRowButtonPanel.getContentPane().add(btnReopenTicket);
+			secondRowButtonPanel.getContentPane().add(btnVoidTicket);
+			secondRowButtonPanel.getContentPane().add(btnRefundTicket);
+			secondRowButtonPanel.getContentPane().add(btnAssignDriver);
+		}
+		innerActivityPanel.add(firstRowButtonPanel);
+		innerActivityPanel.add(secondRowButtonPanel, "newline"); //$NON-NLS-1$
 
-		btnManager.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/user_32.png")));
-		btnManager.setText("MANAGER");
+		final PosButton btnMore = new PosButton(POSConstants.MORE_ACTIVITY_BUTTON_TEXT);
+		btnMore.setPreferredSize(new Dimension(PosUIManager.getSize(78), 0));
 
-		btnClockOut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/log_out_32.png")));
-		btnClockOut.setText("CLOCK OUT");
+		btnMore.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				boolean collapsed = secondRowButtonPanel.isCollapsed();
+				secondRowButtonPanel.setVisible(collapsed);
+				secondRowButtonPanel.setCollapsed(!collapsed);
+				if (collapsed) {
+					btnMore.setText(POSConstants.LESS_ACTIVITY_BUTTON_TEXT);
+				}
+				else {
+					btnMore.setText(POSConstants.MORE_ACTIVITY_BUTTON_TEXT);
+				}
+			}
+		});
 
-		org.jdesktop.layout.GroupLayout bottomRightPanelLayout = new org.jdesktop.layout.GroupLayout(bottomRightPanel);
-		bottomRightPanel.setLayout(bottomRightPanelLayout);
-		bottomRightPanelLayout.setHorizontalGroup(bottomRightPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING).add(
-				bottomRightPanelLayout.createSequentialGroup().addContainerGap().add(
-						bottomRightPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING).add(btnShutdown, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE).add(btnLogout, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE).add(btnClockOut,
-								org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 168, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE).add(btnBackOffice, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE).add(btnManager, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE))
-						.addContainerGap()));
-		bottomRightPanelLayout.setVerticalGroup(bottomRightPanelLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING).add(
-				org.jdesktop.layout.GroupLayout.TRAILING,
-				bottomRightPanelLayout.createSequentialGroup().addContainerGap(39, Short.MAX_VALUE).add(btnManager, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE).addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED).add(
-						btnBackOffice, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE).addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED).add(btnClockOut, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
-						org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE).addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED).add(btnLogout, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-						org.jdesktop.layout.GroupLayout.PREFERRED_SIZE).addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED).add(btnShutdown, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 58, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE).addContainerGap()));
+		activityPanel.add(innerActivityPanel);
+		activityPanel.add(btnMore, BorderLayout.EAST);
 
-		bottomRightPanelLayout.linkSize(new java.awt.Component[] { btnBackOffice, btnClockOut, btnLogout, btnManager, btnShutdown }, org.jdesktop.layout.GroupLayout.VERTICAL);
+		List<FloreantPlugin> orderPlugins = ExtensionManager.getPlugins(OnlineOrderPlugin.class);
+		if (orderPlugins != null) {
+			for (FloreantPlugin floreantPlugin : orderPlugins) {
+				if (floreantPlugin instanceof OnlineOrderPlugin) {
 
-		bottomPanel.add(bottomRightPanel, java.awt.BorderLayout.EAST);
+					OnlineOrderPlugin orderPlugin = (OnlineOrderPlugin) floreantPlugin;
+					if (orderPlugin.getId().equals("fp-menugreat-plugin")) {
+						loadMenugreatButtons(activityPanel2, orderPlugin);
+					}
+					else if (orderPlugin.getId().equals("fp-woocommerce-plugin")) {
+						loadWooCommurceButtons(activityPanel2, orderPlugin);
+					}
+				}
+			}
+		}
+		activityPanel.add(activityPanel2, BorderLayout.SOUTH);
+		updateButtonsView();
+		return activityPanel;
+	}
 
-		add(bottomPanel, java.awt.BorderLayout.CENTER);
-	}// </editor-fold>//GEN-END:initComponents
+	private void loadMenugreatButtons(JPanel panel, OnlineOrderPlugin orderPlugin) {
+		onlineOrderActionsButtonPanel = new JPanel(new GridLayout(1, 0, 5, 5));
+		PosButton btnShowOnlineOrderInfo = new PosButton(POSConstants.ORDER_INFO_BUTTON_TEXT);
+		btnShowOnlineOrderInfo.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doShowOrderInfo();
+			}
+		});
+		onlineOrderActionsButtonPanel.add(btnShowOnlineOrderInfo);
+		panel.add(onlineOrderActionsButtonPanel, "wrap");
+		orderPlugin.initSwitchboardActionButtons(onlineOrderActionsButtonPanel, ticketList, new RefreshableView() {
+
+			@Override
+			public void refresh() {
+			}
+		});
+	}
+
+	private void loadWooCommurceButtons(JPanel panel, OnlineOrderPlugin orderPlugin) {
+		woocomOrderActionsButtonPanel = new JPanel(new GridLayout(1, 0, 5, 5));
+		PosButton btnShowOnlineOrderInfo = new PosButton(POSConstants.ORDER_INFO_BUTTON_TEXT);
+		btnShowOnlineOrderInfo.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doShowOrderInfo();
+			}
+		});
+		woocomOrderActionsButtonPanel.add(btnShowOnlineOrderInfo);
+		panel.add(woocomOrderActionsButtonPanel);
+		orderPlugin.initSwitchboardActionButtons(woocomOrderActionsButtonPanel, ticketList, new RefreshableView() {
+
+			@Override
+			public void refresh() {
+			}
+		});
+	}
+
+	public void updateButtonsView() {
+		Ticket selectedTicket = getSelectedTicket();
+		if (selectedTicket != null) {
+			boolean isSourceOnline = selectedTicket.isSourceOnline();
+			if (onlineOrderActionsButtonPanel != null && isSourceOnline) {
+				onlineOrderActionsButtonPanel.setVisible(isSourceOnline);
+				if (woocomOrderActionsButtonPanel != null) {
+					woocomOrderActionsButtonPanel.setVisible(!isSourceOnline);
+				}
+				innerActivityPanel.setVisible(!isSourceOnline);
+			}
+			else {
+				boolean isSourceWoocomerce = selectedTicket.isSourceWoocomerce();
+				if (woocomOrderActionsButtonPanel != null && isSourceWoocomerce) {
+					woocomOrderActionsButtonPanel.setVisible(isSourceWoocomerce);
+					if (onlineOrderActionsButtonPanel != null) {
+						onlineOrderActionsButtonPanel.setVisible(!isSourceWoocomerce);
+					}
+					innerActivityPanel.setVisible(!isSourceWoocomerce);
+				}
+				else {
+					if (onlineOrderActionsButtonPanel != null) {
+						onlineOrderActionsButtonPanel.setVisible(false);
+					}
+					if (woocomOrderActionsButtonPanel != null) {
+						woocomOrderActionsButtonPanel.setVisible(false);
+					}
+					innerActivityPanel.setVisible(true);
+				}
+			}
+		}
+		else {
+			if (onlineOrderActionsButtonPanel != null) {
+				onlineOrderActionsButtonPanel.setVisible(false);
+			}
+			if (woocomOrderActionsButtonPanel != null) {
+				woocomOrderActionsButtonPanel.setVisible(false);
+			}
+			innerActivityPanel.setVisible(true);
+		}
+	}
+
+	protected void doCloseOrder() {
+		Ticket ticket = getFirstSelectedTicket();
+
+		if (ticket == null) {
+			return;
+		}
+
+		ticket = TicketDAO.getInstance().loadFullTicket(ticket.getId());
+
+		//		int due = (int) POSUtil.getDouble(ticket.getDueAmount());
+		//		if (due != 0) {
+		//			POSMessageDialog.showError(this, Messages.getString("SwitchboardView.5")); //$NON-NLS-1$
+		//			return;
+		//		}
+
+		int option = JOptionPane.showOptionDialog(Application.getPosWindow(),
+				Messages.getString("SwitchboardView.6") + ticket.getId() + Messages.getString("SwitchboardView.7"), POSConstants.CONFIRM, //$NON-NLS-1$ //$NON-NLS-2$
+				JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
+
+		if (option != JOptionPane.OK_OPTION) {
+			return;
+		}
+
+		OrderController.closeOrder(ticket);
+
+		//tickteListViewObj.updateTicketList();
+		updateTicketList();
+	}
+
+	protected void doAssignDriver() {
+		try {
+
+			Ticket ticket = getFirstSelectedTicket();
+
+			if (ticket == null) {
+				return;
+			}
+
+			if (!ticket.getOrderType().isDelivery()) {
+				POSMessageDialog.showError(this, Messages.getString("SwitchboardView.8")); //$NON-NLS-1$
+				return;
+			}
+
+			User assignedDriver = ticket.getAssignedDriver();
+			if (assignedDriver != null) {
+				int option = JOptionPane.showOptionDialog(Application.getPosWindow(), Messages.getString("SwitchboardView.9"), POSConstants.CONFIRM, //$NON-NLS-1$
+						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+
+				if (option != JOptionPane.YES_OPTION) {
+					return;
+				}
+			}
+
+			orderServiceExtension.assignDriver(ticket.getId());
+		} catch (Exception e) {
+			PosLog.error(getClass(), e);
+			POSMessageDialog.showError(this, e.getMessage());
+			LogFactory.getLog(SwitchboardView.class).error(e);
+		}
+	}
 
 	private void doReopenTicket() {
-		NumberSelectionDialog2 dialog = new NumberSelectionDialog2();
-		dialog.setTitle("Please enter ticket ID");
-		dialog.pack();
-		dialog.open();
-
-		if (dialog.isCanceled()) {
-			return;
-		}
-
-		int ticketId = (int) dialog.getValue();
-		TicketDAO dao = new TicketDAO();
-		Ticket ticket = dao.get(Integer.valueOf(ticketId));
-		if (ticket == null) {
-			POSMessageDialog.showError("No ticket with ID " + ticketId + " found");
-			return;
-		}
-		if (!ticket.isClosed()) {
-			POSMessageDialog.showError("The ticket is not closed");
-			return;
-		}
-
-		String amount = Application.getCurrencySymbol() + Application.formatNumber(ticket.getTotalAmount());
-		String amountMessage = "<span style='color: red; font-weight: bold;'>" + amount + "</span>";
-		String message = "<html><body><h3>The ticket will be opened in edit mode. Before that, you must refund <br/>" + "amount " + amountMessage + " to keep the system stable. Do you wish to continue?</h3></body></html>";
-		int option = JOptionPane.showOptionDialog(this, message, "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, null, null);
-		if (option != JOptionPane.YES_OPTION) {
-			return;
-		}
-
 		try {
-			PosTransactionService service = PosTransactionService.getInstance();
-			service.refundTicket(ticket);
 
-			//REOPEN ACTION
-			ActionHistoryDAO.getInstance().saveHistory(Application.getCurrentUser(), ActionHistory.REOPEN_CHECK, "CHK#:" + ticket.getId());
+			int ticketId = NumberSelectionDialog2.takeIntInput(Messages.getString("SwitchboardView.10")); //$NON-NLS-1$
 
-			JOptionPane.showMessageDialog(this, "<html><body>Please press <b>OK</b> after you refund amount " + amountMessage + "</body></html>");
-			ticket.setDrawerResetted(false);
-			editTicket(ticket);
+			if (ticketId == -1) {
+				return;
+			}
+
+			Ticket ticket = TicketDAO.getInstance().loadFullTicket(ticketId);
+
+			if (ticket == null) {
+				throw new PosException(POSConstants.NO_TICKET_WITH_ID + " " + ticketId + " " + POSConstants.FOUND); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+
+			if (!ticket.isClosed()) {
+				throw new PosException(POSConstants.TICKET_IS_NOT_CLOSED);
+			}
+
+			if (ticket.isVoided()) {
+				throw new PosException(Messages.getString("SwitchboardView.11")); //$NON-NLS-1$
+			}
+
+			ticket.setClosed(false);
+			ticket.setClosingDate(null);
+			ticket.setReOpened(true);
+
+			TicketDAO.getInstance().saveOrUpdate(ticket);
+
+			OrderInfoView view = new OrderInfoView(Arrays.asList(ticket));
+			OrderInfoDialog dialog = new OrderInfoDialog(view);
+			dialog.setSize(PosUIManager.getSize(400), PosUIManager.getSize(600));
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.setLocationRelativeTo(Application.getPosWindow());
+			dialog.setVisible(true);
+
+			//tickteListViewObj.updateTicketList();
+			updateTicketList();
+
+		} catch (PosException e) {
+			POSMessageDialog.showError(this, e.getLocalizedMessage());
 		} catch (Exception e) {
-			POSMessageDialog.showError(this, POSMessageDialog.ERROR_MESSAGE, e);
+			POSMessageDialog.showError(this, POSConstants.ERROR_MESSAGE, e);
 		}
-	}
-
-	private void doClockOut() {
-		int option = JOptionPane.showOptionDialog(this, "Are you sure you want to Clock Out?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
-		if (option != JOptionPane.YES_OPTION) {
-			return;
-		}
-
-		User user = Application.getCurrentUser();
-		AttendenceHistoryDAO attendenceHistoryDAO = new AttendenceHistoryDAO();
-		AttendenceHistory attendenceHistory = attendenceHistoryDAO.findHistoryByClockedInTime(user);
-		if (attendenceHistory == null) {
-			attendenceHistory = new AttendenceHistory();
-			Date lastClockInTime = user.getLastClockInTime();
-			Calendar c = Calendar.getInstance();
-			c.setTime(lastClockInTime);
-			attendenceHistory.setClockInTime(lastClockInTime);
-			attendenceHistory.setClockInHour(Short.valueOf((short) c.get(Calendar.HOUR)));
-			attendenceHistory.setUser(user);
-			attendenceHistory.setTerminal(Application.getInstance().getTerminal());
-			attendenceHistory.setShift(user.getCurrentShift());
-		}
-
-		Shift shift = user.getCurrentShift();
-		Calendar calendar = Calendar.getInstance();
-
-		user.doClockOut(attendenceHistory, shift, calendar);
-
-		Application.getInstance().logout();
-	}
-
-	private synchronized void doShowBackoffice() {
-		BackOfficeWindow window = Application.getInstance().getBackOfficeWindow();
-		if (window == null) {
-			window = new BackOfficeWindow();
-			Application.getInstance().setBackOfficeWindow(window);
-		}
-		window.setVisible(true);
-		window.toFront();
-	}
-
-	private void doShutdown() {
-		Application.getInstance().shutdownPOS();
-	}
-
-	private void doLogout() {
-		Application.getInstance().logout();
 	}
 
 	private void doSettleTicket() {
 		try {
-			List<Ticket> selectedTickets = openTicketList.getSelectedTickets();
-			if (selectedTickets.size() == 0 || selectedTickets.size() > 1) {
-				POSMessageDialog.showMessage("Please select one ticket to settle.");
+			if (!POSUtil.checkDrawerAssignment()) {
 				return;
 			}
 
-			Ticket ticket = selectedTickets.get(0);
+			Ticket ticket = null;
 
-			PaymentTypeSelectionDialog dialog = new PaymentTypeSelectionDialog();
-			dialog.setSize(250, 400);
-			dialog.open();
+			List<Ticket> selectedTickets = ticketList.getSelectedTickets();
 
-			if (!dialog.isCanceled()) {
-				ticket = TicketDAO.getInstance().initializeTicket(ticket);
-
-				SettleTicketView view = SettleTicketView.getInstance();
-				view.setPaymentView(dialog.getSelectedPaymentView());
-				view.setCurrentTicket(ticket);
-				RootView.getInstance().showView(SettleTicketView.VIEW_NAME);
+			if (selectedTickets.size() > 0) {
+				ticket = selectedTickets.get(0);
 			}
+			else {
+				int ticketId = NumberSelectionDialog2.takeIntInput(Messages.getString("SwitchboardView.12")); //$NON-NLS-1$
+				if (ticketId == -1)
+					return;
+				ticket = TicketService.getTicket(ticketId);
+			}
+
+			new SettleTicketAction(ticket.getId()).execute();
+
+			//tickteListViewObj.updateTicketList();
+			updateTicketList();
+
+		} catch (PosException e) {
+			POSMessageDialog.showError(this, e.getMessage());
 		} catch (Exception e) {
-			POSMessageDialog.showError(POSConstants.RESTART_ERROR_MESSAGE, e);
+			PosLog.error(getClass(), e);
+			POSMessageDialog.showError(this, POSConstants.ERROR_MESSAGE, e);
 		}
 	}
 
-	private void doPrintTicket() {
-		List<Ticket> selectedTickets = openTicketList.getSelectedTickets();
-		if (selectedTickets.size() == 0 || selectedTickets.size() > 1) {
-			POSMessageDialog.showMessage("Please select one ticket to print.");
-			return;
-		}
-
-		Ticket ticket = selectedTickets.get(0);
-		try {
-			ticket = TicketDAO.getInstance().initializeTicket(ticket);
-			PosPrintService.printTicket(ticket);
-
-			//			PRINT ACTION
-			String actionMessage = "CHK#:" + ticket.getId();
-			ActionHistoryDAO.getInstance().saveHistory(Application.getCurrentUser(), ActionHistory.PRINT_CHECK, actionMessage);
-		} catch (Exception e) {
-			POSMessageDialog.showError(this, e.getMessage(), e);
-		}
+	private void doShowOrderInfo() {
+		doShowOrderInfo(ticketList.getSelectedTickets());
 	}
 
-	private void doVoidTicket() {
+	private void doShowOrderInfo(List<Ticket> tickets) {
 		try {
-			List<Ticket> selectedTickets = openTicketList.getSelectedTickets();
-			if (selectedTickets.size() == 0 || selectedTickets.size() > 1) {
-				POSMessageDialog.showMessage("Please select one ticket to void.");
-				return;
+
+			if (tickets.size() == 0) {
+				if (ticketList.getOrderFiltersPanel().isMenugreatOrderFilterSelected()
+						|| ticketList.getOrderFiltersPanel().isWoocommerceOrderFilterSelected()) {
+					throw new PosException(POSConstants.SELECT_TICKET);
+				}
+				int ticketId = NumberSelectionDialog2.takeIntInput(Messages.getString("SwitchboardView.0")); //$NON-NLS-1$
+				if (ticketId == -1) {
+					return;
+				}
+
+				Ticket ticket = TicketService.getTicket(ticketId);
+				tickets.add(ticket);
 			}
 
-			Ticket ticket = selectedTickets.get(0);
+			List<Ticket> ticketsToShow = new ArrayList<Ticket>();
 
-			if (!ticket.getTotalAmount().equals(ticket.getDueAmount())) {
-				POSMessageDialog.showMessage("You cannot void the ticket since it is partially paid.");
-				return;
+			for (int i = 0; i < tickets.size(); i++) {
+				Ticket ticket = tickets.get(i);
+				if (ticket.isSourceOnline() || ticket.isSourceWoocomerce()) {
+					ticketsToShow.add(ticket);
+					continue;
+				}
+				ticketsToShow.add(TicketDAO.getInstance().loadFullTicket(ticket.getId()));
 			}
 
-			//initialize the ticket.
-			ticket = TicketDAO.getInstance().initializeTicket(ticket);
-
-			VoidTicketDialog voidTicketDialog = new VoidTicketDialog(Application.getPosWindow(), true);
-			voidTicketDialog.setTicket(ticket);
-			voidTicketDialog.open();
-
-			if (!voidTicketDialog.isCanceled()) {
-				updateView();
-			}
+			OrderInfoView view = new OrderInfoView(ticketsToShow);
+			OrderInfoDialog dialog = new OrderInfoDialog(view, ticketList);
+			dialog.setSize(PosUIManager.getSize(400), PosUIManager.getSize(600));
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.setLocationRelativeTo(Application.getPosWindow());
+			dialog.setVisible(true);
+		} catch (PosException e) {
+			POSMessageDialog.showError(this, e.getMessage());
 		} catch (Exception e) {
-			POSMessageDialog.showError(POSConstants.RESTART_ERROR_MESSAGE, e);
+			POSMessageDialog.showError(this, POSConstants.ERROR_MESSAGE, e);
 		}
 	}
 
 	private void doSplitTicket() {
 		try {
-			List<Ticket> selectedTickets = openTicketList.getSelectedTickets();
-			if (selectedTickets.size() == 0 || selectedTickets.size() > 1) {
-				POSMessageDialog.showMessage("Please select one ticket to split.");
+			Ticket selectedTicket = getFirstSelectedTicket();
+
+			if (selectedTicket == null) {
 				return;
 			}
 
-			Ticket ticket = selectedTickets.get(0);
-			if (!ticket.getTotalAmount().equals(ticket.getDueAmount())) {
-				POSMessageDialog.showMessage("You cannot void the ticket since it is partially paid.");
-				return;
-			}
-
-			//initialize the ticket.
-			ticket = TicketDAO.getInstance().initializeTicket(ticket);
+			// initialize the ticket.
+			Ticket ticket = TicketDAO.getInstance().loadFullTicket(selectedTicket.getId());
 
 			SplitTicketDialog dialog = new SplitTicketDialog();
 			dialog.setTicket(ticket);
@@ -420,190 +633,109 @@ public class SwitchboardView extends JPanel implements ActionListener {
 
 			updateView();
 		} catch (Exception e) {
-			POSMessageDialog.showError(POSConstants.RESTART_ERROR_MESSAGE, e);
+			POSMessageDialog.showError(this, POSConstants.ERROR_MESSAGE, e);
 		}
 	}
 
 	private void doEditTicket() {
-		List<Ticket> selectedTickets = openTicketList.getSelectedTickets();
-		if (selectedTickets.size() == 0 || selectedTickets.size() > 1) {
-			POSMessageDialog.showMessage("Please select one ticket to edit.");
-			return;
+		try {
+			Ticket ticket = null;
+
+			List<Ticket> selectedTickets = ticketList.getSelectedTickets();
+
+			if (selectedTickets.size() > 0) {
+				ticket = selectedTickets.get(0);
+			}
+			else {
+				int ticketId = NumberSelectionDialog2.takeIntInput(Messages.getString("SwitchboardView.12")); //$NON-NLS-1$
+				if (ticketId == -1)
+					return;
+
+				ticket = TicketService.getTicket(ticketId);
+			}
+
+			editTicket(ticket);
+		} catch (PosException e) {
+			POSMessageDialog.showError(this, e.getMessage());
+		} catch (Exception e) {
+			POSMessageDialog.showError(this, e.getMessage(), e);
 		}
-
-		Ticket ticket = selectedTickets.get(0);
-
-		editTicket(ticket);
 	}
 
 	private void editTicket(Ticket ticket) {
-		//initialize the ticket.
-		ticket = TicketDAO.getInstance().initializeTicket(ticket);
+		if (ticket.isPaid()) {
+			POSMessageDialog.showMessage(this, Messages.getString("SwitchboardView.14")); //$NON-NLS-1$
+			return;
+		}
 
-		OrderView.getInstance().setCurrentTicket(ticket);
+		Ticket ticketToEdit = TicketDAO.getInstance().loadFullTicket(ticket.getId());
+
+		OrderView.getInstance().setCurrentTicket(ticketToEdit);
 		RootView.getInstance().showView(OrderView.VIEW_NAME);
+		OrderView.getInstance().getTicketView().getTxtSearchItem().requestFocus();
 	}
 
-	private void doCreateNewTicket() {
-		createNewTicket();
-	}
+	//	public void doCreateNewTicket(final OrderType ticketType) {
+	//		try {
+	//			if (ticketType.isShowTableSelection()) {
+	//				OrderServiceExtension orderService = new DefaultOrderServiceExtension();
+	//				orderService.createNewTicket(ticketType);
+	//			}
+	//			else {
+	//				OrderUtil.createNewTakeOutOrder(ticketType);
+	//			}
+	//
+	//		} catch (TicketAlreadyExistsException e) {
+	//
+	//			int option = JOptionPane.showOptionDialog(Application.getPosWindow(), POSConstants.EDIT_TICKET_CONFIRMATION, POSConstants.CONFIRM,
+	//					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+	//			if (option == JOptionPane.YES_OPTION) {
+	//				editTicket(e.getTicket());
+	//				return;
+	//			}
+	//		}
+	//	}
 
-	private void createNewTicket() {
-		NumberSelectionDialog2 dialog = new NumberSelectionDialog2();
-		dialog.setTitle("Please enter a table number");
-		dialog.pack();
-		dialog.open();
-
-		if (dialog.isCanceled()) {
-			return;
-		}
-
-		int tableNumber = (int) dialog.getValue();
-		if (tableNumber == 0) {
-			POSMessageDialog.showError(this, "Table number cannot be 0");
-			return;
-		}
-
-		TicketDAO dao = TicketDAO.getInstance();
-
-		Ticket ticket = dao.findTicketByTableNumber(tableNumber);
-		if (ticket != null) {
-			int option = JOptionPane.showOptionDialog(this, "The table is already occupied, what do you want to do?", "Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[] { "Create New Ticket", "Edit Existing Ticket", "Cancel" }, null);
-			if (option == JOptionPane.YES_OPTION) {
-				//createNewTicket();
-				//return;
-				//fall down to create new ticket.
-			}
-			else if (option == JOptionPane.NO_OPTION) {
-				editTicket(ticket);
-				return;
-			}
-			else {
-				return;
-			}
-		}
-
-		dialog.setTitle("Please enter number of guest");
-		dialog.setValue(0);
-		dialog.open();
-
-		if (dialog.isCanceled()) {
-			return;
-		}
-		int numberOfGuests = (int) dialog.getValue();
-		if (numberOfGuests == 0) {
-			POSMessageDialog.showError(this, "Guest number cannot be 0");
-			return;
-		}
-
-		Application application = Application.getInstance();
-
-		ticket = new Ticket();
-		ticket.setTableNumber(tableNumber);
-		ticket.setNumberOfGuests(numberOfGuests);
-		ticket.setTerminal(application.getTerminal());
-		ticket.setOwner(Application.getCurrentUser());
-		ticket.setShift(application.getCurrentShift());
-
-		Calendar currentTime = Calendar.getInstance();
-		ticket.setCreateDate(currentTime.getTime());
-		ticket.setCreationHour(currentTime.get(Calendar.HOUR_OF_DAY));
-
-		OrderView.getInstance().setCurrentTicket(ticket);
-		RootView.getInstance().showView(OrderView.VIEW_NAME);
-	}
-
-	private void doTakeout() {
-		Application application = Application.getInstance();
-
-		Ticket ticket = new Ticket();
-		ticket.setTableNumber(Ticket.TAKE_OUT);
-		ticket.setTerminal(application.getTerminal());
-		ticket.setOwner(Application.getCurrentUser());
-		ticket.setShift(application.getCurrentShift());
-
-		Calendar currentTime = Calendar.getInstance();
-		ticket.setCreateDate(currentTime.getTime());
-		ticket.setCreationHour(currentTime.get(Calendar.HOUR_OF_DAY));
-
-		OrderView.getInstance().setCurrentTicket(ticket);
-		RootView.getInstance().showView(OrderView.VIEW_NAME);
-	}
-
-	private void doPayout() {
-		PayoutDialog dialog = new PayoutDialog(Application.getPosWindow(), true);
-		dialog.open();
-	}
-
-	private void doShowManagerWindow() {
-		ManagerDialog dialog = new ManagerDialog();
-		dialog.open();
-	}
-
-	private void doShowTicketInfo() {
-		Ticket ticket = openTicketList.getSelectedTicket();
-		if (ticket == null) {
-			POSMessageDialog.showMessage("Please select a ticket from the open ticket list.");
-			return;
-		}
-		TicketDetailDialog dialog = new TicketDetailDialog(Application.getPosWindow(), true);
-		dialog.setButtonPanelVisible(false);
-		dialog.setBalanceDuePanelVisible(false);
-		dialog.setTicket(ticket);
-		dialog.pack();
-		dialog.open();
+	public void doHomeDelivery(OrderType ticketType) {
+		//		try {
+		//
+		//			orderServiceExtension.createNewTicket(ticketType);
+		//
+		//		} catch (TicketAlreadyExistsException e) {
+		//
+		//			int option = JOptionPane.showOptionDialog(Application.getPosWindow(), POSConstants.EDIT_TICKET_CONFIRMATION, POSConstants.CONFIRM,
+		//					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+		//			if (option == JOptionPane.YES_OPTION) {
+		//				editTicket(e.getTicket());
+		//				return;
+		//			}
+		//		}
 	}
 
 	private void doGroupSettle() {
-		List<Ticket> selectedTickets = openTicketList.getSelectedTickets();
-		if (selectedTickets.size() < 2) {
-			POSMessageDialog.showError("You must select two or more ticket for group settle");
+		GroupSettleTicketAction action = new GroupSettleTicketAction();
+		if (!action.execute())
 			return;
-		}
-
-		PaymentTypeSelectionDialog dialog = new PaymentTypeSelectionDialog();
-		dialog.setSize(250, 400);
-		dialog.open();
-
-		if (!dialog.isCanceled()) {
-
-			for (int i = 0; i < selectedTickets.size(); i++) {
-				Ticket ticket = selectedTickets.get(i);
-				ticket = TicketDAO.getInstance().initializeTicket(ticket);
-				selectedTickets.set(i, ticket);
-			}
-
-			SettleTicketView view = SettleTicketView.getInstance();
-			view.setPaymentView(dialog.getSelectedPaymentView());
-			view.setTicketsToSettle(selectedTickets);
-			RootView.getInstance().showView(SettleTicketView.VIEW_NAME);
-		}
+		//tickteListViewObj.updateTicketList();
+		updateTicketList();
 	}
 
 	public void updateView() {
 		User user = Application.getCurrentUser();
-		UserType userType = user.getNewUserType();
+		UserType userType = user.getType();
 		if (userType != null) {
 			Set<UserPermission> permissions = userType.getPermissions();
 			if (permissions != null) {
-				btnNewTicket.setEnabled(false);
-				btnBackOffice.setEnabled(false);
+
 				btnEditTicket.setEnabled(false);
 				btnGroupSettle.setEnabled(false);
-				btnManager.setEnabled(false);
-				btnPayout.setEnabled(false);
 				btnReopenTicket.setEnabled(false);
 				btnSettleTicket.setEnabled(false);
 				btnSplitTicket.setEnabled(false);
-				btnTakeout.setEnabled(false);
-				btnVoidTicket.setEnabled(false);
 
 				for (UserPermission permission : permissions) {
 					if (permission.equals(UserPermission.VOID_TICKET)) {
 						btnVoidTicket.setEnabled(true);
-					}
-					else if (permission.equals(UserPermission.PAY_OUT)) {
-						btnPayout.setEnabled(true);
 					}
 					else if (permission.equals(UserPermission.SETTLE_TICKET)) {
 						btnSettleTicket.setEnabled(true);
@@ -612,156 +744,131 @@ public class SwitchboardView extends JPanel implements ActionListener {
 					else if (permission.equals(UserPermission.REOPEN_TICKET)) {
 						btnReopenTicket.setEnabled(true);
 					}
-					else if (permission.equals(UserPermission.PERFORM_MANAGER_TASK)) {
-						btnManager.setEnabled(true);
-					}
 					else if (permission.equals(UserPermission.SPLIT_TICKET)) {
 						btnSplitTicket.setEnabled(true);
 					}
-					else if (permission.equals(UserPermission.TAKE_OUT)) {
-						btnTakeout.setEnabled(true);
-					}
-					else if (permission.equals(UserPermission.VIEW_BACK_OFFICE)) {
-						btnBackOffice.setEnabled(true);
-					}
-					else if (permission.equals(UserPermission.PAY_OUT)) {
-						btnPayout.setEnabled(true);
-					}
-					else if (permission.equals(UserPermission.EDIT_TICKET)) {
+					else if (permission.equals(UserPermission.CREATE_TICKET)) {
 						btnEditTicket.setEnabled(true);
 					}
-					else if (permission.equals(UserPermission.CREATE_NEW_TICKET)) {
-						btnNewTicket.setEnabled(true);
+					/*
+					 else if (permission.equals(UserPermission.TAKE_OUT)) {
+						btnTakeout.setEnabled(true);
 					}
+					else if (permission.equals(UserPermission.CREATE_TICKET)) {
+						btnDineIn.setEnabled(true);
+					}*/
 				}
 			}
 		}
 
 		updateTicketList();
+
 	}
 
-	private void updateTicketList() {
-		User user = Application.getCurrentUser();
-
-		TicketDAO dao = TicketDAO.getInstance();
-		List<Ticket> openTickets = null;
-
-		boolean showAllOpenTicket = false;
-		if (user.getNewUserType() != null) {
-			Set<UserPermission> permissions = user.getNewUserType().getPermissions();
-			if (permissions != null) {
-				for (UserPermission permission : permissions) {
-					if(permission.equals(UserPermission.VIEW_ALL_OPEN_TICKET)) {
-						showAllOpenTicket = true;
-						break;
-					}
-				}
-			}
-		}
-
-		if(showAllOpenTicket) {
-			openTickets = dao.findOpenTickets();
-		}
-		else {
-			openTickets = dao.findOpenTicketsForUser(user);
-		}
-		openTicketList.setTickets(openTickets);
-
-		lblUserName.setText("Welcome " + user.toString() + ". You have " + openTickets.size() + " open tickets.");
+	public synchronized void updateTicketList() {
+		ticketList.updateTicketList();
 	}
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables
-	private com.floreantpos.swing.PosButton btnBackOffice;
-	private com.floreantpos.swing.PosButton btnClockOut;
-	private com.floreantpos.swing.PosButton btnEditTicket;
-	private com.floreantpos.swing.PosButton btnGroupSettle;
-	private com.floreantpos.swing.PosButton btnInfo;
-	private com.floreantpos.swing.PosButton btnLogout;
-	private com.floreantpos.swing.PosButton btnManager;
-	private com.floreantpos.swing.PosButton btnNewTicket;
-	private com.floreantpos.swing.PosButton btnPayout;
-	private com.floreantpos.swing.PosButton btnPrintTicket;
-	private com.floreantpos.swing.PosButton btnReopenTicket;
-	private com.floreantpos.swing.PosButton btnSettleTicket;
-	private com.floreantpos.swing.PosButton btnShutdown;
-	private com.floreantpos.swing.PosButton btnSplitTicket;
-	private com.floreantpos.swing.PosButton btnTakeout;
-	private com.floreantpos.swing.PosButton btnVoidTicket;
-	private javax.swing.JLabel lblUserName;
-	private com.floreantpos.ui.TicketListView openTicketList;
 
-	// End of variables declaration//GEN-END:variables
+	//	private PosButton btnBarTab = new PosButton(POSConstants.BAR_TAB_BUTTON_TEXT);
+
+	private PosButton btnEditTicket = new PosButton(POSConstants.EDIT_TICKET_BUTTON_TEXT);
+	private PosButton btnGroupSettle = new PosButton(POSConstants.GROUP_SETTLE_BUTTON_TEXT);
+
+	private PosButton btnOrderInfo = new PosButton(POSConstants.ORDER_INFO_BUTTON_TEXT);
+	private PosButton btnReopenTicket = new PosButton(POSConstants.REOPEN_TICKET_BUTTON_TEXT);
+	private PosButton btnSettleTicket = new PosButton(POSConstants.SETTLE_TICKET_BUTTON_TEXT);
+	private PosButton btnSplitTicket = new PosButton(POSConstants.SPLIT_TICKET_BUTTON_TEXT);
+
+	private PosButton btnVoidTicket = new PosButton(POSConstants.VOID_TICKET_BUTTON_TEXT);
+	private PosButton btnRefundTicket = new PosButton(POSConstants.REFUND_BUTTON_TEXT, new RefundAction(this));
+
+	private PosButton btnAssignDriver = new PosButton(POSConstants.ASSIGN_DRIVER_BUTTON_TEXT);
+	private PosButton btnCloseOrder = new PosButton(POSConstants.CLOSE_ORDER_BUTTON_TEXT);
+	//private PosBlinkButton btnRefreshTicketList = new PosBlinkButton(Messages.getString(Messages.getString("SwitchboardView.21"))); //NON-NLS-1$ //$NON-NLS-1$
+
+	private com.floreantpos.ui.TicketListView ticketList = new com.floreantpos.ui.TicketListView();
+	private TitledBorder ticketsListPanelBorder;
+	private JPanel innerActivityPanel;
 
 	@Override
-	public void setVisible(boolean aFlag) {
-		super.setVisible(aFlag);
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
 
-		if (aFlag) {
+		if (visible) {
 			updateView();
-			ticketListUpdater.start();
+			ticketList.setAutoUpdateCheck(true);
 		}
 		else {
-			ticketListUpdater.stop();
+			ticketList.setAutoUpdateCheck(false);
 		}
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
-		if (source == btnBackOffice) {
-			doShowBackoffice();
-		}
-		if (source == btnClockOut) {
-			doClockOut();
-		}
+
 		if (source == btnEditTicket) {
 			doEditTicket();
 		}
-		if (source == btnGroupSettle) {
+		else if (source == btnGroupSettle) {
 			doGroupSettle();
 		}
-		if (source == btnInfo) {
-			doShowTicketInfo();
+		else if (source == btnOrderInfo) {
+			doShowOrderInfo();
 		}
-		if (source == btnLogout) {
-			doLogout();
-		}
-		if (source == btnManager) {
-			doShowManagerWindow();
-		}
-		if (source == btnNewTicket) {
-			doCreateNewTicket();
-		}
-		if (source == btnPayout) {
-			doPayout();
-		}
-		if (source == btnPrintTicket) {
-			doPrintTicket();
-		}
-		if (source == btnReopenTicket) {
+		else if (source == btnReopenTicket) {
 			doReopenTicket();
 		}
-		if (source == btnSettleTicket) {
+		else if (source == btnSettleTicket) {
 			doSettleTicket();
 		}
-		if (source == btnShutdown) {
-			doShutdown();
-		}
-		if (source == btnSplitTicket) {
+		else if (source == btnSplitTicket) {
 			doSplitTicket();
-		}
-		if (source == btnTakeout) {
-			doTakeout();
-		}
-		if (source == btnVoidTicket) {
-			doVoidTicket();
 		}
 	}
 
-	private class TicketListUpdaterTask implements ActionListener {
+	public Ticket getFirstSelectedTicket() {
+		List<Ticket> selectedTickets = ticketList.getSelectedTickets();
 
-		public void actionPerformed(ActionEvent e) {
-			updateTicketList();
+		if (selectedTickets.size() == 0 || selectedTickets.size() > 1) {
+			POSMessageDialog.showMessage(this, Messages.getString("SwitchboardView.22")); //$NON-NLS-1$
+			return null;
 		}
 
+		Ticket ticket = selectedTickets.get(0);
+
+		return ticket;
+	}
+
+	public Ticket getSelectedTicket() {
+		List<Ticket> selectedTickets = ticketList.getSelectedTickets();
+
+		if (selectedTickets.size() == 0 || selectedTickets.size() > 1) {
+			return null;
+		}
+
+		Ticket ticket = selectedTickets.get(0);
+
+		return ticket;
+	}
+
+	@Override
+	public String getViewName() {
+		return VIEW_NAME;
+	}
+
+	@Override
+	public void ticketListUpdated() {
+		PaymentStatusFilter paymentStatusFilter = TerminalConfig.getPaymentStatusFilter();
+		String orderTypeFilter = TerminalConfig.getOrderTypeFilter();
+		String title = POSConstants.OPEN_TICKETS_AND_ACTIVITY + " [ FILTERS: " + paymentStatusFilter + ", " + orderTypeFilter + " ]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+		ticketsListPanelBorder.setTitle(title);
+
+	}
+
+	@Override
+	public void updateCustomerTicketList(Integer customerId) {
 	}
 }

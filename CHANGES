@@ -1,0 +1,32 @@
+CHANGES IN VERSION 1.3
+1. Removed support for javapos printing. Printing now is done via registered OS printer.
+2. Added support for gratuity when paying using card.
+3. Fix report printing of manager functions (Drawer pull report/Server tips report).
+4. Tips is now printed on receipt.
+5. Added a button to manually print to kitchen. From home screen, kitchen print can be done by selecting a ticket and then press PRINT TO KITCHEN.
+6. All printing are done using jasper reports, no javapos printing.
+
+Changes in version 1.1
+
+1. Make user id unique.
+2. Removed user type selection from login screen.
+3. Small change in Switchboard look.
+4. Disable print ticket when Finish is clicked in order screen.
+5. Fixed Sales summary report
+6. Fixed Sales Analysis report
+7. Fixed Menu Usage Report
+8. Fixed Server Productivity Report
+9. Fixed Journal Report
+
+Version 1.4
+
+1. Added support to use MySQL database. Database configuration dialog now shows a drop down of
+database chooses from which user can select the database to use. Currently only MySQL and 
+Derby is supported.
+2. Added "Create Database Schema" button in Database configuration dialog. This button
+creates necessary databse schema and populate initial values.
+3. Added "Save" button in Database configuration dialog, to save current configuration, without using "Test Connection".
+4. Faster database connection.
+5. Previously, it was not possible to switch database without restarting the application.
+This is now fixed. User can switch database any time from login screen by configuring database.
+1

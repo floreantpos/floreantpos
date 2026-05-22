@@ -1,107 +1,171 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.ui.dialog;
 
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JSeparator;
 
 import net.miginfocom.swing.MigLayout;
 
+import com.floreantpos.Messages;
 import com.floreantpos.main.Application;
-import com.floreantpos.model.Ticket;
-import com.floreantpos.print.PosPrintService;
+import com.floreantpos.model.PosTransaction;
+import com.floreantpos.report.ReceiptPrintService;
 import com.floreantpos.swing.PosButton;
+import com.floreantpos.util.NumberUtil;
 
 public class TransactionCompletionDialog extends POSDialog {
-	private List<Ticket> tickets;
+	//private List<Ticket> tickets;
 	private double tenderedAmount;
 	private double totalAmount;
 	private double paidAmount;
 	private double dueAmount;
-	private double dueAmountBeforePaid;
 	private double gratuityAmount;
-	
+	private double changeAmount;
+	private double feeAmount;
+
 	private JLabel lblTenderedAmount;
 	private JLabel lblTotalAmount;
 	private JLabel lblPaidAmount;
 	private JLabel lblDueAmount;
 	private JLabel lblChangeDue;
 	private JLabel lblGratuityAmount;
-	
-	private TransactionCompletionDialog(Frame parent) {
-		super(parent, true);
-		
-		setTitle("Transaction Completed");
-		
-		setLayout(new MigLayout("align 50% 0%, ins 20","[]20[]",""));
-		
-		add(createLabel("TOTAL AMOUNT:",JLabel.LEFT), "grow");
-		lblTotalAmount = createLabel("0.0",JLabel.RIGHT);
-		add(lblTotalAmount, "grow");
-		
-		add(createLabel("TENDERED AMOUNT:",JLabel.LEFT), "newline,grow");
-		lblTenderedAmount = createLabel("0.0",JLabel.RIGHT);
-		add(lblTenderedAmount, "grow");
-		
-		add(new JSeparator(), "newline,span, grow");
-		
-		add(createLabel("PAID AMOUNT:",JLabel.LEFT), "newline,grow");
-		lblPaidAmount = createLabel("0.0",JLabel.RIGHT);
-		add(lblPaidAmount, "grow");
+	private JLabel lblFeeAmount;
 
-		add(createLabel("DUE AMOUNT:",JLabel.LEFT), "newline,grow");
-		lblDueAmount = createLabel("0.0",JLabel.RIGHT);
-		add(lblDueAmount, "grow");
-		
-		add(new JSeparator(), "newline,span, grow");
-		
-		add(createLabel("GRATUITY AMOUNT:",JLabel.LEFT), "newline,grow");
-		lblGratuityAmount = createLabel("0.0",JLabel.RIGHT);
-		add(lblGratuityAmount, "grow");
-		
-		add(new JSeparator(), "newline,span, grow");
-		
-		add(createLabel("CHANGE DUE:",JLabel.LEFT), "grow");
-		lblChangeDue = createLabel("0.0", JLabel.RIGHT);
-		add(lblChangeDue, "grow");
-		
-		add(new JSeparator(), "sg mygroup,newline,span,grow");
-		PosButton btnClose = new PosButton("CLOSE");
+	private PosTransaction completedTransaction;
+	private boolean isCard;
+
+	public TransactionCompletionDialog(PosTransaction transaction) {
+		this.completedTransaction = transaction;
+		isCard = completedTransaction.isCard();
+		initializeComponents();
+		//setResizable(false);
+	}
+
+	public TransactionCompletionDialog(List<PosTransaction> transaction) {
+		initializeComponents();
+		//setResizable(false);
+	}
+
+	private void initializeComponents() {
+		setTitle(com.floreantpos.POSConstants.TRANSACTION_COMPLETED);
+
+		setLayout(new MigLayout("align 50% 0%, ins 20", "[]20[]", "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+		add(createLabel(Messages.getString("TransactionCompletionDialog.3") + ":", JLabel.LEFT), "grow"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		lblTotalAmount = createLabel("0.0", JLabel.RIGHT); //$NON-NLS-1$
+		add(lblTotalAmount, "span, grow"); //$NON-NLS-1$
+
+		add(createLabel(Messages.getString("TransactionCompletionDialog.8") + ":", JLabel.LEFT), "newline,grow"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		lblTenderedAmount = createLabel("0.0", JLabel.RIGHT); //$NON-NLS-1$
+		add(lblTenderedAmount, "span, grow"); //$NON-NLS-1$
+
+		add(new JSeparator(), "newline,span, grow"); //$NON-NLS-1$
+
+		add(createLabel(Messages.getString("TransactionCompletionDialog.14") + ":", JLabel.LEFT), "newline,grow"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		lblPaidAmount = createLabel("0.0", JLabel.RIGHT); //$NON-NLS-1$
+		add(lblPaidAmount, "span, grow"); //$NON-NLS-1$
+
+		add(createLabel(Messages.getString("TransactionCompletionDialog.19") + ":", JLabel.LEFT), "newline,grow"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		lblDueAmount = createLabel("0.0", JLabel.RIGHT); //$NON-NLS-1$
+		add(lblDueAmount, "span, grow"); //$NON-NLS-1$
+
+		add(new JSeparator(), "newline,span, grow"); //$NON-NLS-1$
+
+		add(createLabel(Messages.getString("TransactionCompletionDialog.25") + ":", JLabel.LEFT), "newline,grow"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		lblGratuityAmount = createLabel("0.0", JLabel.RIGHT); //$NON-NLS-1$
+		add(lblGratuityAmount, "span, grow"); //$NON-NLS-1$
+
+		add(new JSeparator(), "newline,span, grow"); //$NON-NLS-1$
+
+		add(createLabel(Messages.getString("TransactionCompletionDialog.42") + ":", JLabel.LEFT), "newline,grow"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		lblFeeAmount = createLabel("0.0", JLabel.RIGHT);
+		add(lblFeeAmount, "span,grow");
+
+		add(new JSeparator(), "newline,span, grow"); //$NON-NLS-1$
+
+		add(createLabel(Messages.getString("TransactionCompletionDialog.31") + ":", JLabel.LEFT), "grow"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		lblChangeDue = createLabel("0.0", JLabel.RIGHT); //$NON-NLS-1$
+		add(lblChangeDue, "span, grow"); //$NON-NLS-1$
+
+		add(new JSeparator(), "sg mygroup,newline,span,grow"); //$NON-NLS-1$
+		PosButton btnClose = new PosButton(Messages.getString("TransactionCompletionDialog.37")); //$NON-NLS-1$
 		btnClose.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 				dispose();
 			}
-			
+
 		});
 
-		PosButton btnPrintClose = new PosButton("PRINT & CLOSE");
-		btnPrintClose.addActionListener(new ActionListener() {
+		PosButton btnPrintStoreCopy = new PosButton(Messages.getString("TransactionCompletionDialog.38")); //$NON-NLS-1$
+		btnPrintStoreCopy.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					for (Ticket ticket : tickets) {
-//						PosPrintService.printMoneyReceipt(ticket);
-						PosPrintService.printTicket(ticket);
-					}
-				}catch(Exception ee) {
-					POSMessageDialog.showError(Application.getPosWindow(), "There was an error while printing money receipt", ee);
+
+					ReceiptPrintService.printTransaction(completedTransaction, true, false);
+
+				} catch (Exception ee) {
+					POSMessageDialog.showError(Application.getPosWindow(), Messages.getString("TransactionCompletionDialog.39"), ee); //$NON-NLS-1$
+				}
+				//dispose();
+			}
+		});
+
+		PosButton btnPrintAllCopy = new PosButton(Messages.getString("TransactionCompletionDialog.40")); //$NON-NLS-1$
+		btnPrintAllCopy.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+
+					ReceiptPrintService.printTransaction(completedTransaction, true, true);
+
+				} catch (Exception ee) {
+					POSMessageDialog.showError(Application.getPosWindow(), Messages.getString("TransactionCompletionDialog.41"), ee); //$NON-NLS-1$
 				}
 				dispose();
 			}
 		});
-		
-		add(btnPrintClose, "newline,skip, align 100%,h 50, w 120");
-		add(btnClose, "skip, align 100%,h 50, w 120");
-		setResizable(false);
+
+		JPanel p = new JPanel();
+
+		if (isCard) {
+			p.add(btnPrintAllCopy, "newline,skip, h 50"); //$NON-NLS-1$
+			p.add(btnPrintStoreCopy, "skip, h 50"); //$NON-NLS-1$
+			p.add(btnClose, "skip, h 50"); //$NON-NLS-1$
+		}
+		else {
+			btnPrintStoreCopy.setText(Messages.getString("TransactionCompletionDialog.0")); //$NON-NLS-1$
+			p.add(btnPrintStoreCopy, "skip, h 50"); //$NON-NLS-1$
+			p.add(btnClose, "skip, h 50"); //$NON-NLS-1$
+		}
+
+		add(p, "newline, span 2, grow, gaptop 15px"); //$NON-NLS-1$
 	}
-	
+
 	protected JLabel createLabel(String text, int alignment) {
 		JLabel label = new JLabel(text);
-		label.setFont(new java.awt.Font("Tahoma", 1, 36));
-		label.setForeground(new java.awt.Color(255, 102, 0));
+		label.setFont(new java.awt.Font("Tahoma", 1, 24)); //$NON-NLS-1$
+		//label.setForeground(new java.awt.Color(255, 102, 0));
 		label.setHorizontalAlignment(alignment);
 		label.setText(text);
 		return label;
@@ -116,36 +180,21 @@ public class TransactionCompletionDialog extends POSDialog {
 	}
 
 	public void updateView() {
-		lblTotalAmount.setText(Application.formatNumber(totalAmount));
-		lblTenderedAmount.setText(Application.formatNumber(tenderedAmount));
-		lblPaidAmount.setText(Application.formatNumber(paidAmount));
-		lblDueAmount.setText(Application.formatNumber(dueAmount));
-		lblGratuityAmount.setText(Application.formatNumber(gratuityAmount));
-		
-		double changeDueAmount = tenderedAmount - dueAmountBeforePaid;
-		if(changeDueAmount < 0) {
-			changeDueAmount = 0;
-		}
-		lblChangeDue.setText(Application.formatNumber(changeDueAmount));
-	}
-	
-	private static TransactionCompletionDialog instance;
-	
-	public static TransactionCompletionDialog getInstance() {
-		if(instance == null) {
-			instance = new TransactionCompletionDialog(Application.getPosWindow());
-		}
-		return instance;
+		lblTotalAmount.setText(NumberUtil.formatNumber(totalAmount));
+		lblTenderedAmount.setText(NumberUtil.formatNumber(tenderedAmount));
+		lblPaidAmount.setText(NumberUtil.formatNumber(paidAmount));
+		lblDueAmount.setText(NumberUtil.formatNumber(dueAmount));
+		lblGratuityAmount.setText(NumberUtil.formatNumber(gratuityAmount));
+		lblFeeAmount.setText(NumberUtil.formatNumber(feeAmount));
+		lblChangeDue.setText(NumberUtil.formatNumber(changeAmount));
 	}
 
-	public double getDueAmountBeforePaid() {
-		return dueAmountBeforePaid;
+	public double getFeeAmount() {
+		return feeAmount;
 	}
-
-	public void setDueAmountBeforePaid(double dueAmountBeforePaid) {
-		this.dueAmountBeforePaid = dueAmountBeforePaid;
+	public void setFeeAmount(double feeAmount) {
+		this.feeAmount = feeAmount;
 	}
-
 	public double getDueAmount() {
 		return dueAmount;
 	}
@@ -178,11 +227,23 @@ public class TransactionCompletionDialog extends POSDialog {
 		this.gratuityAmount = gratuityAmount;
 	}
 
-	public List<Ticket> getTickets() {
-		return tickets;
+	public double getChangeAmount() {
+		return changeAmount;
 	}
 
-	public void setTickets(List<Ticket> tickets) {
-		this.tickets = tickets;
+	public void setChangeAmount(double changeAmount) {
+		this.changeAmount = changeAmount;
+	}
+
+	public void setCompletedTransaction(PosTransaction completedTransaction) {
+		this.completedTransaction = completedTransaction;
+	}
+
+	public boolean isCard() {
+		return isCard;
+	}
+
+	public void setCard(boolean isCard) {
+		this.isCard = isCard;
 	}
 }

@@ -1,0 +1,22 @@
+# Build output
+target/
+
+# Maven
+.m2/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Runtime databases / logs
+posdb/
+posdb-training/
+derby.log
+output.log
+error.log
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

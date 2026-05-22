@@ -1,3 +1,20 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 /*
  * RestaurantPropertyDialog.java
  *
@@ -6,7 +23,7 @@
 
 package com.floreantpos.bo.ui;
 
-import com.floreantpos.main.Application;
+import com.floreantpos.POSConstants;
 import com.floreantpos.model.Restaurant;
 import com.floreantpos.model.dao.RestaurantDAO;
 import com.floreantpos.ui.dialog.POSDialog;
@@ -22,9 +39,9 @@ public class RestaurantPropertyDialog extends POSDialog {
 
 	/** Creates new form RestaurantPropertyDialog */
 	public RestaurantPropertyDialog() {
-		super(Application.getInstance().getBackOfficeWindow(), true);
+		super();
 		
-		setTitle("Configure");
+		setTitle(com.floreantpos.POSConstants.CONFIGURE);
 		
 		initComponents();
 
@@ -62,24 +79,24 @@ public class RestaurantPropertyDialog extends POSDialog {
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-		jLabel1.setText("Restaurant Name:");
+		jLabel1.setText(com.floreantpos.POSConstants.RESTAURANT_NAME + POSConstants.COLON);
 
-		jLabel2.setText("Address Line1:");
+		jLabel2.setText(com.floreantpos.POSConstants.ADDRESS_LINE1 + POSConstants.COLON);
 
-		jLabel3.setText("Address Line2:");
+		jLabel3.setText(com.floreantpos.POSConstants.ADDRESS_LINE2 + POSConstants.COLON);
 
-		jLabel4.setText("Capacity:");
+		jLabel4.setText(com.floreantpos.POSConstants.CAPACITY + POSConstants.COLON);
 
-		jLabel5.setText("Tables:");
+		jLabel5.setText(com.floreantpos.POSConstants.TABLES + POSConstants.COLON);
 
-		btnCancel.setText("Close");
+		btnCancel.setText(com.floreantpos.POSConstants.CLOSE);
 		btnCancel.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				doClose(evt);
 			}
 		});
 
-		btnOk.setText("Save");
+		btnOk.setText(com.floreantpos.POSConstants.SAVE);
 		btnOk.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				doSave(evt);
@@ -140,14 +157,14 @@ public class RestaurantPropertyDialog extends POSDialog {
 			try {
 				capacity = Integer.parseInt(tfCapacity.getText());
 			} catch (Exception e) {
-				POSMessageDialog.showError(this, "Capacity is not valid.");
+				POSMessageDialog.showError(this, com.floreantpos.POSConstants.CAPACITY_IS_NOT_VALID_);
 				return;
 			}
 
 			try {
 				tables = Integer.parseInt(tfTables.getText());
 			} catch (Exception e) {
-				POSMessageDialog.showError(this, "Number of tables is not valid.");
+				POSMessageDialog.showError(this, com.floreantpos.POSConstants.NUMBER_OF_TABLES_IS_NOT_VALID);
 				return;
 			}
 
@@ -159,7 +176,7 @@ public class RestaurantPropertyDialog extends POSDialog {
 
 			dao.saveOrUpdate(restaurant);
 		} catch (Exception e) {
-			POSMessageDialog.showError(this, POSMessageDialog.ERROR_MESSAGE, e);
+			POSMessageDialog.showError(this, POSConstants.ERROR_MESSAGE, e);
 		}
 	}//GEN-LAST:event_doSave
 

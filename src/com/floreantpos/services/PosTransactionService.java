@@ -1,8 +1,23 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.services;
 
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -10,146 +25,93 @@ import org.hibernate.Transaction;
 import com.floreantpos.main.Application;
 import com.floreantpos.model.ActionHistory;
 import com.floreantpos.model.CashTransaction;
-import com.floreantpos.model.CreditCardTransaction;
-import com.floreantpos.model.DebitCardTransaction;
 import com.floreantpos.model.GiftCertificateTransaction;
 import com.floreantpos.model.Gratuity;
+import com.floreantpos.model.OrderType;
+import com.floreantpos.model.PaymentType;
 import com.floreantpos.model.PosTransaction;
 import com.floreantpos.model.RefundTransaction;
 import com.floreantpos.model.Terminal;
 import com.floreantpos.model.Ticket;
+import com.floreantpos.model.TransactionType;
 import com.floreantpos.model.User;
+import com.floreantpos.model.VoidTransaction;
 import com.floreantpos.model.dao.ActionHistoryDAO;
 import com.floreantpos.model.dao.GenericDAO;
+import com.floreantpos.model.dao.TicketDAO;
+import com.floreantpos.report.ReceiptPrintService;
+import com.floreantpos.util.NumberUtil;
 
 public class PosTransactionService {
 	private static PosTransactionService paymentService = new PosTransactionService();
 
-	public void settleTickets(List<Ticket> tickets, double tenderedAmount, double gratuityAmount, PosTransaction transaction, String cardType, String cardAuthorizationCode) throws Exception {
+	public void settleTicket(Ticket ticket, PosTransaction transaction) throws Exception {
 		Application application = Application.getInstance();
 		User currentUser = Application.getCurrentUser();
-		Terminal terminal = application.getTerminal();
+		if (currentUser == null) {
+			currentUser = ticket.getOwner();
+		}
+		Terminal terminal = application.refreshAndGetTerminal();
 
 		Session session = null;
 		Transaction tx = null;
 
 		GenericDAO dao = new GenericDAO();
-		
+
 		try {
 			Date currentDate = new Date();
-			boolean gratuityPaid = false;
-			
-			session = dao.getSession();
+
+			session = dao.createNewSession();
 			tx = session.beginTransaction();
-			
-			double totalDueAmount = 0;
-			double cashBackAmount = 0;
-			for (Ticket ticket : tickets) {
-				totalDueAmount += ticket.getDueAmount();
+
+			ticket.setVoided(false);
+			ticket.setDrawerResetted(false);
+			ticket.setTerminal(terminal);
+			ticket.setPaidAmount(ticket.getPaidAmount() + transaction.getAmount());
+
+			ticket.calculatePrice();
+
+			if (ticket.getDueAmount() == 0.0) {
+				ticket.setPaid(true);
+				closeTicketIfApplicable(ticket, currentDate);
 			}
-			cashBackAmount = tenderedAmount - totalDueAmount;
-			if(cashBackAmount < 0) {
-				cashBackAmount = 0;
+			else {
+				ticket.setPaid(false);
+				ticket.setClosed(false);
 			}
-			
-			for (Iterator it = tickets.iterator(); it.hasNext(); ) {
-				Ticket ticket = (Ticket) it.next();
-				
-				ticket.setVoided(false);
-				ticket.setDrawerResetted(false);
-				ticket.setClosingDate(currentDate);
-				ticket.setTerminal(terminal);
-				ticket.setCardNumber(cardAuthorizationCode);
-				
-				double paidAmount = Double.parseDouble(Application.formatNumber(ticket.getPaidAmount()));
-				double dueAmount = Double.parseDouble(Application.formatNumber(ticket.getDueAmount()));
-				
-				if(tenderedAmount >= dueAmount) {
-					paidAmount += dueAmount;
-					tenderedAmount -= dueAmount;
-					dueAmount = 0;
-					
-					ticket.setPaid(true);
-					ticket.setClosed(true);
-				}
-				else {
-					paidAmount += tenderedAmount;
-					dueAmount -= tenderedAmount;
-					
-					ticket.setPaid(false);
-					ticket.setClosed(false);
-				}
-				ticket.setPaidAmount(paidAmount);
-				ticket.setDueAmount(dueAmount);
-				
-				if (!gratuityPaid && gratuityAmount > 0) {
-					Gratuity gratuity = new Gratuity();
-					gratuity.setAmount(gratuityAmount);
-					gratuity.setOwner(ticket.getOwner());
-					gratuity.setPaid(false);
-					gratuity.setTicket(ticket);
-					gratuity.setTerminal(ticket.getTerminal());
-					
-					ticket.setGratuity(gratuity);
-					
-					gratuityPaid = true;
-				}
 
-				PosTransaction posTransaction = null;
-				if (transaction instanceof CashTransaction) {
-					posTransaction = new CashTransaction();
-					
-					Double currentBalance = terminal.getCurrentBalance();
-					Double totalPrice = ticket.getTotalAmount();
-					double newBalance = currentBalance + totalPrice;
+			transaction.setTransactionType(TransactionType.CREDIT.name());
+			transaction.setPaymentType(transaction.getPaymentType());
+			transaction.setTerminal(terminal);
+			transaction.setUser(currentUser);
+			transaction.setTransactionTime(currentDate);
 
-					terminal.setCurrentBalance(newBalance);
-					
-					ticket.setTransactionType(PosTransaction.TYPE_CASH);
-				}
-				else if (transaction instanceof CreditCardTransaction) {
-					posTransaction = new CreditCardTransaction();
-					((CreditCardTransaction) posTransaction).setCardNumber(cardAuthorizationCode);
-					((CreditCardTransaction) posTransaction).setCardType(cardType);
-					ticket.setCardType(cardType);
-					ticket.setTransactionType(PosTransaction.TYPE_CREDIT_CARD);
-				}
-				else if (transaction instanceof DebitCardTransaction) {
-					posTransaction = new DebitCardTransaction();
-					((DebitCardTransaction) posTransaction).setCardNumber(cardAuthorizationCode);
-					((DebitCardTransaction) posTransaction).setCardType(cardType);
-					ticket.setCardType(cardType);
-					ticket.setTransactionType(PosTransaction.TYPE_DEBIT_CARD);
-				}
-				else if (transaction instanceof GiftCertificateTransaction) {
-					posTransaction = transaction;
-					GiftCertificateTransaction giftCertificateTransaction = (GiftCertificateTransaction) posTransaction;
-						
-					Double currentBalance = terminal.getCurrentBalance();
-					double newBalance = currentBalance - giftCertificateTransaction.getCashBackAmount();
-					terminal.setCurrentBalance(newBalance);
+			ticket.addTotransactions(transaction);
 
-					ticket.setTransactionType(PosTransaction.TYPE_GIFT_CERT);
-				}
-				
-				posTransaction.setTicket(ticket);
-				posTransaction.setSubtotalAmount(ticket.getSubtotalAmount());
-				posTransaction.setDiscountAmount(ticket.getDiscountAmount());
-				posTransaction.setTaxAmount(ticket.getTaxAmount());
-				posTransaction.setTotalAmount(ticket.getTotalAmount());
-				
-				if(ticket.getGratuity() != null) {
-					posTransaction.setGratuityAmount(ticket.getGratuity().getAmount());
-				}
-
-				posTransaction.setTerminal(terminal);
-				posTransaction.setUser(currentUser);
-				posTransaction.setTransactionTime(currentDate);
-				
-				dao.saveOrUpdate(ticket, session);
-				dao.saveOrUpdate(posTransaction, session);
-				dao.saveOrUpdate(terminal, session);
+			if (ticket.getOrderType().getName() == OrderType.BAR_TAB) {
+				ticket.removeProperty(Ticket.PROPERTY_PAYMENT_METHOD);
+				ticket.removeProperty(Ticket.PROPERTY_CARD_NAME);
+				ticket.removeProperty(Ticket.PROPERTY_CARD_TRANSACTION_ID);
+				ticket.removeProperty(Ticket.PROPERTY_CARD_TRACKS);
+				ticket.removeProperty(Ticket.PROPERTY_CARD_READER);
+				ticket.removeProperty(Ticket.PROPERTY_ADVANCE_PAYMENT);
+				ticket.removeProperty(Ticket.PROPERTY_CARD_NUMBER);
+				ticket.removeProperty(Ticket.PROPERTY_CARD_EXP_YEAR);
+				ticket.removeProperty(Ticket.PROPERTY_CARD_EXP_MONTH);
+				ticket.removeProperty(Ticket.PROPERTY_CARD_AUTH_CODE);
 			}
+
+			adjustTerminalBalance(transaction);
+
+			session.update(terminal);
+			//session.saveOrUpdate(ticket);
+			TicketDAO.getInstance().saveOrUpdate(ticket, session);
+
+			//				User assignedDriver = ticket.getAssignedDriver();
+			//				if(assignedDriver != null) {
+			//					assignedDriver.setAvailableForDelivery(true);
+			//					UserDAO.getInstance().saveOrUpdate(assignedDriver, session);
+			//				}
 
 			tx.commit();
 		} catch (Exception e) {
@@ -161,19 +123,110 @@ public class PosTransactionService {
 		} finally {
 			dao.closeSession(session);
 		}
-		
-		for (Ticket ticket : tickets) {
-//			SETTLE ACTION
-			String actionMessage = "CHK#:" + ticket.getId();
-			actionMessage += "; TOTAL:" + Application.formatNumber(ticket.getTotalAmount());
-			ActionHistoryDAO.getInstance().saveHistory(Application.getCurrentUser(), ActionHistory.SETTLE_CHECK, actionMessage);
+
+		//			SETTLE ACTION
+		String actionMessage = com.floreantpos.POSConstants.RECEIPT_REPORT_TICKET_NO_LABEL + ":" + ticket.getId(); //$NON-NLS-1$
+		actionMessage += ";" + com.floreantpos.POSConstants.TOTAL + ":" + NumberUtil.formatNumber(ticket.getTotalAmount()); //$NON-NLS-1$ //$NON-NLS-2$
+		ActionHistoryDAO.getInstance().saveHistory(Application.getCurrentUser(), ActionHistory.SETTLE_CHECK, actionMessage);
+	}
+
+	public void bookBartabTicket(Ticket ticket, PosTransaction transaction, boolean closed) throws Exception {
+		Application application = Application.getInstance();
+		User currentUser = Application.getCurrentUser();
+		Terminal terminal = application.refreshAndGetTerminal();
+
+		Session session = null;
+		Transaction tx = null;
+
+		GenericDAO dao = new GenericDAO();
+
+		try {
+			Date currentDate = new Date();
+
+			session = dao.createNewSession();
+			tx = session.beginTransaction();
+
+			ticket.setVoided(false);
+			ticket.setDrawerResetted(false);
+			ticket.setTerminal(terminal);
+			ticket.calculatePrice();
+
+			if (closed) {
+				ticket.setPaid(true);
+				closeTicketIfApplicable(ticket, currentDate);
+			}
+			else {
+				ticket.setPaid(false);
+				ticket.setClosed(false);
+			}
+
+			transaction.setTransactionType(TransactionType.CREDIT.name());
+			transaction.setPaymentType(transaction.getPaymentType());
+			transaction.setTerminal(terminal);
+			transaction.setUser(currentUser);
+			transaction.setTransactionTime(currentDate);
+
+			ticket.addTotransactions(transaction);
+
+			TicketDAO.getInstance().saveOrUpdate(ticket, session);
+			tx.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				tx.rollback();
+			} catch (Exception x) {
+			}
+			throw e;
+		} finally {
+			dao.closeSession(session);
+		}
+
+		String actionMessage = com.floreantpos.POSConstants.RECEIPT_REPORT_TICKET_NO_LABEL + ":" + ticket.getId(); //$NON-NLS-1$
+		actionMessage += ";" + com.floreantpos.POSConstants.TOTAL + ":" + NumberUtil.formatNumber(ticket.getTotalAmount()); //$NON-NLS-1$ //$NON-NLS-2$
+		ActionHistoryDAO.getInstance().saveHistory(Application.getCurrentUser(), ActionHistory.SETTLE_CHECK, actionMessage);
+	}
+
+	public static void adjustTerminalBalance(PosTransaction transaction) {
+		Terminal terminal = transaction.getTerminal();
+
+		if (transaction instanceof CashTransaction) {
+
+			double currentBalance = terminal.getCurrentBalance();
+			double newBalance = currentBalance + transaction.getAmount();
+
+			terminal.setCurrentBalance(newBalance);
+
+		}
+		else if (transaction instanceof GiftCertificateTransaction) {
+
+			double currentBalance = terminal.getCurrentBalance();
+			double newBalance = currentBalance - transaction.getGiftCertCashBackAmount();
+
+			terminal.setCurrentBalance(newBalance);
+
+		}
+		else if (transaction instanceof VoidTransaction) {
+
+			double currentBalance = terminal.getCurrentBalance();
+			double newBalance = currentBalance - transaction.getAmount();
+
+			terminal.setCurrentBalance(newBalance);
+
 		}
 	}
 
-	public void refundTicket(Ticket ticket) throws Exception {
-		Application application = Application.getInstance();
+	private void closeTicketIfApplicable(Ticket ticket, Date currentDate) {
+		OrderType ticketType = ticket.getOrderType();
+
+		if (ticketType.isCloseOnPaid()) {//fix
+			ticket.setClosed(true);
+			ticket.setClosingDate(currentDate);
+		}
+	}
+
+	public void refundTicket(Ticket ticket, final double refundAmount) throws Exception {
 		User currentUser = Application.getCurrentUser();
-		Terminal terminal = application.getTerminal();
+		Terminal terminal = ticket.getTerminal();
 
 		Session session = null;
 		Transaction tx = null;
@@ -182,38 +235,46 @@ public class PosTransactionService {
 
 		try {
 			Double currentBalance = terminal.getCurrentBalance();
-			Double totalPrice = ticket.getTotalAmount();
-			double newBalance = currentBalance - totalPrice;
+			double newBalance = currentBalance - refundAmount;
 			terminal.setCurrentBalance(newBalance);
 
-			ticket.setVoided(false);
-			ticket.setPaid(false);
-			ticket.setClosed(false);
-			ticket.setDrawerResetted(false);
-			ticket.setClosingDate(null);
-			ticket.setReOpened(true);
-			ticket.setTerminal(terminal);
+			Gratuity gratuity = ticket.getGratuity();
+			if (gratuity != null) {
+				double diff = ticket.getPaidAmount() - refundAmount;
+				if (diff == 0 || diff > gratuity.getAmount()) {
+					gratuity.setRefunded(true);
+				}
+			}
 
 			RefundTransaction posTransaction = new RefundTransaction();
 			posTransaction.setTicket(ticket);
-
-			posTransaction.setSubtotalAmount(ticket.getSubtotalAmount());
-			posTransaction.setDiscountAmount(ticket.getDiscountAmount());
-			posTransaction.setTaxAmount(ticket.getTaxAmount());
-			posTransaction.setTotalAmount(ticket.getTotalAmount());
-
+			posTransaction.setPaymentType(PaymentType.CASH.name());
+			posTransaction.setTransactionType(TransactionType.DEBIT.name());
+			posTransaction.setAmount(refundAmount);
 			posTransaction.setTerminal(terminal);
 			posTransaction.setUser(currentUser);
 			posTransaction.setTransactionTime(new Date());
 
-			session = dao.getSession();
+			ticket.setVoided(false);
+			ticket.setRefunded(true);
+			ticket.setClosed(true);
+			ticket.setDrawerResetted(false);
+			ticket.setClosingDate(new Date());
+
+			ticket.addTotransactions(posTransaction);
+
+			session = dao.createNewSession();
 			tx = session.beginTransaction();
 
 			dao.saveOrUpdate(ticket, session);
-			dao.saveOrUpdate(posTransaction, session);
 			dao.saveOrUpdate(terminal, session);
 
 			tx.commit();
+
+			//String title = "- REFUND RECEIPT -";
+			//String data = "Ticket #" + ticket.getId() + ", amount " + refundAmount + " was refunded.";
+
+			ReceiptPrintService.printRefundTicket(ticket, posTransaction);
 
 		} catch (Exception e) {
 			try {

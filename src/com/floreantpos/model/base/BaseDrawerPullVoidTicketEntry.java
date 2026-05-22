@@ -1,6 +1,22 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.model.base;
 
-import java.lang.Comparable;
 import java.io.Serializable;
 
 
@@ -15,12 +31,12 @@ import java.io.Serializable;
 
 public abstract class BaseDrawerPullVoidTicketEntry  implements Comparable, Serializable {
 
-	public static String REF = "DrawerPullVoidTicketEntry";
-	public static String PROP_AMOUNT = "amount";
-	public static String PROP_QUANTITY = "quantity";
-	public static String PROP_HAST = "hast";
-	public static String PROP_CODE = "code";
-	public static String PROP_REASON = "reason";
+	public static String REF = "DrawerPullVoidTicketEntry"; //$NON-NLS-1$
+	public static String PROP_AMOUNT = "amount"; //$NON-NLS-1$
+	public static String PROP_HAST = "hast"; //$NON-NLS-1$
+	public static String PROP_QUANTITY = "quantity"; //$NON-NLS-1$
+	public static String PROP_CODE = "code"; //$NON-NLS-1$
+	public static String PROP_REASON = "reason"; //$NON-NLS-1$
 
 
 	// constructors
@@ -33,11 +49,11 @@ public abstract class BaseDrawerPullVoidTicketEntry  implements Comparable, Seri
 
 
 	// fields
-	private java.lang.Integer code;
-	private java.lang.String reason;
-	private java.lang.String hast;
-	private java.lang.Integer quantity;
-	private java.lang.Double amount;
+		protected java.lang.Integer code;
+		protected java.lang.String reason;
+		protected java.lang.String hast;
+		protected java.lang.Integer quantity;
+		protected java.lang.Double amount;
 
 
 
@@ -48,8 +64,8 @@ public abstract class BaseDrawerPullVoidTicketEntry  implements Comparable, Seri
 	 * Return the value associated with the column: code
 	 */
 	public java.lang.Integer getCode () {
-			return code == null ? Integer.valueOf(0) : code;
-	}
+									return code == null ? Integer.valueOf(0) : code;
+					}
 
 	/**
 	 * Set the value related to the column: code
@@ -65,8 +81,8 @@ public abstract class BaseDrawerPullVoidTicketEntry  implements Comparable, Seri
 	 * Return the value associated with the column: reason
 	 */
 	public java.lang.String getReason () {
-			return reason;
-	}
+					return reason;
+			}
 
 	/**
 	 * Set the value related to the column: reason
@@ -82,8 +98,8 @@ public abstract class BaseDrawerPullVoidTicketEntry  implements Comparable, Seri
 	 * Return the value associated with the column: hast
 	 */
 	public java.lang.String getHast () {
-			return hast;
-	}
+					return hast;
+			}
 
 	/**
 	 * Set the value related to the column: hast
@@ -99,8 +115,8 @@ public abstract class BaseDrawerPullVoidTicketEntry  implements Comparable, Seri
 	 * Return the value associated with the column: quantity
 	 */
 	public java.lang.Integer getQuantity () {
-			return quantity == null ? Integer.valueOf(0) : quantity;
-	}
+									return quantity == null ? Integer.valueOf(0) : quantity;
+					}
 
 	/**
 	 * Set the value related to the column: quantity
@@ -116,8 +132,8 @@ public abstract class BaseDrawerPullVoidTicketEntry  implements Comparable, Seri
 	 * Return the value associated with the column: amount
 	 */
 	public java.lang.Double getAmount () {
-					return amount == null ? Double.valueOf(0) : amount;
-			}
+									return amount == null ? Double.valueOf(0) : amount;
+					}
 
 	/**
 	 * Set the value related to the column: amount

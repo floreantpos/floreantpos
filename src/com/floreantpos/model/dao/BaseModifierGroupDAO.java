@@ -2,6 +2,7 @@ package com.floreantpos.model.dao;
 
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
+import com.floreantpos.model.dao.ModifierGroupDAO;
 import org.hibernate.criterion.Order;
 
 /**
@@ -12,18 +13,18 @@ public abstract class BaseModifierGroupDAO extends com.floreantpos.model.dao._Ro
 	// query name references
 
 
-	//public static ModifierGroupDAO instance;
+	public static ModifierGroupDAO instance;
 
 	/**
 	 * Return a singleton of the DAO
 	 */
-	//public static ModifierGroupDAO getInstance () {
-	//	if (null == instance) instance = new ModifierGroupDAO();
-	//	return instance;
-	//}
+	public static ModifierGroupDAO getInstance () {
+		if (null == instance) instance = new ModifierGroupDAO();
+		return instance;
+	}
 
 	public Class getReferenceClass () {
-		return com.floreantpos.model.MenuModifierGroup.class;
+		return com.floreantpos.model.ModifierGroup.class;
 	}
 
     public Order getDefaultOrder () {
@@ -33,33 +34,33 @@ public abstract class BaseModifierGroupDAO extends com.floreantpos.model.dao._Ro
 	/**
 	 * Cast the object as a com.floreantpos.model.ModifierGroup
 	 */
-	public com.floreantpos.model.MenuModifierGroup cast (Object object) {
-		return (com.floreantpos.model.MenuModifierGroup) object;
+	public com.floreantpos.model.ModifierGroup cast (Object object) {
+		return (com.floreantpos.model.ModifierGroup) object;
 	}
 
-	public com.floreantpos.model.MenuModifierGroup get(java.lang.Integer key)
-	{
-		return (com.floreantpos.model.MenuModifierGroup) get(getReferenceClass(), key);
+	public com.floreantpos.model.ModifierGroup get(java.lang.Integer key)
+		throws org.hibernate.HibernateException {
+		return (com.floreantpos.model.ModifierGroup) get(getReferenceClass(), key);
 	}
 
-	public com.floreantpos.model.MenuModifierGroup get(java.lang.Integer key, Session s)
-	{
-		return (com.floreantpos.model.MenuModifierGroup) get(getReferenceClass(), key, s);
+	public com.floreantpos.model.ModifierGroup get(java.lang.Integer key, Session s)
+		throws org.hibernate.HibernateException {
+		return (com.floreantpos.model.ModifierGroup) get(getReferenceClass(), key, s);
 	}
 
-	public com.floreantpos.model.MenuModifierGroup load(java.lang.Integer key)
-	{
-		return (com.floreantpos.model.MenuModifierGroup) load(getReferenceClass(), key);
+	public com.floreantpos.model.ModifierGroup load(java.lang.Integer key)
+		throws org.hibernate.HibernateException {
+		return (com.floreantpos.model.ModifierGroup) load(getReferenceClass(), key);
 	}
 
-	public com.floreantpos.model.MenuModifierGroup load(java.lang.Integer key, Session s)
-	{
-		return (com.floreantpos.model.MenuModifierGroup) load(getReferenceClass(), key, s);
+	public com.floreantpos.model.ModifierGroup load(java.lang.Integer key, Session s)
+		throws org.hibernate.HibernateException {
+		return (com.floreantpos.model.ModifierGroup) load(getReferenceClass(), key, s);
 	}
 
-	public com.floreantpos.model.MenuModifierGroup loadInitialize(java.lang.Integer key, Session s) 
-	{ 
-		com.floreantpos.model.MenuModifierGroup obj = load(key, s); 
+	public com.floreantpos.model.ModifierGroup loadInitialize(java.lang.Integer key, Session s) 
+			throws org.hibernate.HibernateException { 
+		com.floreantpos.model.ModifierGroup obj = load(key, s); 
 		if (!Hibernate.isInitialized(obj)) {
 			Hibernate.initialize(obj);
 		} 
@@ -71,14 +72,14 @@ public abstract class BaseModifierGroupDAO extends com.floreantpos.model.dao._Ro
 	/**
 	 * Return all objects related to the implementation of this DAO with no filter.
 	 */
-	public java.util.List<com.floreantpos.model.MenuModifierGroup> findAll () {
+	public java.util.List<com.floreantpos.model.ModifierGroup> findAll () {
 		return super.findAll();
 	}
 
 	/**
 	 * Return all objects related to the implementation of this DAO with no filter.
 	 */
-	public java.util.List<com.floreantpos.model.MenuModifierGroup> findAll (Order defaultOrder) {
+	public java.util.List<com.floreantpos.model.ModifierGroup> findAll (Order defaultOrder) {
 		return super.findAll(defaultOrder);
 	}
 
@@ -87,7 +88,7 @@ public abstract class BaseModifierGroupDAO extends com.floreantpos.model.dao._Ro
 	 * Use the session given.
 	 * @param s the Session
 	 */
-	public java.util.List<com.floreantpos.model.MenuModifierGroup> findAll (Session s, Order defaultOrder) {
+	public java.util.List<com.floreantpos.model.ModifierGroup> findAll (Session s, Order defaultOrder) {
 		return super.findAll(s, defaultOrder);
 	}
 
@@ -97,8 +98,8 @@ public abstract class BaseModifierGroupDAO extends com.floreantpos.model.dao._Ro
 	 * @param modifierGroup a transient instance of a persistent class 
 	 * @return the class identifier
 	 */
-	public java.lang.Integer save(com.floreantpos.model.MenuModifierGroup modifierGroup)
-	{
+	public java.lang.Integer save(com.floreantpos.model.ModifierGroup modifierGroup)
+		throws org.hibernate.HibernateException {
 		return (java.lang.Integer) super.save(modifierGroup);
 	}
 
@@ -110,8 +111,8 @@ public abstract class BaseModifierGroupDAO extends com.floreantpos.model.dao._Ro
 	 * @param s the Session
 	 * @return the class identifier
 	 */
-	public java.lang.Integer save(com.floreantpos.model.MenuModifierGroup modifierGroup, Session s)
-	{
+	public java.lang.Integer save(com.floreantpos.model.ModifierGroup modifierGroup, Session s)
+		throws org.hibernate.HibernateException {
 		return (java.lang.Integer) save((Object) modifierGroup, s);
 	}
 
@@ -121,8 +122,8 @@ public abstract class BaseModifierGroupDAO extends com.floreantpos.model.dao._Ro
 	 * identifier property mapping. 
 	 * @param modifierGroup a transient instance containing new or updated state 
 	 */
-	public void saveOrUpdate(com.floreantpos.model.MenuModifierGroup modifierGroup)
-	{
+	public void saveOrUpdate(com.floreantpos.model.ModifierGroup modifierGroup)
+		throws org.hibernate.HibernateException {
 		saveOrUpdate((Object) modifierGroup);
 	}
 
@@ -134,8 +135,8 @@ public abstract class BaseModifierGroupDAO extends com.floreantpos.model.dao._Ro
 	 * @param modifierGroup a transient instance containing new or updated state.
 	 * @param s the Session.
 	 */
-	public void saveOrUpdate(com.floreantpos.model.MenuModifierGroup modifierGroup, Session s)
-	{
+	public void saveOrUpdate(com.floreantpos.model.ModifierGroup modifierGroup, Session s)
+		throws org.hibernate.HibernateException {
 		saveOrUpdate((Object) modifierGroup, s);
 	}
 
@@ -144,8 +145,8 @@ public abstract class BaseModifierGroupDAO extends com.floreantpos.model.dao._Ro
 	 * instance with the same identifier in the current session.
 	 * @param modifierGroup a transient instance containing updated state
 	 */
-	public void update(com.floreantpos.model.MenuModifierGroup modifierGroup) 
-	{
+	public void update(com.floreantpos.model.ModifierGroup modifierGroup) 
+		throws org.hibernate.HibernateException {
 		update((Object) modifierGroup);
 	}
 
@@ -156,8 +157,8 @@ public abstract class BaseModifierGroupDAO extends com.floreantpos.model.dao._Ro
 	 * @param modifierGroup a transient instance containing updated state
 	 * @param the Session
 	 */
-	public void update(com.floreantpos.model.MenuModifierGroup modifierGroup, Session s)
-	{
+	public void update(com.floreantpos.model.ModifierGroup modifierGroup, Session s)
+		throws org.hibernate.HibernateException {
 		update((Object) modifierGroup, s);
 	}
 
@@ -167,7 +168,7 @@ public abstract class BaseModifierGroupDAO extends com.floreantpos.model.dao._Ro
 	 * @param id the instance ID to be removed
 	 */
 	public void delete(java.lang.Integer id)
-	{
+		throws org.hibernate.HibernateException {
 		delete((Object) load(id));
 	}
 
@@ -179,7 +180,7 @@ public abstract class BaseModifierGroupDAO extends com.floreantpos.model.dao._Ro
 	 * @param s the Session
 	 */
 	public void delete(java.lang.Integer id, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		delete((Object) load(id, s), s);
 	}
 
@@ -188,8 +189,8 @@ public abstract class BaseModifierGroupDAO extends com.floreantpos.model.dao._Ro
 	 * Session or a transient instance with an identifier associated with existing persistent state. 
 	 * @param modifierGroup the instance to be removed
 	 */
-	public void delete(com.floreantpos.model.MenuModifierGroup modifierGroup)
-	{
+	public void delete(com.floreantpos.model.ModifierGroup modifierGroup)
+		throws org.hibernate.HibernateException {
 		delete((Object) modifierGroup);
 	}
 
@@ -200,8 +201,8 @@ public abstract class BaseModifierGroupDAO extends com.floreantpos.model.dao._Ro
 	 * @param modifierGroup the instance to be removed
 	 * @param s the Session
 	 */
-	public void delete(com.floreantpos.model.MenuModifierGroup modifierGroup, Session s)
-	{
+	public void delete(com.floreantpos.model.ModifierGroup modifierGroup, Session s)
+		throws org.hibernate.HibernateException {
 		delete((Object) modifierGroup, s);
 	}
 	
@@ -215,8 +216,8 @@ public abstract class BaseModifierGroupDAO extends com.floreantpos.model.dao._Ro
 	 * <li>after inserting a Blob or Clob</li>
 	 * </ul>
 	 */
-	public void refresh (com.floreantpos.model.MenuModifierGroup modifierGroup, Session s)
-	{
+	public void refresh (com.floreantpos.model.ModifierGroup modifierGroup, Session s)
+		throws org.hibernate.HibernateException {
 		refresh((Object) modifierGroup, s);
 	}
 

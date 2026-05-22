@@ -1,6 +1,22 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.model.base;
 
-import java.lang.Comparable;
 import java.io.Serializable;
 
 import com.floreantpos.model.DrawerPullVoidTicketEntry;
@@ -17,50 +33,54 @@ import com.floreantpos.model.DrawerPullVoidTicketEntry;
 
 public abstract class BaseDrawerPullReport  implements Comparable, Serializable {
 
-	public static String REF = "DrawerPullReport";
-	public static String PROP_TOTAL_DISCOUNT_CHECK_SIZE = "totalDiscountCheckSize";
-	public static String PROP_TOTAL_DISCOUNT_SALES = "totalDiscountSales";
-	public static String PROP_VARIANCE = "variance";
-	public static String PROP_PAY_OUT_AMOUNT = "payOutAmount";
-	public static String PROP_DEBIT_CARD_RECEIPT_AMOUNT = "debitCardReceiptAmount";
-	public static String PROP_SALES_TAX = "salesTax";
-	public static String PROP_TOTAL_VOID = "totalVoid";
-	public static String PROP_CREDIT_CARD_RECEIPT_NUMBER = "creditCardReceiptNumber";
-	public static String PROP_TIPS_DIFFERENTIAL = "tipsDifferential";
-	public static String PROP_DRAWER_ACCOUNTABLE = "drawerAccountable";
-	public static String PROP_CASH_RECEIPT_NUMBER = "cashReceiptNumber";
-	public static String PROP_CASH_TAX = "cashTax";
-	public static String PROP_RECEIPT_DIFFERENTIAL = "receiptDifferential";
-	public static String PROP_TOTAL_DISCOUNT_GUEST = "totalDiscountGuest";
-	public static String PROP_GIFT_CERT_CHANGE_AMOUNT = "giftCertChangeAmount";
-	public static String PROP_PAY_OUT_NUMBER = "payOutNumber";
-	public static String PROP_NET_SALES = "netSales";
-	public static String PROP_CASH_BACK = "cashBack";
-	public static String PROP_DRAWER_BLEED_NUMBER = "drawerBleedNumber";
-	public static String PROP_DRAWER_BLEED_AMOUNT = "drawerBleedAmount";
-	public static String PROP_CASH_RECEIPT_AMOUNT = "cashReceiptAmount";
-	public static String PROP_TOTAL_DISCOUNT_PARTY_SIZE = "totalDiscountPartySize";
-	public static String PROP_DEBIT_CARD_RECEIPT_NUMBER = "debitCardReceiptNumber";
-	public static String PROP_TERMINAL = "terminal";
-	public static String PROP_REG = "reg";
-	public static String PROP_TOTAL_VOID_WST = "totalVoidWst";
-	public static String PROP_CREDIT_CARD_RECEIPT_AMOUNT = "creditCardReceiptAmount";
-	public static String PROP_TOTAL_DISCOUNT_PERCENTAGE = "totalDiscountPercentage";
-	public static String PROP_GIFT_CERT_RETURN_AMOUNT = "giftCertReturnAmount";
-	public static String PROP_BEGIN_CASH = "beginCash";
-	public static String PROP_TOTAL_DISCOUNT_RATIO = "totalDiscountRatio";
-	public static String PROP_CASH_TO_DEPOSIT = "cashToDeposit";
-	public static String PROP_TOTAL_DISCOUNT_AMOUNT = "totalDiscountAmount";
-	public static String PROP_TOTAL_DISCOUNT_COUNT = "totalDiscountCount";
-	public static String PROP_TIPS_PAID = "tipsPaid";
-	public static String PROP_TOTAL_REVENUE = "totalRevenue";
-	public static String PROP_ID = "id";
-	public static String PROP_GROSS_RECEIPTS = "grossReceipts";
-	public static String PROP_CHARGED_TIPS = "chargedTips";
-	public static String PROP_GIFT_CERT_RETURN_COUNT = "giftCertReturnCount";
-	public static String PROP_TICKET_COUNT = "ticketCount";
-	public static String PROP_REPORT_TIME = "reportTime";
-	public static String PROP_CASH_TIPS = "cashTips";
+	public static String REF = "DrawerPullReport"; //$NON-NLS-1$
+	public static String PROP_CREDIT_CARD_RECEIPT_AMOUNT = "creditCardReceiptAmount"; //$NON-NLS-1$
+	public static String PROP_TOTAL_VOID_WST = "totalVoidWst"; //$NON-NLS-1$
+	public static String PROP_TOTAL_DISCOUNT_RATIO = "totalDiscountRatio"; //$NON-NLS-1$
+	public static String PROP_GROSS_RECEIPTS = "grossReceipts"; //$NON-NLS-1$
+	public static String PROP_PAY_OUT_AMOUNT = "payOutAmount"; //$NON-NLS-1$
+	public static String PROP_SALES_DELIVERY_CHARGE = "salesDeliveryCharge"; //$NON-NLS-1$
+	public static String PROP_CASH_RECEIPT_COUNT = "cashReceiptCount"; //$NON-NLS-1$
+	public static String PROP_TOTAL_DISCOUNT_PERCENTAGE = "totalDiscountPercentage"; //$NON-NLS-1$
+	public static String PROP_TIPS_DIFFERENTIAL = "tipsDifferential"; //$NON-NLS-1$
+	public static String PROP_VARIANCE = "variance"; //$NON-NLS-1$
+	public static String PROP_TOTAL_DISCOUNT_CHECK_SIZE = "totalDiscountCheckSize"; //$NON-NLS-1$
+	public static String PROP_SALES_TAX = "salesTax"; //$NON-NLS-1$
+	public static String PROP_DRAWER_BLEED_AMOUNT = "drawerBleedAmount"; //$NON-NLS-1$
+	public static String PROP_TOTAL_VOID = "totalVoid"; //$NON-NLS-1$
+	public static String PROP_TOTAL_DISCOUNT_AMOUNT = "totalDiscountAmount"; //$NON-NLS-1$
+	public static String PROP_TOTAL_DISCOUNT_SALES = "totalDiscountSales"; //$NON-NLS-1$
+	public static String PROP_CASH_TAX = "cashTax"; //$NON-NLS-1$
+	public static String PROP_DRAWER_ACCOUNTABLE = "drawerAccountable"; //$NON-NLS-1$
+	public static String PROP_CASH_BACK = "cashBack"; //$NON-NLS-1$
+	public static String PROP_GIFT_CERT_RETURN_AMOUNT = "giftCertReturnAmount"; //$NON-NLS-1$
+	public static String PROP_CHARGED_TIPS = "chargedTips"; //$NON-NLS-1$
+	public static String PROP_GIFT_CERT_RETURN_COUNT = "giftCertReturnCount"; //$NON-NLS-1$
+	public static String PROP_CASH_TIPS = "cashTips"; //$NON-NLS-1$
+	public static String PROP_BEGIN_CASH = "beginCash"; //$NON-NLS-1$
+	public static String PROP_TOTAL_DISCOUNT_GUEST = "totalDiscountGuest"; //$NON-NLS-1$
+	public static String PROP_TICKET_COUNT = "ticketCount"; //$NON-NLS-1$
+	public static String PROP_CREDIT_CARD_RECEIPT_COUNT = "creditCardReceiptCount"; //$NON-NLS-1$
+	public static String PROP_ASSIGNED_USER = "assignedUser"; //$NON-NLS-1$
+	public static String PROP_DEBIT_CARD_RECEIPT_COUNT = "debitCardReceiptCount"; //$NON-NLS-1$
+	public static String PROP_REFUND_AMOUNT = "refundAmount"; //$NON-NLS-1$
+	public static String PROP_NET_SALES = "netSales"; //$NON-NLS-1$
+	public static String PROP_TERMINAL = "terminal"; //$NON-NLS-1$
+	public static String PROP_TIPS_PAID = "tipsPaid"; //$NON-NLS-1$
+	public static String PROP_DRAWER_BLEED_COUNT = "drawerBleedCount"; //$NON-NLS-1$
+	public static String PROP_REPORT_TIME = "reportTime"; //$NON-NLS-1$
+	public static String PROP_GIFT_CERT_CHANGE_AMOUNT = "giftCertChangeAmount"; //$NON-NLS-1$
+	public static String PROP_CASH_TO_DEPOSIT = "cashToDeposit"; //$NON-NLS-1$
+	public static String PROP_TOTAL_DISCOUNT_COUNT = "totalDiscountCount"; //$NON-NLS-1$
+	public static String PROP_TOTAL_DISCOUNT_PARTY_SIZE = "totalDiscountPartySize"; //$NON-NLS-1$
+	public static String PROP_REG = "reg"; //$NON-NLS-1$
+	public static String PROP_DEBIT_CARD_RECEIPT_AMOUNT = "debitCardReceiptAmount"; //$NON-NLS-1$
+	public static String PROP_TOTAL_REVENUE = "totalRevenue"; //$NON-NLS-1$
+	public static String PROP_RECEIPT_DIFFERENTIAL = "receiptDifferential"; //$NON-NLS-1$
+	public static String PROP_CASH_RECEIPT_AMOUNT = "cashReceiptAmount"; //$NON-NLS-1$
+	public static String PROP_PAY_OUT_COUNT = "payOutCount"; //$NON-NLS-1$
+	public static String PROP_REFUND_RECEIPT_COUNT = "refundReceiptCount"; //$NON-NLS-1$
+	public static String PROP_ID = "id"; //$NON-NLS-1$
 
 
 	// constructors
@@ -86,53 +106,58 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	private java.lang.Integer id;
 
 	// fields
-	private java.util.Date reportTime;
-	private java.lang.String reg;
-	private java.lang.Integer ticketCount;
-	private java.lang.Double beginCash;
-	private java.lang.Double netSales;
-	private java.lang.Double salesTax;
-	private java.lang.Double cashTax;
-	private java.lang.Double totalRevenue;
-	private java.lang.Double grossReceipts;
-	private java.lang.Integer giftCertReturnCount;
-	private java.lang.Double giftCertReturnAmount;
-	private java.lang.Double giftCertChangeAmount;
-	private java.lang.Integer cashReceiptNumber;
-	private java.lang.Double cashReceiptAmount;
-	private java.lang.Integer creditCardReceiptNumber;
-	private java.lang.Double creditCardReceiptAmount;
-	private java.lang.Integer debitCardReceiptNumber;
-	private java.lang.Double debitCardReceiptAmount;
-	private java.lang.Double receiptDifferential;
-	private java.lang.Double cashBack;
-	private java.lang.Double cashTips;
-	private java.lang.Double chargedTips;
-	private java.lang.Double tipsPaid;
-	private java.lang.Double tipsDifferential;
-	private java.lang.Integer payOutNumber;
-	private java.lang.Double payOutAmount;
-	private java.lang.Integer drawerBleedNumber;
-	private java.lang.Double drawerBleedAmount;
-	private java.lang.Double drawerAccountable;
-	private java.lang.Double cashToDeposit;
-	private java.lang.Double variance;
-	private java.lang.Double totalVoidWst;
-	private java.lang.Double totalVoid;
-	private java.lang.Integer totalDiscountCount;
-	private java.lang.Double totalDiscountAmount;
-	private java.lang.Double totalDiscountSales;
-	private java.lang.Integer totalDiscountGuest;
-	private java.lang.Integer totalDiscountPartySize;
-	private java.lang.Integer totalDiscountCheckSize;
-	private java.lang.Double totalDiscountPercentage;
-	private java.lang.Double totalDiscountRatio;
+		protected java.util.Date reportTime;
+		protected java.lang.String reg;
+		protected java.lang.Integer ticketCount;
+		protected java.lang.Double beginCash;
+		protected java.lang.Double netSales;
+		protected java.lang.Double salesTax;
+		protected java.lang.Double cashTax;
+		protected java.lang.Double totalRevenue;
+		protected java.lang.Double grossReceipts;
+		protected java.lang.Integer giftCertReturnCount;
+		protected java.lang.Double giftCertReturnAmount;
+		protected java.lang.Double giftCertChangeAmount;
+		protected java.lang.Integer cashReceiptCount;
+		protected java.lang.Double cashReceiptAmount;
+		protected java.lang.Integer creditCardReceiptCount;
+		protected java.lang.Double creditCardReceiptAmount;
+		protected java.lang.Integer debitCardReceiptCount;
+		protected java.lang.Double debitCardReceiptAmount;
+		protected java.lang.Integer refundReceiptCount;
+		protected java.lang.Double refundAmount;
+		protected java.lang.Double receiptDifferential;
+		protected java.lang.Double cashBack;
+		protected java.lang.Double cashTips;
+		protected java.lang.Double chargedTips;
+		protected java.lang.Double tipsPaid;
+		protected java.lang.Double tipsDifferential;
+		protected java.lang.Integer payOutCount;
+		protected java.lang.Double payOutAmount;
+		protected java.lang.Integer drawerBleedCount;
+		protected java.lang.Double drawerBleedAmount;
+		protected java.lang.Double drawerAccountable;
+		protected java.lang.Double cashToDeposit;
+		protected java.lang.Double variance;
+		protected java.lang.Double salesDeliveryCharge;
+		protected java.lang.Double totalVoidWst;
+		protected java.lang.Double totalVoid;
+		protected java.lang.Integer totalDiscountCount;
+		protected java.lang.Double totalDiscountAmount;
+		protected java.lang.Double totalDiscountSales;
+		protected java.lang.Integer totalDiscountGuest;
+		protected java.lang.Integer totalDiscountPartySize;
+		protected java.lang.Integer totalDiscountCheckSize;
+		protected java.lang.Double totalDiscountPercentage;
+		protected java.lang.Double totalDiscountRatio;
 
 	// many to one
+	private com.floreantpos.model.User assignedUser;
 	private com.floreantpos.model.Terminal terminal;
 
 	// collections
 	private java.util.Set<DrawerPullVoidTicketEntry> voidTickets;
+	private java.util.Set<com.floreantpos.model.CurrencyBalance> currencyBalances;
 
 
 
@@ -162,8 +187,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: REPORT_TIME
 	 */
 	public java.util.Date getReportTime () {
-			return reportTime;
-	}
+					return reportTime;
+			}
 
 	/**
 	 * Set the value related to the column: REPORT_TIME
@@ -179,8 +204,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: REG
 	 */
 	public java.lang.String getReg () {
-			return reg;
-	}
+					return reg;
+			}
 
 	/**
 	 * Set the value related to the column: REG
@@ -196,8 +221,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: TICKET_COUNT
 	 */
 	public java.lang.Integer getTicketCount () {
-			return ticketCount == null ? Integer.valueOf(0) : ticketCount;
-	}
+									return ticketCount == null ? Integer.valueOf(0) : ticketCount;
+					}
 
 	/**
 	 * Set the value related to the column: TICKET_COUNT
@@ -213,8 +238,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: BEGIN_CASH
 	 */
 	public java.lang.Double getBeginCash () {
-					return beginCash == null ? Double.valueOf(0) : beginCash;
-			}
+									return beginCash == null ? Double.valueOf(0) : beginCash;
+					}
 
 	/**
 	 * Set the value related to the column: BEGIN_CASH
@@ -230,8 +255,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: NET_SALES
 	 */
 	public java.lang.Double getNetSales () {
-					return netSales == null ? Double.valueOf(0) : netSales;
-			}
+									return netSales == null ? Double.valueOf(0) : netSales;
+					}
 
 	/**
 	 * Set the value related to the column: NET_SALES
@@ -247,8 +272,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: SALES_TAX
 	 */
 	public java.lang.Double getSalesTax () {
-					return salesTax == null ? Double.valueOf(0) : salesTax;
-			}
+									return salesTax == null ? Double.valueOf(0) : salesTax;
+					}
 
 	/**
 	 * Set the value related to the column: SALES_TAX
@@ -264,8 +289,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: CASH_TAX
 	 */
 	public java.lang.Double getCashTax () {
-					return cashTax == null ? Double.valueOf(0) : cashTax;
-			}
+									return cashTax == null ? Double.valueOf(0) : cashTax;
+					}
 
 	/**
 	 * Set the value related to the column: CASH_TAX
@@ -281,8 +306,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: TOTAL_REVENUE
 	 */
 	public java.lang.Double getTotalRevenue () {
-					return totalRevenue == null ? Double.valueOf(0) : totalRevenue;
-			}
+									return totalRevenue == null ? Double.valueOf(0) : totalRevenue;
+					}
 
 	/**
 	 * Set the value related to the column: TOTAL_REVENUE
@@ -298,8 +323,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: GROSS_RECEIPTS
 	 */
 	public java.lang.Double getGrossReceipts () {
-					return grossReceipts == null ? Double.valueOf(0) : grossReceipts;
-			}
+									return grossReceipts == null ? Double.valueOf(0) : grossReceipts;
+					}
 
 	/**
 	 * Set the value related to the column: GROSS_RECEIPTS
@@ -315,8 +340,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: GIFTCERTRETURNCOUNT
 	 */
 	public java.lang.Integer getGiftCertReturnCount () {
-			return giftCertReturnCount == null ? Integer.valueOf(0) : giftCertReturnCount;
-	}
+									return giftCertReturnCount == null ? Integer.valueOf(0) : giftCertReturnCount;
+					}
 
 	/**
 	 * Set the value related to the column: GIFTCERTRETURNCOUNT
@@ -332,8 +357,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: GIFTCERTRETURNAMOUNT
 	 */
 	public java.lang.Double getGiftCertReturnAmount () {
-					return giftCertReturnAmount == null ? Double.valueOf(0) : giftCertReturnAmount;
-			}
+									return giftCertReturnAmount == null ? Double.valueOf(0) : giftCertReturnAmount;
+					}
 
 	/**
 	 * Set the value related to the column: GIFTCERTRETURNAMOUNT
@@ -349,8 +374,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: GIFTCERTCHANGEAMOUNT
 	 */
 	public java.lang.Double getGiftCertChangeAmount () {
-					return giftCertChangeAmount == null ? Double.valueOf(0) : giftCertChangeAmount;
-			}
+									return giftCertChangeAmount == null ? Double.valueOf(0) : giftCertChangeAmount;
+					}
 
 	/**
 	 * Set the value related to the column: GIFTCERTCHANGEAMOUNT
@@ -365,16 +390,16 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	/**
 	 * Return the value associated with the column: CASH_RECEIPT_NO
 	 */
-	public java.lang.Integer getCashReceiptNumber () {
-			return cashReceiptNumber == null ? Integer.valueOf(0) : cashReceiptNumber;
-	}
+	public java.lang.Integer getCashReceiptCount () {
+									return cashReceiptCount == null ? Integer.valueOf(0) : cashReceiptCount;
+					}
 
 	/**
 	 * Set the value related to the column: CASH_RECEIPT_NO
-	 * @param cashReceiptNumber the CASH_RECEIPT_NO value
+	 * @param cashReceiptCount the CASH_RECEIPT_NO value
 	 */
-	public void setCashReceiptNumber (java.lang.Integer cashReceiptNumber) {
-		this.cashReceiptNumber = cashReceiptNumber;
+	public void setCashReceiptCount (java.lang.Integer cashReceiptCount) {
+		this.cashReceiptCount = cashReceiptCount;
 	}
 
 
@@ -383,8 +408,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: CASH_RECEIPT_AMOUNT
 	 */
 	public java.lang.Double getCashReceiptAmount () {
-					return cashReceiptAmount == null ? Double.valueOf(0) : cashReceiptAmount;
-			}
+									return cashReceiptAmount == null ? Double.valueOf(0) : cashReceiptAmount;
+					}
 
 	/**
 	 * Set the value related to the column: CASH_RECEIPT_AMOUNT
@@ -399,16 +424,16 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	/**
 	 * Return the value associated with the column: CREDIT_CARD_RECEIPT_NO
 	 */
-	public java.lang.Integer getCreditCardReceiptNumber () {
-			return creditCardReceiptNumber == null ? Integer.valueOf(0) : creditCardReceiptNumber;
-	}
+	public java.lang.Integer getCreditCardReceiptCount () {
+									return creditCardReceiptCount == null ? Integer.valueOf(0) : creditCardReceiptCount;
+					}
 
 	/**
 	 * Set the value related to the column: CREDIT_CARD_RECEIPT_NO
-	 * @param creditCardReceiptNumber the CREDIT_CARD_RECEIPT_NO value
+	 * @param creditCardReceiptCount the CREDIT_CARD_RECEIPT_NO value
 	 */
-	public void setCreditCardReceiptNumber (java.lang.Integer creditCardReceiptNumber) {
-		this.creditCardReceiptNumber = creditCardReceiptNumber;
+	public void setCreditCardReceiptCount (java.lang.Integer creditCardReceiptCount) {
+		this.creditCardReceiptCount = creditCardReceiptCount;
 	}
 
 
@@ -417,8 +442,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: CREDIT_CARD_RECEIPT_AMOUNT
 	 */
 	public java.lang.Double getCreditCardReceiptAmount () {
-					return creditCardReceiptAmount == null ? Double.valueOf(0) : creditCardReceiptAmount;
-			}
+									return creditCardReceiptAmount == null ? Double.valueOf(0) : creditCardReceiptAmount;
+					}
 
 	/**
 	 * Set the value related to the column: CREDIT_CARD_RECEIPT_AMOUNT
@@ -433,16 +458,16 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	/**
 	 * Return the value associated with the column: DEBIT_CARD_RECEIPT_NO
 	 */
-	public java.lang.Integer getDebitCardReceiptNumber () {
-			return debitCardReceiptNumber == null ? Integer.valueOf(0) : debitCardReceiptNumber;
-	}
+	public java.lang.Integer getDebitCardReceiptCount () {
+									return debitCardReceiptCount == null ? Integer.valueOf(0) : debitCardReceiptCount;
+					}
 
 	/**
 	 * Set the value related to the column: DEBIT_CARD_RECEIPT_NO
-	 * @param debitCardReceiptNumber the DEBIT_CARD_RECEIPT_NO value
+	 * @param debitCardReceiptCount the DEBIT_CARD_RECEIPT_NO value
 	 */
-	public void setDebitCardReceiptNumber (java.lang.Integer debitCardReceiptNumber) {
-		this.debitCardReceiptNumber = debitCardReceiptNumber;
+	public void setDebitCardReceiptCount (java.lang.Integer debitCardReceiptCount) {
+		this.debitCardReceiptCount = debitCardReceiptCount;
 	}
 
 
@@ -451,8 +476,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: DEBIT_CARD_RECEIPT_AMOUNT
 	 */
 	public java.lang.Double getDebitCardReceiptAmount () {
-					return debitCardReceiptAmount == null ? Double.valueOf(0) : debitCardReceiptAmount;
-			}
+									return debitCardReceiptAmount == null ? Double.valueOf(0) : debitCardReceiptAmount;
+					}
 
 	/**
 	 * Set the value related to the column: DEBIT_CARD_RECEIPT_AMOUNT
@@ -465,11 +490,45 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 
 
 	/**
+	 * Return the value associated with the column: REFUND_RECEIPT_COUNT
+	 */
+	public java.lang.Integer getRefundReceiptCount () {
+									return refundReceiptCount == null ? Integer.valueOf(0) : refundReceiptCount;
+					}
+
+	/**
+	 * Set the value related to the column: REFUND_RECEIPT_COUNT
+	 * @param refundReceiptCount the REFUND_RECEIPT_COUNT value
+	 */
+	public void setRefundReceiptCount (java.lang.Integer refundReceiptCount) {
+		this.refundReceiptCount = refundReceiptCount;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: REFUND_AMOUNT
+	 */
+	public java.lang.Double getRefundAmount () {
+									return refundAmount == null ? Double.valueOf(0) : refundAmount;
+					}
+
+	/**
+	 * Set the value related to the column: REFUND_AMOUNT
+	 * @param refundAmount the REFUND_AMOUNT value
+	 */
+	public void setRefundAmount (java.lang.Double refundAmount) {
+		this.refundAmount = refundAmount;
+	}
+
+
+
+	/**
 	 * Return the value associated with the column: RECEIPT_DIFFERENTIAL
 	 */
 	public java.lang.Double getReceiptDifferential () {
-					return receiptDifferential == null ? Double.valueOf(0) : receiptDifferential;
-			}
+									return receiptDifferential == null ? Double.valueOf(0) : receiptDifferential;
+					}
 
 	/**
 	 * Set the value related to the column: RECEIPT_DIFFERENTIAL
@@ -485,8 +544,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: CASH_BACK
 	 */
 	public java.lang.Double getCashBack () {
-					return cashBack == null ? Double.valueOf(0) : cashBack;
-			}
+									return cashBack == null ? Double.valueOf(0) : cashBack;
+					}
 
 	/**
 	 * Set the value related to the column: CASH_BACK
@@ -502,8 +561,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: CASH_TIPS
 	 */
 	public java.lang.Double getCashTips () {
-					return cashTips == null ? Double.valueOf(0) : cashTips;
-			}
+									return cashTips == null ? Double.valueOf(0) : cashTips;
+					}
 
 	/**
 	 * Set the value related to the column: CASH_TIPS
@@ -519,8 +578,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: CHARGED_TIPS
 	 */
 	public java.lang.Double getChargedTips () {
-					return chargedTips == null ? Double.valueOf(0) : chargedTips;
-			}
+									return chargedTips == null ? Double.valueOf(0) : chargedTips;
+					}
 
 	/**
 	 * Set the value related to the column: CHARGED_TIPS
@@ -536,8 +595,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: TIPS_PAID
 	 */
 	public java.lang.Double getTipsPaid () {
-					return tipsPaid == null ? Double.valueOf(0) : tipsPaid;
-			}
+									return tipsPaid == null ? Double.valueOf(0) : tipsPaid;
+					}
 
 	/**
 	 * Set the value related to the column: TIPS_PAID
@@ -553,8 +612,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: TIPS_DIFFERENTIAL
 	 */
 	public java.lang.Double getTipsDifferential () {
-					return tipsDifferential == null ? Double.valueOf(0) : tipsDifferential;
-			}
+									return tipsDifferential == null ? Double.valueOf(0) : tipsDifferential;
+					}
 
 	/**
 	 * Set the value related to the column: TIPS_DIFFERENTIAL
@@ -569,16 +628,16 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	/**
 	 * Return the value associated with the column: PAY_OUT_NO
 	 */
-	public java.lang.Integer getPayOutNumber () {
-			return payOutNumber == null ? Integer.valueOf(0) : payOutNumber;
-	}
+	public java.lang.Integer getPayOutCount () {
+									return payOutCount == null ? Integer.valueOf(0) : payOutCount;
+					}
 
 	/**
 	 * Set the value related to the column: PAY_OUT_NO
-	 * @param payOutNumber the PAY_OUT_NO value
+	 * @param payOutCount the PAY_OUT_NO value
 	 */
-	public void setPayOutNumber (java.lang.Integer payOutNumber) {
-		this.payOutNumber = payOutNumber;
+	public void setPayOutCount (java.lang.Integer payOutCount) {
+		this.payOutCount = payOutCount;
 	}
 
 
@@ -587,8 +646,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: PAY_OUT_AMOUNT
 	 */
 	public java.lang.Double getPayOutAmount () {
-					return payOutAmount == null ? Double.valueOf(0) : payOutAmount;
-			}
+									return payOutAmount == null ? Double.valueOf(0) : payOutAmount;
+					}
 
 	/**
 	 * Set the value related to the column: PAY_OUT_AMOUNT
@@ -603,16 +662,16 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	/**
 	 * Return the value associated with the column: DRAWER_BLEED_NO
 	 */
-	public java.lang.Integer getDrawerBleedNumber () {
-			return drawerBleedNumber == null ? Integer.valueOf(0) : drawerBleedNumber;
-	}
+	public java.lang.Integer getDrawerBleedCount () {
+									return drawerBleedCount == null ? Integer.valueOf(0) : drawerBleedCount;
+					}
 
 	/**
 	 * Set the value related to the column: DRAWER_BLEED_NO
-	 * @param drawerBleedNumber the DRAWER_BLEED_NO value
+	 * @param drawerBleedCount the DRAWER_BLEED_NO value
 	 */
-	public void setDrawerBleedNumber (java.lang.Integer drawerBleedNumber) {
-		this.drawerBleedNumber = drawerBleedNumber;
+	public void setDrawerBleedCount (java.lang.Integer drawerBleedCount) {
+		this.drawerBleedCount = drawerBleedCount;
 	}
 
 
@@ -621,8 +680,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: DRAWER_BLEED_AMOUNT
 	 */
 	public java.lang.Double getDrawerBleedAmount () {
-					return drawerBleedAmount == null ? Double.valueOf(0) : drawerBleedAmount;
-			}
+									return drawerBleedAmount == null ? Double.valueOf(0) : drawerBleedAmount;
+					}
 
 	/**
 	 * Set the value related to the column: DRAWER_BLEED_AMOUNT
@@ -638,8 +697,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: DRAWER_ACCOUNTABLE
 	 */
 	public java.lang.Double getDrawerAccountable () {
-					return drawerAccountable == null ? Double.valueOf(0) : drawerAccountable;
-			}
+									return drawerAccountable == null ? Double.valueOf(0) : drawerAccountable;
+					}
 
 	/**
 	 * Set the value related to the column: DRAWER_ACCOUNTABLE
@@ -655,8 +714,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: CASH_TO_DEPOSIT
 	 */
 	public java.lang.Double getCashToDeposit () {
-					return cashToDeposit == null ? Double.valueOf(0) : cashToDeposit;
-			}
+									return cashToDeposit == null ? Double.valueOf(0) : cashToDeposit;
+					}
 
 	/**
 	 * Set the value related to the column: CASH_TO_DEPOSIT
@@ -672,8 +731,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: VARIANCE
 	 */
 	public java.lang.Double getVariance () {
-					return variance == null ? Double.valueOf(0) : variance;
-			}
+									return variance == null ? Double.valueOf(0) : variance;
+					}
 
 	/**
 	 * Set the value related to the column: VARIANCE
@@ -686,11 +745,28 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 
 
 	/**
+	 * Return the value associated with the column: DELIVERY_CHARGE
+	 */
+	public java.lang.Double getSalesDeliveryCharge () {
+									return salesDeliveryCharge == null ? Double.valueOf(0) : salesDeliveryCharge;
+					}
+
+	/**
+	 * Set the value related to the column: DELIVERY_CHARGE
+	 * @param salesDeliveryCharge the DELIVERY_CHARGE value
+	 */
+	public void setSalesDeliveryCharge (java.lang.Double salesDeliveryCharge) {
+		this.salesDeliveryCharge = salesDeliveryCharge;
+	}
+
+
+
+	/**
 	 * Return the value associated with the column: totalVoidWst
 	 */
 	public java.lang.Double getTotalVoidWst () {
-					return totalVoidWst == null ? Double.valueOf(0) : totalVoidWst;
-			}
+									return totalVoidWst == null ? Double.valueOf(0) : totalVoidWst;
+					}
 
 	/**
 	 * Set the value related to the column: totalVoidWst
@@ -706,8 +782,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: totalVoid
 	 */
 	public java.lang.Double getTotalVoid () {
-					return totalVoid == null ? Double.valueOf(0) : totalVoid;
-			}
+									return totalVoid == null ? Double.valueOf(0) : totalVoid;
+					}
 
 	/**
 	 * Set the value related to the column: totalVoid
@@ -723,8 +799,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: totalDiscountCount
 	 */
 	public java.lang.Integer getTotalDiscountCount () {
-			return totalDiscountCount == null ? Integer.valueOf(0) : totalDiscountCount;
-	}
+									return totalDiscountCount == null ? Integer.valueOf(0) : totalDiscountCount;
+					}
 
 	/**
 	 * Set the value related to the column: totalDiscountCount
@@ -740,8 +816,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: totalDiscountAmount
 	 */
 	public java.lang.Double getTotalDiscountAmount () {
-					return totalDiscountAmount == null ? Double.valueOf(0) : totalDiscountAmount;
-			}
+									return totalDiscountAmount == null ? Double.valueOf(0) : totalDiscountAmount;
+					}
 
 	/**
 	 * Set the value related to the column: totalDiscountAmount
@@ -757,8 +833,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: totalDiscountSales
 	 */
 	public java.lang.Double getTotalDiscountSales () {
-					return totalDiscountSales == null ? Double.valueOf(0) : totalDiscountSales;
-			}
+									return totalDiscountSales == null ? Double.valueOf(0) : totalDiscountSales;
+					}
 
 	/**
 	 * Set the value related to the column: totalDiscountSales
@@ -774,8 +850,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: totalDiscountGuest
 	 */
 	public java.lang.Integer getTotalDiscountGuest () {
-			return totalDiscountGuest == null ? Integer.valueOf(0) : totalDiscountGuest;
-	}
+									return totalDiscountGuest == null ? Integer.valueOf(0) : totalDiscountGuest;
+					}
 
 	/**
 	 * Set the value related to the column: totalDiscountGuest
@@ -791,8 +867,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: totalDiscountPartySize
 	 */
 	public java.lang.Integer getTotalDiscountPartySize () {
-			return totalDiscountPartySize == null ? Integer.valueOf(0) : totalDiscountPartySize;
-	}
+									return totalDiscountPartySize == null ? Integer.valueOf(0) : totalDiscountPartySize;
+					}
 
 	/**
 	 * Set the value related to the column: totalDiscountPartySize
@@ -808,8 +884,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: totalDiscountCheckSize
 	 */
 	public java.lang.Integer getTotalDiscountCheckSize () {
-			return totalDiscountCheckSize == null ? Integer.valueOf(0) : totalDiscountCheckSize;
-	}
+									return totalDiscountCheckSize == null ? Integer.valueOf(0) : totalDiscountCheckSize;
+					}
 
 	/**
 	 * Set the value related to the column: totalDiscountCheckSize
@@ -825,8 +901,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: totalDiscountPercentage
 	 */
 	public java.lang.Double getTotalDiscountPercentage () {
-					return totalDiscountPercentage == null ? Double.valueOf(0) : totalDiscountPercentage;
-			}
+									return totalDiscountPercentage == null ? Double.valueOf(0) : totalDiscountPercentage;
+					}
 
 	/**
 	 * Set the value related to the column: totalDiscountPercentage
@@ -842,8 +918,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: totalDiscountRatio
 	 */
 	public java.lang.Double getTotalDiscountRatio () {
-					return totalDiscountRatio == null ? Double.valueOf(0) : totalDiscountRatio;
-			}
+									return totalDiscountRatio == null ? Double.valueOf(0) : totalDiscountRatio;
+					}
 
 	/**
 	 * Set the value related to the column: totalDiscountRatio
@@ -856,11 +932,28 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 
 
 	/**
+	 * Return the value associated with the column: USER_ID
+	 */
+	public com.floreantpos.model.User getAssignedUser () {
+					return assignedUser;
+			}
+
+	/**
+	 * Set the value related to the column: USER_ID
+	 * @param assignedUser the USER_ID value
+	 */
+	public void setAssignedUser (com.floreantpos.model.User assignedUser) {
+		this.assignedUser = assignedUser;
+	}
+
+
+
+	/**
 	 * Return the value associated with the column: TERMINAL_ID
 	 */
 	public com.floreantpos.model.Terminal getTerminal () {
-			return terminal;
-	}
+					return terminal;
+			}
 
 	/**
 	 * Set the value related to the column: TERMINAL_ID
@@ -876,8 +969,8 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 * Return the value associated with the column: voidTickets
 	 */
 	public java.util.Set<DrawerPullVoidTicketEntry> getVoidTickets () {
-			return voidTickets;
-	}
+					return voidTickets;
+			}
 
 	/**
 	 * Set the value related to the column: voidTickets
@@ -885,6 +978,28 @@ public abstract class BaseDrawerPullReport  implements Comparable, Serializable 
 	 */
 	public void setVoidTickets (java.util.Set<DrawerPullVoidTicketEntry> voidTickets) {
 		this.voidTickets = voidTickets;
+	}
+
+
+
+	/**
+	 * Return the value associated with the column: currencyBalances
+	 */
+	public java.util.Set<com.floreantpos.model.CurrencyBalance> getCurrencyBalances () {
+					return currencyBalances;
+			}
+
+	/**
+	 * Set the value related to the column: currencyBalances
+	 * @param currencyBalances the currencyBalances value
+	 */
+	public void setCurrencyBalances (java.util.Set<com.floreantpos.model.CurrencyBalance> currencyBalances) {
+		this.currencyBalances = currencyBalances;
+	}
+
+	public void addTocurrencyBalances (com.floreantpos.model.CurrencyBalance currencyBalance) {
+		if (null == getCurrencyBalances()) setCurrencyBalances(new java.util.TreeSet<com.floreantpos.model.CurrencyBalance>());
+		getCurrencyBalances().add(currencyBalance);
 	}
 
 

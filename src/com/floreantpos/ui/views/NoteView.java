@@ -1,3 +1,20 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.ui.views;
 
 import java.awt.BorderLayout;
@@ -15,39 +32,40 @@ import javax.swing.JToggleButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.floreantpos.Messages;
 import com.floreantpos.swing.FixedLengthDocument;
 import com.floreantpos.swing.POSToggleButton;
 import com.floreantpos.swing.PosButton;
+import com.floreantpos.swing.PosUIManager;
 import com.floreantpos.swing.TransparentPanel;
 
 public class NoteView extends JPanel implements ActionListener, ChangeListener {
-	Font buttonFont = getFont().deriveFont(Font.BOLD, 24);
+	Font buttonFont = getFont().deriveFont(Font.BOLD, PosUIManager.getFontSize(24));
 
-	String[] s1 = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
-	String[] s2 = { "q", "w", "e", "r", "t", "y", "u", "i", "o", "p" };
-	String[] s3 = { "a", "s", "d", "f", "g", "h", "j", "k", "l", ";" };
-	String[] s4 = { "z", "x", "c", "v", "b", "n", "m", "-", ",", "." };
+	String[] s1 = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
+	String[] s2 = { "q", "w", "e", "r", "t", "y", "u", "i", "o", "p" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
+	String[] s3 = { "a", "s", "d", "f", "g", "h", "j", "k", "l", ";" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
+	String[] s4 = { "z", "x", "c", "v", "b", "n", "m", "-", ",", "." }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
 
 	JTextArea note = new JTextArea();
 
 	private ArrayList<PosButton> buttons = new ArrayList<PosButton>();
-	Dimension pSize = new Dimension(50, 50);
+	Dimension size = PosUIManager.getSize(60, 60);
 
 	public NoteView() {
 		setLayout(new BorderLayout(5, 5));
 
-		note.setFont(note.getFont().deriveFont(Font.BOLD, 18));
 		note.setWrapStyleWord(true);
 		note.setLineWrap(true);
 		note.setDocument(new FixedLengthDocument(255));
 
 		TransparentPanel northPanel = new TransparentPanel(new BorderLayout());
 		JScrollPane scrollPane = new JScrollPane(note);
-		northPanel.setPreferredSize(new Dimension(100,100));
+		northPanel.setPreferredSize(new Dimension(100, 60));
 		northPanel.add(scrollPane);
 		add(northPanel, BorderLayout.NORTH);
 
-		TransparentPanel centerPanel = new TransparentPanel(new GridLayout(0,1,2,2));
+		TransparentPanel centerPanel = new TransparentPanel(new GridLayout(0, 1, 2, 2));
 		centerPanel.add(addButtonsToPanel(s1));
 		centerPanel.add(addButtonsToPanel(s2));
 		centerPanel.add(addButtonsToPanel(s3));
@@ -56,36 +74,36 @@ public class NoteView extends JPanel implements ActionListener, ChangeListener {
 
 		JPanel eastPanel = new JPanel(new GridLayout(0, 1, 2, 2));
 		PosButton button = new PosButton();
-		button.setText("SPACE");
+		button.setText(Messages.getString("NoteView.40")); //$NON-NLS-1$
 		button.addActionListener(this);
 		eastPanel.add(button);
-		
+
 		POSToggleButton toggleButton = new POSToggleButton();
-		toggleButton.setText("CAPS");
+		toggleButton.setText(Messages.getString("NoteView.41")); //$NON-NLS-1$
 		toggleButton.addChangeListener(this);
 		eastPanel.add(toggleButton);
 
 		button = new PosButton();
-		button.setText("CLEAR");
+		button.setText(com.floreantpos.POSConstants.CLEAR);
 		button.addActionListener(this);
 		eastPanel.add(button);
 
 		button = new PosButton();
-		button.setText("CLEAR ALL");
+		button.setText(com.floreantpos.POSConstants.CLEAR_ALL);
 		button.addActionListener(this);
 		eastPanel.add(button);
 
-		eastPanel.setPreferredSize(new Dimension(90, 50));
+		eastPanel.setPreferredSize(PosUIManager.getSize(90, 70));
 		add(eastPanel, BorderLayout.EAST);
 	}
 
 	private TransparentPanel addButtonsToPanel(String[] buttonText) {
-		TransparentPanel panel = new TransparentPanel(new GridLayout(0,s1.length,2,2));
+		TransparentPanel panel = new TransparentPanel(new GridLayout(0, s1.length, 2, 2));
 		for (int i = 0; i < buttonText.length; i++) {
 			String s = buttonText[i];
 			PosButton button = new PosButton();
 			button.setText(s);
-			button.setPreferredSize(pSize);
+			button.setPreferredSize(size);
 			button.addActionListener(this);
 			button.setFont(buttonFont);
 			buttons.add(button);
@@ -96,37 +114,30 @@ public class NoteView extends JPanel implements ActionListener, ChangeListener {
 
 	public void actionPerformed(ActionEvent e) {
 		note.requestFocus();
-		
+
 		String s = e.getActionCommand();
-		if (s.equals("OK")) {
-			//canceled = false;
-			//dispose();
-		}
-		else if (s.equals("CANCEL")) {
-			//canceled = true;
-			//dispose();
-		}
-		else if (s.equals("CLEAR")) {
+
+		if (s.equals(com.floreantpos.POSConstants.CLEAR)) {
 			String str = note.getText();
 			if (str.length() > 0) {
 				str = str.substring(0, str.length() - 1);
 			}
 			note.setText(str);
 		}
-		else if (s.equals("CLEAR ALL")) {
-			note.setText("");
+		else if (s.equals(com.floreantpos.POSConstants.CLEAR_ALL)) {
+			note.setText(""); //$NON-NLS-1$
 		}
-		else if (s.equals("SPACE")) {
+		else if (s.equals(Messages.getString("NoteView.43"))) { //$NON-NLS-1$
 			String str = note.getText();
 			if (str == null) {
-				str = "";
+				str = ""; //$NON-NLS-1$
 			}
-			note.setText(str + " ");
+			note.setText(str + " "); //$NON-NLS-1$
 		}
 		else {
 			String str = note.getText();
 			if (str == null) {
-				str = "";
+				str = ""; //$NON-NLS-1$
 			}
 			note.setText(str + s);
 		}
@@ -150,7 +161,7 @@ public class NoteView extends JPanel implements ActionListener, ChangeListener {
 	public String getNote() {
 		return note.getText();
 	}
-	
+
 	public void setNoteLength(int length) {
 		note.setDocument(new FixedLengthDocument(length));
 	}

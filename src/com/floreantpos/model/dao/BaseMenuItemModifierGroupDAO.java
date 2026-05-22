@@ -1,3 +1,20 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.model.dao;
 
 import org.hibernate.Hibernate;
@@ -38,27 +55,27 @@ public abstract class BaseMenuItemModifierGroupDAO extends com.floreantpos.model
 	}
 
 	public com.floreantpos.model.MenuItemModifierGroup get(java.lang.Integer key)
-	{
+		throws org.hibernate.HibernateException {
 		return (com.floreantpos.model.MenuItemModifierGroup) get(getReferenceClass(), key);
 	}
 
 	public com.floreantpos.model.MenuItemModifierGroup get(java.lang.Integer key, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		return (com.floreantpos.model.MenuItemModifierGroup) get(getReferenceClass(), key, s);
 	}
 
 	public com.floreantpos.model.MenuItemModifierGroup load(java.lang.Integer key)
-	{
+		throws org.hibernate.HibernateException {
 		return (com.floreantpos.model.MenuItemModifierGroup) load(getReferenceClass(), key);
 	}
 
 	public com.floreantpos.model.MenuItemModifierGroup load(java.lang.Integer key, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		return (com.floreantpos.model.MenuItemModifierGroup) load(getReferenceClass(), key, s);
 	}
 
 	public com.floreantpos.model.MenuItemModifierGroup loadInitialize(java.lang.Integer key, Session s) 
-	{ 
+			throws org.hibernate.HibernateException { 
 		com.floreantpos.model.MenuItemModifierGroup obj = load(key, s); 
 		if (!Hibernate.isInitialized(obj)) {
 			Hibernate.initialize(obj);
@@ -98,7 +115,7 @@ public abstract class BaseMenuItemModifierGroupDAO extends com.floreantpos.model
 	 * @return the class identifier
 	 */
 	public java.lang.Integer save(com.floreantpos.model.MenuItemModifierGroup menuItemModifierGroup)
-	{
+		throws org.hibernate.HibernateException {
 		return (java.lang.Integer) super.save(menuItemModifierGroup);
 	}
 
@@ -111,7 +128,7 @@ public abstract class BaseMenuItemModifierGroupDAO extends com.floreantpos.model
 	 * @return the class identifier
 	 */
 	public java.lang.Integer save(com.floreantpos.model.MenuItemModifierGroup menuItemModifierGroup, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		return (java.lang.Integer) save((Object) menuItemModifierGroup, s);
 	}
 
@@ -122,7 +139,7 @@ public abstract class BaseMenuItemModifierGroupDAO extends com.floreantpos.model
 	 * @param menuItemModifierGroup a transient instance containing new or updated state 
 	 */
 	public void saveOrUpdate(com.floreantpos.model.MenuItemModifierGroup menuItemModifierGroup)
-	{
+		throws org.hibernate.HibernateException {
 		saveOrUpdate((Object) menuItemModifierGroup);
 	}
 
@@ -135,7 +152,7 @@ public abstract class BaseMenuItemModifierGroupDAO extends com.floreantpos.model
 	 * @param s the Session.
 	 */
 	public void saveOrUpdate(com.floreantpos.model.MenuItemModifierGroup menuItemModifierGroup, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		saveOrUpdate((Object) menuItemModifierGroup, s);
 	}
 
@@ -145,7 +162,7 @@ public abstract class BaseMenuItemModifierGroupDAO extends com.floreantpos.model
 	 * @param menuItemModifierGroup a transient instance containing updated state
 	 */
 	public void update(com.floreantpos.model.MenuItemModifierGroup menuItemModifierGroup) 
-	{
+		throws org.hibernate.HibernateException {
 		update((Object) menuItemModifierGroup);
 	}
 
@@ -157,7 +174,7 @@ public abstract class BaseMenuItemModifierGroupDAO extends com.floreantpos.model
 	 * @param the Session
 	 */
 	public void update(com.floreantpos.model.MenuItemModifierGroup menuItemModifierGroup, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		update((Object) menuItemModifierGroup, s);
 	}
 
@@ -167,7 +184,7 @@ public abstract class BaseMenuItemModifierGroupDAO extends com.floreantpos.model
 	 * @param id the instance ID to be removed
 	 */
 	public void delete(java.lang.Integer id)
-	{
+		throws org.hibernate.HibernateException {
 		delete((Object) load(id));
 	}
 
@@ -179,7 +196,7 @@ public abstract class BaseMenuItemModifierGroupDAO extends com.floreantpos.model
 	 * @param s the Session
 	 */
 	public void delete(java.lang.Integer id, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		delete((Object) load(id, s), s);
 	}
 
@@ -189,7 +206,7 @@ public abstract class BaseMenuItemModifierGroupDAO extends com.floreantpos.model
 	 * @param menuItemModifierGroup the instance to be removed
 	 */
 	public void delete(com.floreantpos.model.MenuItemModifierGroup menuItemModifierGroup)
-	{
+		throws org.hibernate.HibernateException {
 		delete((Object) menuItemModifierGroup);
 	}
 
@@ -201,7 +218,7 @@ public abstract class BaseMenuItemModifierGroupDAO extends com.floreantpos.model
 	 * @param s the Session
 	 */
 	public void delete(com.floreantpos.model.MenuItemModifierGroup menuItemModifierGroup, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		delete((Object) menuItemModifierGroup, s);
 	}
 	
@@ -216,7 +233,7 @@ public abstract class BaseMenuItemModifierGroupDAO extends com.floreantpos.model
 	 * </ul>
 	 */
 	public void refresh (com.floreantpos.model.MenuItemModifierGroup menuItemModifierGroup, Session s)
-	{
+		throws org.hibernate.HibernateException {
 		refresh((Object) menuItemModifierGroup, s);
 	}
 

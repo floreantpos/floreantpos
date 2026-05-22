@@ -1,3 +1,20 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 /*
  * CashDropDialog.java
  *
@@ -8,27 +25,35 @@ package com.floreantpos.ui.dialog;
 
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.Rectangle;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import net.miginfocom.swing.MigLayout;
+
+import com.floreantpos.IconFactory;
+import com.floreantpos.Messages;
 import com.floreantpos.main.Application;
 import com.floreantpos.model.CashDropTransaction;
+import com.floreantpos.model.PaymentType;
 import com.floreantpos.model.Terminal;
 import com.floreantpos.model.dao.CashDropTransactionDAO;
+import com.floreantpos.swing.PosUIManager;
+import com.floreantpos.util.CurrencyUtil;
+import com.floreantpos.util.NumberUtil;
 
 /**
  *
@@ -41,15 +66,16 @@ public class CashDropDialog extends POSDialog {
 	private String currencySymbol;
 
 	/** Creates new form CashDropDialog */
-	public CashDropDialog(Frame parent) {
-		super(parent, true);
+	public CashDropDialog() {
+		super(Application.getPosWindow(), true);
+		
 		initComponents();
 
 		terminal = Application.getInstance().getTerminal();
-		currencySymbol = Application.getCurrencySymbol();
+		currencySymbol = CurrencyUtil.getCurrencySymbol();
 
-		lblActiveCashDrop.setText("");
-		TitledBorder titledBorder = new TitledBorder("ACTIVE CASH DROPS FOR" + terminal.getName());
+		lblActiveCashDrop.setText(""); //$NON-NLS-1$
+		TitledBorder titledBorder = new TitledBorder(Messages.getString("CashDropDialog.1") + terminal.getName()); //$NON-NLS-1$
 		titledBorder.setTitleJustification(TitledBorder.CENTER);
 		midPanel.setBorder(titledBorder);
 
@@ -62,7 +88,7 @@ public class CashDropDialog extends POSDialog {
 		tableModel = new CashDropTableModel();
 		tableCashDrops.setModel(tableModel);
 		
-		setTitle("Drawer Bleed");
+		setTitle(Messages.getString("CashDropDialog.2")); //$NON-NLS-1$
 	}
 
 	public void initDate() throws Exception {
@@ -82,7 +108,7 @@ public class CashDropDialog extends POSDialog {
         titlePanel1 = new com.floreantpos.ui.TitlePanel();
         transparentPanel1 = new com.floreantpos.swing.TransparentPanel();
         jSeparator1 = new javax.swing.JSeparator();
-        transparentPanel3 = new com.floreantpos.swing.TransparentPanel();
+        transparentPanel3 = new com.floreantpos.swing.TransparentPanel(new MigLayout("al center", "sg, fill",""));
         btnNewCashDrop = new com.floreantpos.swing.PosButton();
         btnDeleteSelected = new com.floreantpos.swing.PosButton();
         btnClose = new com.floreantpos.swing.PosButton();
@@ -93,18 +119,17 @@ public class CashDropDialog extends POSDialog {
         lblActiveCashDrop = new com.floreantpos.swing.POSLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tableCashDrops = new javax.swing.JTable();
+        tableCashDrops.setRowHeight(PosUIManager.getSize(40));
 
         getContentPane().setLayout(new java.awt.BorderLayout(5, 5));
 
-        titlePanel1.setTitle("REMOVE CASH FROM DRAWER");
+        titlePanel1.setTitle(Messages.getString("CashDropDialog.3")); //$NON-NLS-1$
         getContentPane().add(titlePanel1, java.awt.BorderLayout.NORTH);
 
         transparentPanel1.setLayout(new java.awt.BorderLayout(5, 5));
-
         transparentPanel1.add(jSeparator1, java.awt.BorderLayout.NORTH);
 
-        btnNewCashDrop.setText("NEW DRAWER BLEED");
-        btnNewCashDrop.setPreferredSize(new java.awt.Dimension(160, 50));
+        btnNewCashDrop.setText(Messages.getString("CashDropDialog.4")); //$NON-NLS-1$
         btnNewCashDrop.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnNewCashDropActionPerformed(evt);
@@ -113,8 +138,7 @@ public class CashDropDialog extends POSDialog {
 
         transparentPanel3.add(btnNewCashDrop);
 
-        btnDeleteSelected.setText("DELETE SELECTED");
-        btnDeleteSelected.setPreferredSize(new java.awt.Dimension(140, 50));
+        btnDeleteSelected.setText(Messages.getString("CashDropDialog.5")); //$NON-NLS-1$
         btnDeleteSelected.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnDeleteSelectedActionPerformed(evt);
@@ -123,8 +147,7 @@ public class CashDropDialog extends POSDialog {
 
         transparentPanel3.add(btnDeleteSelected);
 
-        btnClose.setText("CLOSE");
-        btnClose.setPreferredSize(new java.awt.Dimension(140, 50));
+        btnClose.setText(Messages.getString("CashDropDialog.6")); //$NON-NLS-1$
         btnClose.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCloseActionPerformed(evt);
@@ -141,9 +164,8 @@ public class CashDropDialog extends POSDialog {
 
         transparentPanel2.setLayout(new java.awt.GridLayout(0, 1, 2, 2));
 
-        transparentPanel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 5));
-        btnUp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/up_32.png")));
-        btnUp.setPreferredSize(new java.awt.Dimension(80, 0));
+        transparentPanel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 1, 10, 5));
+        btnUp.setIcon(IconFactory.getIcon("/ui_icons/", "up.png")); //$NON-NLS-1$ //$NON-NLS-2$
         btnUp.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 doScrollUp(evt);
@@ -152,8 +174,7 @@ public class CashDropDialog extends POSDialog {
 
         transparentPanel2.add(btnUp);
 
-        btnDown.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/down_32.png")));
-        btnDown.setPreferredSize(new java.awt.Dimension(80, 0));
+        btnDown.setIcon(IconFactory.getIcon("/ui_icons/", "down.png")); //$NON-NLS-1$ //$NON-NLS-2$
         btnDown.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 doScrollDown(evt);
@@ -165,7 +186,7 @@ public class CashDropDialog extends POSDialog {
         midPanel.add(transparentPanel2, java.awt.BorderLayout.EAST);
 
         lblActiveCashDrop.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblActiveCashDrop.setText("ACTIVE CASH DROPS FOR TERMINAL");
+        lblActiveCashDrop.setText(Messages.getString("CashDropDialog.11")); //$NON-NLS-1$
         midPanel.add(lblActiveCashDrop, java.awt.BorderLayout.NORTH);
 
         tableCashDrops.setModel(new javax.swing.table.DefaultTableModel(
@@ -176,9 +197,10 @@ public class CashDropDialog extends POSDialog {
                 {null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Title 1", "Title 2", "Title 3", "Title 4" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
             }
         ));
+        jScrollPane1.setBorder(BorderFactory.createCompoundBorder(new EmptyBorder(5, 10, 10, 10),jScrollPane1.getBorder())); 
         jScrollPane1.setViewportView(tableCashDrops);
 
         midPanel.add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -186,8 +208,10 @@ public class CashDropDialog extends POSDialog {
         getContentPane().add(midPanel, java.awt.BorderLayout.CENTER);
 
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-606)/2, (screenSize.height-372)/2, 606, 372);
-    }// </editor-fold>//GEN-END:initComponents
+        int width=PosUIManager.getSize(606); 
+        int height=PosUIManager.getSize(472); 
+        setBounds((screenSize.width-width)/2, (screenSize.height-height)/2, width, height);
+    }
 
 	private void doScrollDown(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doScrollDown
 		if (cashDropList == null)
@@ -207,7 +231,7 @@ public class CashDropDialog extends POSDialog {
 		selectionModel.setLeadSelectionIndex(selectedRow);
 		Rectangle cellRect = tableCashDrops.getCellRect(selectedRow, 0, false);
 		tableCashDrops.scrollRectToVisible(cellRect);
-	}//GEN-LAST:event_doScrollDown
+	}
 
 	private void doScrollUp(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doScrollUp
 		if (cashDropList == null)
@@ -239,19 +263,20 @@ public class CashDropDialog extends POSDialog {
 			if (index >= 0) {
 				CashDropTransaction transaction = cashDropList.get(index);
 				CashDropTransactionDAO dao = new CashDropTransactionDAO();
-				dao.deleteCashDrop(transaction, Application.getInstance().getTerminal());
+				dao.deleteCashDrop(transaction, Application.getInstance().refreshAndGetTerminal());
 				tableModel.removeCashDrop(transaction);
 			}
 		} catch (Exception e) {
-			POSMessageDialog.showError("An error has occured while deleting cash drop", e);
+			POSMessageDialog.showError(Application.getPosWindow(),Messages.getString("CashDropDialog.16"), e); //$NON-NLS-1$
 		}
 	}//GEN-LAST:event_btnDeleteSelectedActionPerformed
 
 	private void btnNewCashDropActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewCashDropActionPerformed
 		try {
-			NumberSelectionDialog dialog = new NumberSelectionDialog();
-			dialog.setTitle("DRAWER BLEED AMOUNT");
-			dialog.setDecimalAllowed(true);
+			NumberSelectionDialog2 dialog = new NumberSelectionDialog2();
+			dialog.setTitle(Messages.getString("CashDropDialog.17")); //$NON-NLS-1$
+			dialog.setFloatingPoint(true);
+			dialog.pack(); 
 			dialog.open();
 
 			if (!dialog.isCanceled()) {
@@ -261,10 +286,8 @@ public class CashDropDialog extends POSDialog {
 				transaction.setTerminal(Application.getInstance().getTerminal());
 				transaction.setUser(Application.getCurrentUser());
 				transaction.setTransactionTime(new Date());
-				transaction.setSubtotalAmount(amount);
-				transaction.setDiscountAmount(Double.valueOf(0));
-				transaction.setTaxAmount(Double.valueOf(0));
-				transaction.setTotalAmount(amount);
+				transaction.setAmount(amount);
+				transaction.setPaymentType(PaymentType.CASH.toString());
 
 				CashDropTransactionDAO dao = new CashDropTransactionDAO();
 				dao.saveNewCashDrop(transaction, Application.getInstance().getTerminal());
@@ -272,7 +295,7 @@ public class CashDropDialog extends POSDialog {
 				tableModel.addCashDrop(transaction);
 			}
 		} catch (Exception e) {
-			POSMessageDialog.showError("An error has occured while saving cash drop", e);
+			POSMessageDialog.showError(Application.getPosWindow(),Messages.getString("CashDropDialog.18"), e); //$NON-NLS-1$
 		}
 	}//GEN-LAST:event_btnNewCashDropActionPerformed
 
@@ -341,7 +364,7 @@ public class CashDropDialog extends POSDialog {
 
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			if (cashDropList == null)
-				return "";
+				return ""; //$NON-NLS-1$
 
 			CashDropTransaction t = cashDropList.get(rowIndex);
 
@@ -350,16 +373,15 @@ public class CashDropDialog extends POSDialog {
 					return t.getTransactionTime();
 
 				case 1:
-					return Double.valueOf(t.getSubtotalAmount());
+					return Double.valueOf(t.getAmount());
 			}
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 
 	}
 
 	class TableRenderer extends DefaultTableCellRenderer {
-		private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy hh:mm a");
-		private DecimalFormat numberFormat = new DecimalFormat("0.00");
+		private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy hh:mm a"); //$NON-NLS-1$
 		Font font = getFont().deriveFont(Font.BOLD, 14);
 		/**
 		 * 
@@ -390,7 +412,7 @@ public class CashDropDialog extends POSDialog {
 				label.setHorizontalAlignment(SwingConstants.RIGHT);
 			}
 			if (value instanceof Double) {
-				String string = numberFormat.format(((java.lang.Double) value).doubleValue());
+				String string = NumberUtil.formatNumber(((java.lang.Double) value).doubleValue());
 				label.setText(currencySymbol + string);
 				label.setHorizontalAlignment(SwingConstants.RIGHT);
 			}

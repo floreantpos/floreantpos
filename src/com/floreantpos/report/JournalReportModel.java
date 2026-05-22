@@ -1,11 +1,27 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.report;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.floreantpos.bo.ui.explorer.ListTableModel;
-import com.floreantpos.main.Application;
+import com.floreantpos.swing.ListTableModel;
 
 public class JournalReportModel {
 	private Date fromDate;
@@ -104,7 +120,7 @@ public class JournalReportModel {
 	public static class JournalReportTableModel extends ListTableModel {
 
 		public JournalReportTableModel(List<JournalReportData> datas) {
-			super(new String[] { "refId", "time", "action", "user", "comment" }, datas);
+			super(new String[] { "refId", "time", "action", "user", "comment" }, datas); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 		}
 
 		public Object getValueAt(int rowIndex, int columnIndex) {
@@ -115,7 +131,7 @@ public class JournalReportModel {
 				return String.valueOf(data.getRefId());
 
 			case 1:
-				return Application.formatDate(data.getTime());
+				return data.getTime();
 
 			case 2:
 				return data.getAction();

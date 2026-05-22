@@ -1,7 +1,22 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.ui.dialog;
 
-import java.awt.Dialog;
-import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,22 +44,6 @@ public class SelectCookongInstructionDialog extends POSDialog implements ActionL
 		super();
 	}
 
-	public SelectCookongInstructionDialog(Dialog owner, boolean modal) {
-		super(owner, modal);
-	}
-
-	public SelectCookongInstructionDialog(Dialog owner, String title, boolean modal) {
-		super(owner, title, modal);
-	}
-
-	public SelectCookongInstructionDialog(Frame owner, boolean modal, boolean unDecorated) throws HeadlessException {
-		super(owner, modal, unDecorated);
-	}
-
-	public SelectCookongInstructionDialog(Frame owner, boolean modal) throws HeadlessException {
-		super(owner, modal);
-	}
-	
 	@Override
 	protected void initUI() {
 		setLayout(new MigLayout());
@@ -55,14 +54,14 @@ public class SelectCookongInstructionDialog extends POSDialog implements ActionL
 		
 		cbCookingInstructions = new JComboBox(cbModel);
 		cbCookingInstructions.setFont(cbCookingInstructions.getFont().deriveFont(16));
-		btnNew = new PosButton("NEW");
-		btnOk = new PosButton("OK");
-		btnCancel = new PosButton("CANCEL");
-		add(cbCookingInstructions, "wrap, span, grow, h 30");
-		add(new JSeparator(), "wrap, span, grow");
-		add(btnNew, "al right,width 120, height 30");
-		add(btnOk, "al right,width 120, height 30");
-		add(btnCancel, "width 120, height 30");
+		btnNew = new PosButton(com.floreantpos.POSConstants.NEW);
+		btnOk = new PosButton(com.floreantpos.POSConstants.OK);
+		btnCancel = new PosButton(com.floreantpos.POSConstants.CANCEL);
+		add(cbCookingInstructions, "wrap, span, grow, h 30"); //$NON-NLS-1$
+		add(new JSeparator(), "wrap, span, grow"); //$NON-NLS-1$
+		add(btnNew, "al right,width 120, height 30"); //$NON-NLS-1$
+		add(btnOk, "al right,width 120, height 30"); //$NON-NLS-1$
+		add(btnCancel, "width 120, height 30"); //$NON-NLS-1$
 		
 		btnNew.addActionListener(this);
 		btnOk.addActionListener(this);
@@ -81,7 +80,7 @@ public class SelectCookongInstructionDialog extends POSDialog implements ActionL
 	}
 	
 	private void doCreateNew() {
-		NewCookongInstructionDialog dialog = new NewCookongInstructionDialog(this, true);
+		NewCookongInstructionDialog dialog = new NewCookongInstructionDialog();
 		dialog.pack();
 		dialog.open();
 		
@@ -96,13 +95,13 @@ public class SelectCookongInstructionDialog extends POSDialog implements ActionL
 	public void actionPerformed(ActionEvent e) {
 		String actionCommand = e.getActionCommand();
 		
-		if("OK".equalsIgnoreCase(actionCommand)) {
+		if(com.floreantpos.POSConstants.OK.equalsIgnoreCase(actionCommand)) {
 			doOk();
 		}
-		else if("CANCEL".equalsIgnoreCase(actionCommand)) {
+		else if(com.floreantpos.POSConstants.CANCEL.equalsIgnoreCase(actionCommand)) {
 			doCancel();
 		}
-		else if("NEW".equalsIgnoreCase(actionCommand)) {
+		else if(com.floreantpos.POSConstants.NEW.equalsIgnoreCase(actionCommand)) {
 			doCreateNew();
 		}
 	}

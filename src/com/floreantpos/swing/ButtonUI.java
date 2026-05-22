@@ -1,3 +1,20 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.swing;
 
 import java.awt.Color;
@@ -183,7 +200,7 @@ public class ButtonUI extends PlasticButtonUI {
      * @see #forceFlat(JComponent)
 	 */	
 	static boolean is3D(String keyPrefix) {
-		Object value = UIManager.get(keyPrefix + "is3DEnabled");
+		Object value = UIManager.get(keyPrefix + "is3DEnabled"); //$NON-NLS-1$
 		return Boolean.TRUE.equals(value);
 	}
 
@@ -255,7 +272,7 @@ public class ButtonUI extends PlasticButtonUI {
 
 
 	static void add3DEffekt(Graphics g, Rectangle r) {
-		Color brightenStop = UIManager.getColor("Plastic.brightenStop");
+		Color brightenStop = UIManager.getColor("Plastic.brightenStop"); //$NON-NLS-1$
 		if (null == brightenStop)
 			brightenStop = PlasticTheme.BRIGHTEN_STOP;
 
@@ -274,7 +291,7 @@ public class ButtonUI extends PlasticButtonUI {
 
 
 	static void addLight3DEffekt(Graphics g, Rectangle r, boolean isHorizontal) {
-		Color ltBrightenStop = UIManager.getColor("Plastic.ltBrightenStop");
+		Color ltBrightenStop = UIManager.getColor("Plastic.ltBrightenStop"); //$NON-NLS-1$
 		if (null == ltBrightenStop)
 			ltBrightenStop = PlasticTheme.LT_BRIGHTEN_STOP;
 
@@ -286,7 +303,7 @@ public class ButtonUI extends PlasticButtonUI {
 	 * FillerUI.
 	 */
 	public static void addLight3DEffekt(Graphics g, Rectangle r) {
-		Color ltBrightenStop = UIManager.getColor("Plastic.ltBrightenStop");
+		Color ltBrightenStop = UIManager.getColor("Plastic.ltBrightenStop"); //$NON-NLS-1$
 		if (null == ltBrightenStop)
 			ltBrightenStop = PlasticTheme.LT_BRIGHTEN_STOP;
 

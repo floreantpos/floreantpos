@@ -1,6 +1,22 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.model.base;
 
-import java.lang.Comparable;
 import java.io.Serializable;
 
 
@@ -15,16 +31,16 @@ import java.io.Serializable;
 
 public abstract class BasePrinterConfiguration  implements Comparable, Serializable {
 
-	public static String REF = "PrinterConfiguration";
-	public static String PROP_USE_NORMAL_PRINTER_FOR_TICKET = "useNormalPrinterForTicket";
-	public static String PROP_USE_NORMAL_PRINTER_FOR_KITCHEN = "useNormalPrinterForKitchen";
-	public static String PROP_PRINT_KITCHEN_WHEN_TICKET_SETTLED = "printKitchenWhenTicketSettled";
-	public static String PROP_RECEIPT_PRINTER_NAME = "receiptPrinterName";
-	public static String PROP_PRINT_RECEIPT_WHEN_TICKET_PAID = "printReceiptWhenTicketPaid";
-	public static String PROP_PRINT_RECREIPT_WHEN_TICKET_SETTLED = "printRecreiptWhenTicketSettled";
-	public static String PROP_PRINT_KITCHEN_WHEN_TICKET_PAID = "printKitchenWhenTicketPaid";
-	public static String PROP_ID = "id";
-	public static String PROP_KITCHEN_PRINTER_NAME = "kitchenPrinterName";
+	public static String REF = "PrinterConfiguration"; //$NON-NLS-1$
+	public static String PROP_USE_NORMAL_PRINTER_FOR_TICKET = "useNormalPrinterForTicket"; //$NON-NLS-1$
+	public static String PROP_USE_NORMAL_PRINTER_FOR_KITCHEN = "useNormalPrinterForKitchen"; //$NON-NLS-1$
+	public static String PROP_PRINT_KITCHEN_WHEN_TICKET_SETTLED = "printKitchenWhenTicketSettled"; //$NON-NLS-1$
+	public static String PROP_RECEIPT_PRINTER_NAME = "receiptPrinterName"; //$NON-NLS-1$
+	public static String PROP_PRINT_RECEIPT_WHEN_TICKET_PAID = "printReceiptWhenTicketPaid"; //$NON-NLS-1$
+	public static String PROP_PRINT_RECREIPT_WHEN_TICKET_SETTLED = "printRecreiptWhenTicketSettled"; //$NON-NLS-1$
+	public static String PROP_PRINT_KITCHEN_WHEN_TICKET_PAID = "printKitchenWhenTicketPaid"; //$NON-NLS-1$
+	public static String PROP_ID = "id"; //$NON-NLS-1$
+	public static String PROP_KITCHEN_PRINTER_NAME = "kitchenPrinterName"; //$NON-NLS-1$
 
 
 	// constructors
@@ -137,7 +153,7 @@ public abstract class BasePrinterConfiguration  implements Comparable, Serializa
 	 * Custom property
 	 */
 	public static String getPrintRecreiptWhenTicketSettledDefaultValue () {
-		return "true";
+		return "true"; //$NON-NLS-1$
 	}
 
 
@@ -161,7 +177,7 @@ public abstract class BasePrinterConfiguration  implements Comparable, Serializa
 	 * Custom property
 	 */
 	public static String getPrintKitchenWhenTicketSettledDefaultValue () {
-		return "true";
+		return "true"; //$NON-NLS-1$
 	}
 
 
@@ -185,7 +201,7 @@ public abstract class BasePrinterConfiguration  implements Comparable, Serializa
 	 * Custom property
 	 */
 	public static String getPrintReceiptWhenTicketPaidDefaultValue () {
-		return "true";
+		return "true"; //$NON-NLS-1$
 	}
 
 
@@ -209,7 +225,7 @@ public abstract class BasePrinterConfiguration  implements Comparable, Serializa
 	 * Custom property
 	 */
 	public static String getPrintKitchenWhenTicketPaidDefaultValue () {
-		return "true";
+		return "true"; //$NON-NLS-1$
 	}
 
 
@@ -233,7 +249,7 @@ public abstract class BasePrinterConfiguration  implements Comparable, Serializa
 	 * Custom property
 	 */
 	public static String getUseNormalPrinterForTicketDefaultValue () {
-		return "false";
+		return "false"; //$NON-NLS-1$
 	}
 
 
@@ -257,7 +273,7 @@ public abstract class BasePrinterConfiguration  implements Comparable, Serializa
 	 * Custom property
 	 */
 	public static String getUseNormalPrinterForKitchenDefaultValue () {
-		return "false";
+		return "false"; //$NON-NLS-1$
 	}
 
 
@@ -277,7 +293,7 @@ public abstract class BasePrinterConfiguration  implements Comparable, Serializa
 		if (Integer.MIN_VALUE == this.hashCode) {
 			if (null == this.getId()) return super.hashCode();
 			else {
-				String hashStr = this.getClass().getName() + ":" + this.getId().hashCode();
+				String hashStr = this.getClass().getName() + ":" + this.getId().hashCode(); //$NON-NLS-1$
 				this.hashCode = hashStr.hashCode();
 			}
 		}

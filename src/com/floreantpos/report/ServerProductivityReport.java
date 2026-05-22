@@ -1,11 +1,28 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.report;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.floreantpos.bo.ui.explorer.ListTableModel;
-import com.floreantpos.main.Application;
+import com.floreantpos.swing.ListTableModel;
+import com.floreantpos.util.NumberUtil;
 
 public class ServerProductivityReport {
 	//GST_GROSS=total sales
@@ -203,11 +220,11 @@ public class ServerProductivityReport {
 	}
 
 	public static class ServerProductivityReportTableModel extends ListTableModel {
-		String[] columnNames = { "serverName", "categoryName", 
-				"totalCheckCount", "totalGuestCount", "totalSales", 
-				"netSales", "averageNetSales", "totalAllocation", 
-				"grossSales", "salesDiscount", "averageCheck", 
-				"averageGuest", "allocation","checkCount"
+		String[] columnNames = { "serverName", "categoryName",  //$NON-NLS-1$ //$NON-NLS-2$
+				"totalCheckCount", "totalGuestCount", "totalSales",  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				"netSales", "averageNetSales", "totalAllocation",  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				"grossSales", "salesDiscount", "averageCheck",  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				"averageGuest", "allocation","checkCount" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				};
 
 		public ServerProductivityReportTableModel(List<ServerProductivityReportData> datas) {
@@ -232,31 +249,31 @@ public class ServerProductivityReport {
 				return String.valueOf(data.getTotalGuestCount());
 
 			case 4:
-				return Application.formatNumber(data.getTotalSales());
+				return NumberUtil.formatNumber(data.getTotalSales());
 
 			case 5:
-				return Application.formatNumber(data.getNetSales());
+				return NumberUtil.formatNumber(data.getNetSales());
 			
 			case 6:
-				return Application.formatNumber(data.getAverageNetSales());
+				return NumberUtil.formatNumber(data.getAverageNetSales());
 			
 			case 7:
-				return Application.formatNumber(data.getTotalAllocation());
+				return NumberUtil.formatNumber(data.getTotalAllocation());
 			
 			case 8:
-				return Application.formatNumber(data.getGrossSales());
+				return NumberUtil.formatNumber(data.getGrossSales());
 			
 			case 9:
-				return Application.formatNumber(data.getSalesDiscount());
+				return NumberUtil.formatNumber(data.getSalesDiscount());
 			
 			case 10:
-				return Application.formatNumber(data.getAverageCheck());
+				return NumberUtil.formatNumber(data.getAverageCheck());
 			
 			case 11:
-				return Application.formatNumber(data.getAverageGuest());
+				return NumberUtil.formatNumber(data.getAverageGuest());
 				
 			case 12:
-				return Application.formatNumber(data.getAllocation());
+				return NumberUtil.formatNumber(data.getAllocation());
 				
 			case 13:
 				return String.valueOf(data.getCheckCount());

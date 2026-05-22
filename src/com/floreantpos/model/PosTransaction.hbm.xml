@@ -1,65 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="com.floreantpos.model">
-  <class lazy="false" name="com.floreantpos.model.PosTransaction" optimistic-lock="version" table="TRANSACTIONS">
-    <id column="ID" name="id" type="java.lang.Integer">
-      <generator class="identity"/>
-    </id>
-    <discriminator column="PAYMENT_TYPE" length="20" type="string"/>
-    <version column="MODIFIED_TIME" name="modifiedTime" type="timestamp"/>
-    <property column="TRANSACTION_TIME" length="10" name="transactionTime" type="java.util.Date"/>
-    <property column="SUB_TOTAL" length="52" name="subtotalAmount" type="java.lang.Double"/>
-    <property column="TOTAL_DISCOUNT" length="52" name="discountAmount" type="java.lang.Double"/>
-    <property column="TOTAL_TAX" length="52" name="taxAmount" type="java.lang.Double"/>
-    <property column="TOTAL_PRICE" length="52" name="totalAmount" type="java.lang.Double"/>
-    <property column="GRATUITY_AMOUNT" length="52" name="gratuityAmount" type="java.lang.Double"/>
-    <!-- a transaction is marked as settled when drawer is resetted -->
-    <property column="DRAWER_RESETTED" index="tran_drawer_resetted" name="drawerResetted" type="java.lang.Boolean"/>
-    <!-- Associations -->
-    <!-- uni-directional many-to-one association to Terminal -->
-    <many-to-one class="com.floreantpos.model.Terminal" name="terminal">
-      <column name="TERMINAL_ID"/>
-    </many-to-one>
-    <!-- uni-directional one-to-one association to Ticket -->
-    <many-to-one class="com.floreantpos.model.Ticket" name="ticket">
-      <column name="TICKET_ID"/>
-    </many-to-one>
-    <!--set name="tickets" table="TRANSACTION_TICKET" inverse="false" lazy="true">
-			<key column="TICKET_ID"/>			
-			
-			<many-to-many class="Ticket"/>
-		</set-->
-    <!-- uni-directional many-to-one association to User -->
-    <many-to-one class="com.floreantpos.model.User" name="user">
-      <column name="USER_ID"/>
-    </many-to-one>
-    <subclass discriminator-value="CASH" name="com.floreantpos.model.CashTransaction">
+	<class lazy="false" name="com.floreantpos.model.PosTransaction" table="TRANSACTIONS">
+		<id column="ID" name="id" type="java.lang.Integer">
+			<generator class="identity" />
+		</id>
+
+		<!-- this field will be renamed in future release -->
+		<discriminator column="PAYMENT_TYPE" length="30" type="string" />
+		<property name="globalId" column="GLOBAL_ID" length="16" type="string" unique="true"/>
+		<property column="TRANSACTION_TIME" length="10" name="transactionTime" type="java.util.Date" />
+		<property column="AMOUNT" length="52" name="amount" type="java.lang.Double" />
+		<property column="TIPS_AMOUNT" length="52" name="tipsAmount" type="java.lang.Double" />
+		<property column="TIPS_EXCEED_AMOUNT" length="52" name="tipsExceedAmount" type="java.lang.Double" />
+		<property column="TENDER_AMOUNT" length="52" name="tenderAmount" type="java.lang.Double" />
+		<property column="TRANSACTION_TYPE" name="transactionType" type="string" length="30" not-null="true" />
+		<property column="CUSTOM_PAYMENT_NAME" name="customPaymentName" type="string" length="60" />
+		<property column="CUSTOM_PAYMENT_REF" name="customPaymentRef" type="string" length="120" />
+		<property column="CUSTOM_PAYMENT_FIELD_NAME" name="customPaymentFieldName" type="string" length="60" />
+
+		<!-- this field will be renamed in future release -->
+		<property column="PAYMENT_SUB_TYPE" name="paymentType" type="string" length="40" not-null="true" />
+		<property column="CAPTURED" name="captured" type="java.lang.Boolean" />
+		<property column="VOIDED" name="voided" type="java.lang.Boolean" />
+		<property column="AUTHORIZABLE" name="authorizable" type="java.lang.Boolean" />
+
+		<!-- card -->
+		<property column="CARD_HOLDER_NAME" length="60" name="cardHolderName" type="string" />
+		<property column="CARD_NUMBER" length="40" name="cardNumber" type="string" />
+		<property column="CARD_AUTH_CODE" length="30" name="cardAuthCode" type="string" />
+		<property column="CARD_TYPE" length="20" name="cardType" type="string" />
+		<property column="CARD_TRANSACTION_ID" name="cardTransactionId" type="string" length="255" />
+		<property column="CARD_MERCHANT_GATEWAY" name="cardMerchantGateway" type="string" length="60" />
+		<property column="CARD_READER" name="cardReader" type="string" length="30" />
+		<property column="CARD_AID" name="cardAID" type="string" length="120" />
+		<property column="CARD_ARQC" name="cardARQC" type="string" length="120" />
+		<property column="CARD_EXT_DATA" name="cardExtData" type="string" length="255" />
+
+		<!-- GIFT CERT SPECIFIC -->
+		<property column="GIFT_CERT_NUMBER" name="giftCertNumber" type="string" length="64" />
+		<property column="GIFT_CERT_FACE_VALUE" name="giftCertFaceValue" type="java.lang.Double" />
+		<property column="GIFT_CERT_PAID_AMOUNT" name="giftCertPaidAmount" type="java.lang.Double" />
+		<property column="GIFT_CERT_CASH_BACK_AMOUNT" name="giftCertCashBackAmount" type="java.lang.Double" />
+
+		<!-- a transaction is marked as settled when drawer is resetted -->
+		<property column="DRAWER_RESETTED" index="tran_drawer_resetted" name="drawerResetted" type="java.lang.Boolean" />
+
+		<property column="NOTE" name="note" length="255" type="string" />
+
+		<map name="properties" cascade="all" lazy="false" table="TRANSACTION_PROPERTIES">
+			<key column="id" />
+			<index column="property_name" type="string" />
+			<element column="property_value" type="string" />
+		</map>
+
+		<!-- Associations -->
+		<!-- uni-directional many-to-one association to Terminal -->
+		<many-to-one class="com.floreantpos.model.Terminal" name="terminal" cascade="none">
+			<column name="TERMINAL_ID" />
+		</many-to-one>
+
+		<!-- uni-directional one-to-one association to Ticket -->
+		<many-to-one class="com.floreantpos.model.Ticket" name="ticket">
+			<column name="TICKET_ID" />
+		</many-to-one>
+
+		<!-- uni-directional many-to-one association to User -->
+		<many-to-one class="com.floreantpos.model.User" name="user">
+			<column name="USER_ID" />
+		</many-to-one>
+
+		<many-to-one class="com.floreantpos.model.PayoutReason" lazy="false" name="reason">
+			<column name="PAYOUT_REASON_ID" />
+		</many-to-one>
+
+		<many-to-one class="com.floreantpos.model.PayoutRecepient" lazy="false" name="recepient">
+			<column name="PAYOUT_RECEPIENT_ID" />
+		</many-to-one>
+
+		<subclass discriminator-value="CASH" name="com.floreantpos.model.CashTransaction">
 		</subclass>
-    <subclass discriminator-value="GIFT_CERT" name="com.floreantpos.model.GiftCertificateTransaction">
-      <property column="FACE_VALUE" name="faceValue" type="java.lang.Double"/>
-      <property column="PAID_AMOUNT" name="paidAmount" type="java.lang.Double"/>
-      <property column="CASH_BACK_AMOUNT" name="cashBackAmount" type="java.lang.Double"/>
-    </subclass>
-    <subclass discriminator-value="CREDIT_CARD" name="com.floreantpos.model.CreditCardTransaction">
-      <property column="CARD_NUMBER" length="30" name="cardNumber" type="string"/>
-      <property column="CARD_TYPE" length="30" name="cardType" type="string"/>
-    </subclass>
-    <subclass discriminator-value="DEBIT_CARD" name="com.floreantpos.model.DebitCardTransaction">
-      <property column="CARD_NUMBER" length="30" name="cardNumber" type="string"/>
-      <property column="CARD_TYPE" length="30" name="cardType" type="string"/>
-    </subclass>
-    <subclass discriminator-value="CASH_DROP" name="com.floreantpos.model.CashDropTransaction">
+
+		<subclass discriminator-value="CUSTOM_PAYMENT" name="com.floreantpos.model.CustomPaymentTransaction">
 		</subclass>
-    <subclass discriminator-value="REFUND" name="com.floreantpos.model.RefundTransaction">
+
+		<subclass discriminator-value="GIFT_CERT" name="com.floreantpos.model.GiftCertificateTransaction">
 		</subclass>
-    <subclass discriminator-value="PAY_OUT" name="com.floreantpos.model.PayOutTransaction">
-      <property length="255" name="note" type="string"/>
-      <many-to-one class="com.floreantpos.model.PayoutReason" lazy="false" name="reason">
-        <column name="REASON_ID"/>
-      </many-to-one>
-      <many-to-one class="com.floreantpos.model.PayoutRecepient" lazy="false" name="recepient">
-        <column name="RECEPIENT_ID"/>
-      </many-to-one>
-    </subclass>
-  </class>
+
+		<subclass discriminator-value="CREDIT_CARD" name="com.floreantpos.model.CreditCardTransaction">
+
+		</subclass>
+
+		<subclass discriminator-value="DEBIT_CARD" name="com.floreantpos.model.DebitCardTransaction">
+		</subclass>
+
+		<subclass discriminator-value="CASH_DROP" name="com.floreantpos.model.CashDropTransaction">
+		</subclass>
+
+		<subclass discriminator-value="REFUND" name="com.floreantpos.model.RefundTransaction">
+		</subclass>
+
+		<subclass discriminator-value="PAY_OUT" name="com.floreantpos.model.PayOutTransaction">
+		</subclass>
+
+		<subclass discriminator-value="VOID_TRANS" name="com.floreantpos.model.VoidTransaction">
+		</subclass>
+	</class>
 </hibernate-mapping>

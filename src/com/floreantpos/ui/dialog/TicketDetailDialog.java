@@ -1,3 +1,20 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 /*
  * TicketDetailDialog.java
  *
@@ -15,11 +32,9 @@ import com.floreantpos.model.Ticket;
 public class TicketDetailDialog extends POSDialog {
     
     /** Creates new form TicketDetailDialog */
-    public TicketDetailDialog(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public TicketDetailDialog() {
         initComponents();
         
-        ticketDetailView.setDiscountPanelVisible(true);
         setResizable(false);
         pack();
     }
@@ -38,19 +53,16 @@ public class TicketDetailDialog extends POSDialog {
         ticketDetailView = new com.floreantpos.ui.views.TicketDetailView();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("TICKET DETAIL");
+        setTitle(com.floreantpos.POSConstants.TICKET_DETAIL);
 
-        titlePanel1.setTitle("TICKET DETAIL");
+        titlePanel1.setTitle(com.floreantpos.POSConstants.TICKET_DETAIL);
 
-        btnFinish.setText("OK");
+        btnFinish.setText(com.floreantpos.POSConstants.OK);
         btnFinish.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 doFinish(evt);
             }
         });
-
-        ticketDetailView.setBalanceDuePanelVisible(false);
-        ticketDetailView.setDiscountPanelVisible(false);
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -106,12 +118,5 @@ public class TicketDetailDialog extends POSDialog {
 		ticketDetailView.setTicket(ticket);
 	}
 
-	public void setBalanceDuePanelVisible(boolean b) {
-		ticketDetailView.setBalanceDuePanelVisible(b);
-	}
-	
-	public void setButtonPanelVisible(boolean b) {
-		ticketDetailView.setButtonPanelVisible(b);
-	}
     
 }

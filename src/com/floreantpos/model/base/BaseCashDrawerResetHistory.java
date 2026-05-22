@@ -1,6 +1,5 @@
 package com.floreantpos.model.base;
 
-import java.lang.Comparable;
 import java.io.Serializable;
 
 
@@ -15,11 +14,11 @@ import java.io.Serializable;
 
 public abstract class BaseCashDrawerResetHistory  implements Comparable, Serializable {
 
-	public static String REF = "CashDrawerResetHistory";
-	public static String PROP_DRAWER_PULL_REPORT = "drawerPullReport";
-	public static String PROP_RESETED_BY = "resetedBy";
-	public static String PROP_RESET_TIME = "resetTime";
-	public static String PROP_ID = "id";
+	public static String REF = "CashDrawerResetHistory"; //$NON-NLS-1$
+	public static String PROP_DRAWER_PULL_REPORT = "drawerPullReport"; //$NON-NLS-1$
+	public static String PROP_ID = "id"; //$NON-NLS-1$
+	public static String PROP_RESET_TIME = "resetTime"; //$NON-NLS-1$
+	public static String PROP_RESETED_BY = "resetedBy"; //$NON-NLS-1$
 
 
 	// constructors
@@ -45,7 +44,7 @@ public abstract class BaseCashDrawerResetHistory  implements Comparable, Seriali
 	private java.lang.Integer id;
 
 	// fields
-	private java.util.Date resetTime;
+	protected java.util.Date resetTime;
 
 	// one to one
 	private com.floreantpos.model.DrawerPullReport drawerPullReport;
@@ -81,7 +80,7 @@ public abstract class BaseCashDrawerResetHistory  implements Comparable, Seriali
 	 * Return the value associated with the column: RESET_TIME
 	 */
 	public java.util.Date getResetTime () {
-			return resetTime;
+		return resetTime;
 	}
 
 	/**
@@ -98,7 +97,7 @@ public abstract class BaseCashDrawerResetHistory  implements Comparable, Seriali
 	 * Return the value associated with the column: drawerPullReport
 	 */
 	public com.floreantpos.model.DrawerPullReport getDrawerPullReport () {
-			return drawerPullReport;
+		return drawerPullReport;
 	}
 
 	/**
@@ -115,7 +114,7 @@ public abstract class BaseCashDrawerResetHistory  implements Comparable, Seriali
 	 * Return the value associated with the column: USER_ID
 	 */
 	public com.floreantpos.model.User getResetedBy () {
-			return resetedBy;
+		return resetedBy;
 	}
 
 	/**

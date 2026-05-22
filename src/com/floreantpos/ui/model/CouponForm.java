@@ -1,180 +1,432 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.ui.model;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+
+import net.miginfocom.swing.MigLayout;
 
 import org.jdesktop.swingx.JXDatePicker;
 
-import com.floreantpos.model.CouponAndDiscount;
-import com.floreantpos.model.dao.CouponAndDiscountDAO;
-import com.floreantpos.swing.FixedLengthDocument;
+import com.floreantpos.Messages;
+import com.floreantpos.POSConstants;
+import com.floreantpos.model.Discount;
+import com.floreantpos.model.MenuItem;
+import com.floreantpos.model.dao.DiscountDAO;
+import com.floreantpos.model.dao.MenuItemDAO;
+import com.floreantpos.swing.DoubleTextField;
+import com.floreantpos.swing.FixedLengthTextField;
+import com.floreantpos.swing.ItemCheckBoxList;
 import com.floreantpos.swing.MessageDialog;
+import com.floreantpos.swing.PosButton;
 import com.floreantpos.ui.BeanEditor;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import com.floreantpos.ui.dialog.ItemSelectionDialog;
+import com.floreantpos.ui.dialog.POSMessageDialog;
 
-/**
- * Created by IntelliJ IDEA.
- * User: mshahriar
- * Date: Oct 5, 2006
- * Time: 1:18:01 AM
- * To change this template use File | Settings | File Templates.
- */
-public class CouponForm extends BeanEditor {
-    private JPanel contentPane;
-    private JTextField tfCouponName;
-    private JComboBox cbCouponType;
-    private JFormattedTextField tfCouponValue;
-    private JCheckBox chkDisabled;
-    private JCheckBox chkNeverExpire;
-    private JXDatePicker dpExperation;
+public class CouponForm extends BeanEditor implements ItemListener {
+	private JPanel contentPane;
+	private JPanel itemPanel;
+	private FixedLengthTextField tfCouponName;
+	private FixedLengthTextField tfBarcode;
+	private JComboBox cbQualificationType;
+	private JComboBox cbCouponType;
+	private DoubleTextField tfCouponValue;
+	private JCheckBox chkEnabled;
+	private JCheckBox chkModifiable;
+	private JCheckBox chkAutoApply;
+	private JCheckBox chkNeverExpire;
+	private JXDatePicker dpExperation;
+	private JLabel lblMinimum;
 
-    public CouponForm() {
-        this(new CouponAndDiscount());
-    }
+	private DoubleTextField tfMinimumQua;
 
-    public CouponForm(CouponAndDiscount coupon) {
-        this.setLayout(new BorderLayout());
-        add(contentPane);
+	private JPanel itemSearchPanel;
 
-        tfCouponName.setDocument(new FixedLengthDocument(30));
-        cbCouponType.setModel(new DefaultComboBoxModel(CouponAndDiscount.COUPON_TYPE_NAMES));
+	private JTextField txtSearchItem;
 
-        setBean(coupon);
-    }
+	private JScrollPane itemScrollPane;
 
-    @Override
-    public boolean save() {
-        try {
-            if (!updateModel()) return false;
+	private ItemCheckBoxList cbListItems;
+	private ItemCheckBoxList addedListItems;
 
-            CouponAndDiscount coupon = (CouponAndDiscount) getBean();
-            CouponAndDiscountDAO dao = new CouponAndDiscountDAO();
-            dao.saveOrUpdate(coupon);
-        } catch (Exception e) {
-            MessageDialog.showError("An error has occured, could not save", e);
-            return false;
-        }
-        return true;
-    }
+	private String uuid;
 
-    @Override
-    public void dispose() {
-    }
+	public CouponForm() {
+		this(new Discount());
+	}
 
-    @Override
-    protected void updateView() {
-        CouponAndDiscount coupon = (CouponAndDiscount) getBean();
-        if (coupon == null) return;
+	public CouponForm(Discount coupon) {
+		initializeComponent();
 
-        tfCouponName.setText(coupon.getName());
-        tfCouponValue.setValue(Double.valueOf(coupon.getValue()));
-        cbCouponType.setSelectedIndex(coupon.getType());
-        dpExperation.setDate(coupon.getExpiryDate());
-        chkDisabled.setSelected(coupon.isDisabled());
-        chkNeverExpire.setSelected(coupon.isNeverExpire());
-    }
+		cbCouponType.setModel(new DefaultComboBoxModel(Discount.COUPON_TYPE_NAMES));
 
-    @Override
-    protected boolean updateModel() {
-        String name = tfCouponName.getText();
-        double couponValue = 0;
-        couponValue = ((Double) tfCouponValue.getValue()).doubleValue();
-        int couponType = cbCouponType.getSelectedIndex();
-        Date expiryDate = dpExperation.getDate();
-        boolean disabled = chkDisabled.isSelected();
-        boolean neverExpire = chkNeverExpire.isSelected();
+		cbQualificationType.setModel(new DefaultComboBoxModel(Discount.COUPON_QUALIFICATION_NAMES));
+		cbQualificationType.addItemListener(this);
+		cbCouponType.addItemListener(this);
 
-        if (name == null || name.trim().equals("")) {
-            MessageDialog.showError("Name cannot be empty");
-            return false;
-        }
-        if (couponType != CouponAndDiscount.FREE_AMOUNT && couponValue <= 0) {
-            MessageDialog.showError("Value must be greater than 0");
-            return false;
-        }
+		setBean(coupon);
+	}
 
-        CouponAndDiscount coupon = (CouponAndDiscount) getBean();
-        coupon.setName(name);
-        coupon.setValue(couponValue);
-        coupon.setExpiryDate(expiryDate);
-        coupon.setType(couponType);
-        coupon.setDisabled(disabled);
-        coupon.setNeverExpire(neverExpire);
+	private void initializeComponent() {
+		setLayout(new BorderLayout(10, 10));
 
-        return true;
-    }
+		contentPane = new JPanel();
+		contentPane.setLayout(new MigLayout());
+		contentPane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5), null));
+		contentPane.setPreferredSize(new Dimension(400, 0));
 
-    @Override
-    public String getDisplayText() {
-        CouponAndDiscount coupon = (CouponAndDiscount) getBean();
-        if (coupon.getId() == null) {
-            return "Add new coupon/discount";
-        }
-        return "Edit coupon/discount";
-    }
+		JLabel label1 = new JLabel(Messages.getString("CouponForm.0") + ":"); //$NON-NLS-1$ //$NON-NLS-2$
+		JLabel label2 = new JLabel(Messages.getString("CouponForm.9") + ":"); //$NON-NLS-1$ //$NON-NLS-2$
+		JLabel label3 = new JLabel(Messages.getString("CouponForm.11") + ":"); //$NON-NLS-1$ //$NON-NLS-2$
+		JLabel label4 = new JLabel(Messages.getString("CouponForm.13") + ":"); //$NON-NLS-1$ //$NON-NLS-2$
+		JLabel label6 = new JLabel(Messages.getString("CouponForm.12")); //$NON-NLS-1$
+		JLabel label5 = new JLabel(Messages.getString("CouponForm.7")); //$NON-NLS-1$
+		lblMinimum = new JLabel(Messages.getString("CouponForm.5")); //$NON-NLS-1$
 
-    {
-// GUI initializer generated by IntelliJ IDEA GUI Designer
-// >>> IMPORTANT!! <<<
-// DO NOT EDIT OR ADD ANY CODE HERE!
-        $$$setupUI$$$();
-    }
+		tfCouponName = new FixedLengthTextField(120);
+		tfBarcode = new FixedLengthTextField(120);
+		cbCouponType = new JComboBox();
+		cbQualificationType = new JComboBox();
+		dpExperation = new JXDatePicker();
+		tfCouponValue = new DoubleTextField();
+		tfMinimumQua = new DoubleTextField();
+		chkEnabled = new JCheckBox(POSConstants.ENABLED); //$NON-NLS-1$
+		chkModifiable = new JCheckBox("Modifiable Amount"); //$NON-NLS-1$
+		chkAutoApply = new JCheckBox(Messages.getString("CouponForm.6")); //$NON-NLS-1$
+		chkNeverExpire = new JCheckBox(Messages.getString("CouponForm.16")); //$NON-NLS-1$
 
-    /**
-     * Method generated by IntelliJ IDEA GUI Designer
-     * >>> IMPORTANT!! <<<
-     * DO NOT edit this method OR call it in your code!
-     *
-     * @noinspection ALL
-     */
-    private void $$$setupUI$$$() {
-        contentPane = new JPanel();
-        contentPane.setLayout(new FormLayout("fill:d:noGrow,left:4dlu:noGrow,fill:d:grow,left:4dlu:noGrow,fill:100px:grow", "center:d:noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow"));
-        contentPane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5), null));
-        final JLabel label1 = new JLabel();
-        label1.setText("Coupon Name:");
-        CellConstraints cc = new CellConstraints();
-        contentPane.add(label1, cc.xy(1, 1));
-        final JLabel label2 = new JLabel();
-        label2.setText("Experiation Date:");
-        contentPane.add(label2, cc.xy(1, 5));
-        tfCouponName = new JTextField();
-        contentPane.add(tfCouponName, cc.xyw(3, 1, 3, CellConstraints.FILL, CellConstraints.DEFAULT));
-        dpExperation = new JXDatePicker();
-        contentPane.add(dpExperation, cc.xy(3, 5));
-        final JLabel label3 = new JLabel();
-        label3.setText("Coupon Type:");
-        contentPane.add(label3, cc.xy(1, 3));
-        cbCouponType = new JComboBox();
-        contentPane.add(cbCouponType, cc.xy(3, 3));
-        final JLabel label4 = new JLabel();
-        label4.setText("Coupon Value:");
-        contentPane.add(label4, cc.xy(1, 7));
-        tfCouponValue = new JFormattedTextField();
-        contentPane.add(tfCouponValue, cc.xy(3, 7, CellConstraints.FILL, CellConstraints.DEFAULT));
-        chkDisabled = new JCheckBox();
-        chkDisabled.setText("Disabled");
-        contentPane.add(chkDisabled, cc.xy(3, 9));
-        chkNeverExpire = new JCheckBox();
-        chkNeverExpire.setText("Never Expires");
-        contentPane.add(chkNeverExpire, cc.xy(3, 11));
-    }
+		contentPane.add(label1);
+		contentPane.add(tfCouponName, "grow, wrap"); //$NON-NLS-1$
+		contentPane.add(label2);
+		contentPane.add(dpExperation, "grow, wrap"); //$NON-NLS-1$
+		contentPane.add(label3);
+		contentPane.add(cbCouponType, "grow, wrap"); //$NON-NLS-1$
+		contentPane.add(label6);
+		contentPane.add(tfBarcode, "grow, wrap"); //$NON-NLS-1$
+		contentPane.add(label5);
+		contentPane.add(cbQualificationType, "grow, wrap"); //$NON-NLS-1$
+		contentPane.add(lblMinimum);
+		contentPane.add(tfMinimumQua, "grow, wrap"); //$NON-NLS-1$
+		contentPane.add(label4);
+		contentPane.add(tfCouponValue, "grow, wrap"); //$NON-NLS-1$
+		contentPane.add(new JLabel("")); //$NON-NLS-1$
+		contentPane.add(chkEnabled, "wrap"); //$NON-NLS-1$
+		contentPane.add(new JLabel("")); //$NON-NLS-1$
+		contentPane.add(chkAutoApply, "wrap"); //$NON-NLS-1$
+		contentPane.add(new JLabel("")); //$NON-NLS-1$
+		contentPane.add(chkNeverExpire, "wrap"); //$NON-NLS-1$
+		contentPane.add(new JLabel("")); //$NON-NLS-1$
+		contentPane.add(chkModifiable, "wrap"); //$NON-NLS-1$
 
-    /**
-     * @noinspection ALL
-     */
-    public JComponent $$$getRootComponent$$$() {
-        return contentPane;
-    }
+		createItemSearchPanel();
+
+		itemPanel = new JPanel(new BorderLayout(10, 10));
+		itemPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5), null));
+
+		cbListItems = new ItemCheckBoxList();
+		List<MenuItem> menuItems = MenuItemDAO.getInstance().findAll();
+		cbListItems.setModel(menuItems);
+
+		addedListItems = new ItemCheckBoxList();
+		addedListItems.setModel(cbListItems.getCheckedValues());
+
+		itemPanel.add(itemSearchPanel, BorderLayout.NORTH);
+		itemScrollPane = new JScrollPane(addedListItems);
+
+		itemPanel.add(itemScrollPane, BorderLayout.CENTER);
+
+		add(contentPane, BorderLayout.WEST);
+		add(itemPanel, BorderLayout.CENTER);
+
+		setPreferredSize(new Dimension(700, 350));
+	}
+
+	private void createItemSearchPanel() {
+		itemSearchPanel = new JPanel();
+		itemSearchPanel.setLayout(new BorderLayout(5, 5));
+
+		PosButton btnSearch = new PosButton(POSConstants.ADD); //$NON-NLS-1$
+		btnSearch.setPreferredSize(new Dimension(60, 40));
+
+		txtSearchItem = new JTextField();
+
+		txtSearchItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				if (txtSearchItem.getText().equals("")) { //$NON-NLS-1$
+					POSMessageDialog.showMessage(Messages.getString("CouponForm.8")); //$NON-NLS-1$
+					return;
+				}
+
+				if (!addMenuItemByBarcode(txtSearchItem.getText())) {
+					addMenuItemByItemId(txtSearchItem.getText());
+				}
+				txtSearchItem.setText(""); //$NON-NLS-1$
+			}
+		});
+
+		btnSearch.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				ItemSelectionDialog dialog = new ItemSelectionDialog();
+				dialog.setModel(cbListItems.getModel());
+				dialog.open();
+				if (dialog.isCanceled()) {
+					return;
+				}
+				cbListItems.setModel(dialog.getModel());
+				addedListItems.setModel(cbListItems.getCheckedValues());
+				addedListItems.selectItems(cbListItems.getCheckedValues());
+				txtSearchItem.requestFocus();
+
+			}
+		});
+		itemSearchPanel.add(txtSearchItem);
+		itemSearchPanel.add(btnSearch, BorderLayout.EAST);
+	}
+
+	@Override
+	public void itemStateChanged(ItemEvent event) {
+		if (event.getItem() == Discount.COUPON_QUALIFICATION_NAMES[0]) {
+			List<MenuItem> menuItems = MenuItemDAO.getInstance().findAll();
+			itemPanel.setVisible(true);
+			cbListItems.setModel(menuItems);
+			addedListItems.setModel(cbListItems.getCheckedValues());
+		}
+		else if (event.getItem() == Discount.COUPON_TYPE_NAMES[Discount.DISCOUNT_TYPE_AMOUNT]) {
+			chkModifiable.setVisible(true);
+		}
+		else if (event.getItem() == Discount.COUPON_TYPE_NAMES[Discount.DISCOUNT_TYPE_PERCENTAGE]) {
+			chkModifiable.setVisible(false);
+		}
+		/*else if (event.getItem() == Discount.COUPON_QUALIFICATION_NAMES[1]) {
+			List<MenuGroup> menuGroups = MenuGroupDAO.getInstance().findAll();
+			cbListItems.setModel(menuGroups);
+		}
+		else if (event.getItem() == Discount.COUPON_QUALIFICATION_NAMES[2]) {
+			List<MenuCategory> menuCategories = MenuCategoryDAO.getInstance().findAll();
+			cbListItems.setModel(menuCategories);
+		}*/
+		else {
+			itemPanel.setVisible(false);
+		}
+	}
+
+	private boolean addMenuItemByBarcode(String barcode) {
+
+		MenuItemDAO dao = new MenuItemDAO();
+
+		MenuItem menuItem = dao.getMenuItemByBarcode(barcode);
+
+		if (menuItem == null) {
+			return false;
+		}
+
+		//add to list
+		return true;
+	}
+
+	private boolean addMenuItemByItemId(String id) {
+
+		Integer itemId = Integer.parseInt(id);
+
+		MenuItem menuItem = MenuItemDAO.getInstance().get(itemId);
+		if (menuItem == null) {
+			return false;
+		}
+		cbListItems.setSelected(menuItem);
+		addedListItems.setModel(cbListItems.getCheckedValues());
+		addedListItems.selectItems(cbListItems.getCheckedValues());
+		return true;
+	}
+
+	@Override
+	public boolean save() {
+		try {
+
+			if (!updateModel())
+				return false;
+
+			Discount coupon = (Discount) getBean();
+			DiscountDAO.getInstance().saveOrUpdate(coupon);
+
+		} catch (Exception e) {
+			MessageDialog.showError(com.floreantpos.POSConstants.SAVE_ERROR, e);
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	protected void updateView() {
+		Discount coupon = (Discount) getBean();
+		if (coupon.getId() == null) {
+			chkEnabled.setSelected(true); 
+			tfMinimumQua.setText("0"); 
+			cbCouponType.setSelectedIndex(Discount.DISCOUNT_TYPE_PERCENTAGE); 
+			return;
+		}
+
+		uuid = coupon.getUUID();
+
+		tfCouponName.setText(coupon.getName());
+		tfMinimumQua.setText(coupon.getMinimunBuy().toString());
+		tfCouponValue.setText(String.valueOf(coupon.getValue()));
+		cbCouponType.setSelectedIndex(coupon.getType());
+		cbQualificationType.setSelectedIndex(coupon.getQualificationType());
+		dpExperation.setDate(coupon.getExpiryDate());
+		tfBarcode.setText(coupon.getBarcode());
+		chkEnabled.setSelected(coupon.isEnabled());
+		chkModifiable.setSelected(coupon.isModifiable());
+		chkAutoApply.setSelected(coupon.isAutoApply());
+		chkNeverExpire.setSelected(coupon.isNeverExpire());
+
+		if (coupon.getQualificationType() == Discount.QUALIFICATION_TYPE_ITEM) {
+			cbListItems.selectItems(coupon.getMenuItems());
+			addedListItems.setModel(cbListItems.getCheckedValues());
+			addedListItems.selectItems(cbListItems.getCheckedValues());
+		}
+		/*else if (coupon.getQUALIFICATION_TYPE() == Discount.QUALIFICATION_TYPE_GROUP) {
+			cbListItems.selectItems(coupon.getMenuGroups());
+		}
+		else if (coupon.getQUALIFICATION_TYPE() == Discount.QUALIFICATION_TYPE_CATEGORY) {
+			cbListItems.selectItems(coupon.getMenuCategories());
+		}*/
+
+	}
+
+	@Override
+	protected boolean updateModel() {
+		String name = tfCouponName.getText();
+		String barcode = tfBarcode.getText();
+		double couponValue = 0;
+		couponValue = (Double) tfCouponValue.getDouble();
+		int couponMinimumQua = Integer.parseInt(tfMinimumQua.getText());
+		int couponType = cbCouponType.getSelectedIndex();
+		Date expiryDate = dpExperation.getDate();
+		boolean enabled = chkEnabled.isSelected();
+		boolean modifiable = chkModifiable.isSelected();
+		boolean autoApply = chkAutoApply.isSelected();
+		boolean neverExpire = chkNeverExpire.isSelected();
+		int qualificationType = cbQualificationType.getSelectedIndex();
+
+		if (name == null || name.trim().equals("")) { //$NON-NLS-1$
+			POSMessageDialog.showError(null, Messages.getString("CouponForm.1")); //$NON-NLS-1$
+			return false;
+		}
+		if (couponValue <= 0) {
+			POSMessageDialog.showError(null, Messages.getString("CouponForm.2")); //$NON-NLS-1$
+			return false;
+		}
+		if (qualificationType == Discount.QUALIFICATION_TYPE_ITEM && couponValueOverflow()) {
+			POSMessageDialog.showError(null, Messages.getString("CouponForm.10")); //$NON-NLS-1$
+			return false;
+		}
+
+		Discount coupon = (Discount) getBean();
+		coupon.setName(name);
+		coupon.setMinimunBuy(couponMinimumQua);
+		coupon.setValue(couponValue);
+		coupon.setExpiryDate(expiryDate);
+		coupon.setBarcode(barcode);
+		coupon.setType(couponType);
+		coupon.setQualificationType(qualificationType);
+		coupon.setEnabled(enabled);
+		coupon.setModifiable(modifiable);
+		coupon.setAutoApply(autoApply);
+		coupon.setNeverExpire(neverExpire);
+
+		if (uuid == null) {
+			uuid = UUID.randomUUID().toString();
+		}
+		coupon.setUUID(uuid);
+
+		if (qualificationType == Discount.QUALIFICATION_TYPE_ITEM) {
+			if (addedListItems.getCheckedValues().size() > 0) {
+				coupon.setMenuItems(addedListItems.getCheckedValues());
+				coupon.setApplyToAll(false);
+			}
+			else {
+				coupon.setApplyToAll(true);
+			}
+		}
+		/*else if (qualificationType == Discount.QUALIFICATION_TYPE_GROUP) {
+			coupon.setMenuGroups(cbListItems.getCheckedValues());
+		}
+		else if (qualificationType == Discount.QUALIFICATION_TYPE_CATEGORY) {
+			coupon.setMenuCategories(cbListItems.getCheckedValues());
+		}*/
+
+		return true;
+	}
+
+	private boolean couponValueOverflow() {
+		List<MenuItem> menuItems = addedListItems.getCheckedValues();
+		double couponValue = Double.parseDouble(tfCouponValue.getText());
+		if (cbCouponType.getSelectedIndex() == Discount.DISCOUNT_TYPE_PERCENTAGE) {
+			couponValue = couponValue / 100;
+		}
+		if (Integer.parseInt(tfMinimumQua.getText()) > 0) {
+			int minimumQua = Integer.parseInt(tfMinimumQua.getText());
+			for (MenuItem menuItem : menuItems) {
+				if (couponValue > (menuItem.getPrice() * minimumQua)) {
+					return true;
+				}
+			}
+		}
+		else {
+			for (MenuItem menuItem : menuItems) {
+				if (couponValue > menuItem.getPrice()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public String getDisplayText() {
+		Discount coupon = (Discount) getBean();
+		if (coupon.getId() == null) {
+			return Messages.getString("CouponForm.3"); //$NON-NLS-1$
+		}
+		return Messages.getString("CouponForm.4"); //$NON-NLS-1$
+	}
+
 }

@@ -1,63 +1,61 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 package com.floreantpos.model.util;
 
 public class TransactionSummary {
-	private int totalNumber;
-	private double subtotalAmount;
-	private double totalAmount;
-	private double totalTax;
-	private double totalDiscount;
-	private double gratuityAmount;
+	private int count;
+	private double amount;
+	private double tipsAmount;
+	private double changeAmount;
 	
 	public TransactionSummary() {
 		super();
 	}
 
-	public double getTotalAmount() {
-		return totalAmount;
+	public double getAmount() {
+		return amount;
 	}
 
-	public void setTotalAmount(double totalPrice) {
-		this.totalAmount = totalPrice;
+	public void setAmount(double totalPrice) {
+		this.amount = totalPrice;
 	}
 
-	public int getTotalNumber() {
-		return totalNumber;
+	public int getCount() {
+		return count;
 	}
 
-	public void setTotalNumber(int totalTicket) {
-		this.totalNumber = totalTicket;
+	public void setCount(int totalTicket) {
+		this.count = totalTicket;
 	}
 
-	public double getTotalTax() {
-		return totalTax;
+	public double getChangeAmount() {
+		return changeAmount;
 	}
 
-	public void setTotalTax(double totalTax) {
-		this.totalTax = totalTax;
+	public void setChangeAmount(double changeAmount) {
+		this.changeAmount = changeAmount;
 	}
 
-	public double getTotalDiscount() {
-		return totalDiscount;
+	public double getTipsAmount() {
+		return tipsAmount;
 	}
 
-	public void setTotalDiscount(double totalDiscount) {
-		this.totalDiscount = totalDiscount;
+	public void setTipsAmount(double tipsAmount) {
+		this.tipsAmount = tipsAmount;
 	}
-
-	public double getGratuityAmount() {
-		return gratuityAmount;
-	}
-
-	public void setGratuityAmount(double gratuityAmount) {
-		this.gratuityAmount = gratuityAmount;
-	}
-
-	public double getSubtotalAmount() {
-		return subtotalAmount;
-	}
-
-	public void setSubtotalAmount(double subtotalAmount) {
-		this.subtotalAmount = subtotalAmount;
-	}
-
 }

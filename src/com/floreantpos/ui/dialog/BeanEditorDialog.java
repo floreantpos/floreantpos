@@ -1,3 +1,20 @@
+/**
+ * ************************************************************************
+ * * The contents of this file are subject to the MRPL 1.2
+ * * (the  "License"),  being   the  Mozilla   Public  License
+ * * Version 1.1  with a permitted attribution clause; you may not  use this
+ * * file except in compliance with the License. You  may  obtain  a copy of
+ * * the License at http://www.floreantpos.org/license.html
+ * * Software distributed under the License  is  distributed  on  an "AS IS"
+ * * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * * License for the specific  language  governing  rights  and  limitations
+ * * under the License.
+ * * The Original Code is FLOREANT POS.
+ * * The Initial Developer of the Original Code is OROCUBE LLC
+ * * All portions are Copyright (C) 2015 OROCUBE LLC
+ * * All Rights Reserved.
+ * ************************************************************************
+ */
 /*
  * OkCancelDialog.java
  *
@@ -6,11 +23,16 @@
 
 package com.floreantpos.ui.dialog;
 
+import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import com.floreantpos.main.Application;
+import com.floreantpos.swing.PosButton;
 import com.floreantpos.ui.BeanEditor;
+import com.floreantpos.util.POSUtil;
 
 /**
  *
@@ -20,14 +42,29 @@ public class BeanEditorDialog extends javax.swing.JDialog implements WindowListe
 	protected BeanEditor beanEditor;
 	private boolean canceled = false;
 
-	/** Creates new form OkCancelDialog */
-	public BeanEditorDialog(java.awt.Frame parent, boolean modal) {
-		this(null, parent, modal);
+	public BeanEditorDialog() {
+		this(null);
 	}
 
-	public BeanEditorDialog(BeanEditor beanEditor, java.awt.Frame parent, boolean modal) {
-		super(parent, modal);
-		
+	public BeanEditorDialog(BeanEditor beanEditor) {
+		super(POSUtil.getFocusedWindow(), ModalityType.APPLICATION_MODAL);
+		initComponents();
+
+		setBeanEditor(beanEditor);
+		addWindowListener(this);
+	}
+
+	public BeanEditorDialog(Frame owner, BeanEditor beanEditor) {
+		super(owner, true);
+		initComponents();
+
+		setBeanEditor(beanEditor);
+
+		addWindowListener(this);
+	}
+
+	public BeanEditorDialog(Dialog owner, BeanEditor beanEditor) {
+		super(owner, true);
 		initComponents();
 
 		setBeanEditor(beanEditor);
@@ -45,11 +82,12 @@ public class BeanEditorDialog extends javax.swing.JDialog implements WindowListe
 		titlePanel = new com.floreantpos.ui.TitlePanel();
 		jPanel1 = new com.floreantpos.swing.TransparentPanel();
 		jSeparator1 = new javax.swing.JSeparator();
-		jPanel2 = new com.floreantpos.swing.TransparentPanel();
-		btnOk = new javax.swing.JButton();
-		btnCancel = new javax.swing.JButton();
+		buttonPanel = new com.floreantpos.swing.TransparentPanel();
+		btnOk = new PosButton();
+		btnCancel = new PosButton();
 		beanEditorContainer = new com.floreantpos.swing.TransparentPanel();
 
+		setIconImage(Application.getApplicationIcon().getImage());
 		setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 		getContentPane().add(titlePanel, java.awt.BorderLayout.NORTH);
 
@@ -57,27 +95,29 @@ public class BeanEditorDialog extends javax.swing.JDialog implements WindowListe
 
 		jPanel1.add(jSeparator1, java.awt.BorderLayout.NORTH);
 
-		jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+		buttonPanel.setLayout(new java.awt.FlowLayout());
 
-		btnOk.setText("Ok");
+		btnOk.setPreferredSize(new Dimension(100, 60));
+		btnOk.setText(com.floreantpos.POSConstants.OK.toUpperCase());
 		btnOk.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				performOk(evt);
 			}
 		});
 
-		jPanel2.add(btnOk);
+		buttonPanel.add(btnOk);
 
-		btnCancel.setText("Cancel");
+		btnCancel.setPreferredSize(new Dimension(100, 60));
+		btnCancel.setText(com.floreantpos.POSConstants.CANCEL.toUpperCase());
 		btnCancel.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				performCancel(evt);
 			}
 		});
 
-		jPanel2.add(btnCancel);
+		buttonPanel.add(btnCancel);
 
-		jPanel1.add(jPanel2, java.awt.BorderLayout.CENTER);
+		jPanel1.add(buttonPanel, java.awt.BorderLayout.CENTER);
 
 		getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
 
@@ -89,7 +129,6 @@ public class BeanEditorDialog extends javax.swing.JDialog implements WindowListe
 	@Override
 	public void dispose() {
 		if (beanEditor != null) {
-			beanEditor.dispose();
 			beanEditor = null;
 		}
 
@@ -114,10 +153,10 @@ public class BeanEditorDialog extends javax.swing.JDialog implements WindowListe
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private com.floreantpos.swing.TransparentPanel beanEditorContainer;
-	private javax.swing.JButton btnCancel;
-	private javax.swing.JButton btnOk;
+	private PosButton btnCancel;
+	private PosButton btnOk;
 	private com.floreantpos.swing.TransparentPanel jPanel1;
-	private com.floreantpos.swing.TransparentPanel jPanel2;
+	private com.floreantpos.swing.TransparentPanel buttonPanel;
 	private javax.swing.JSeparator jSeparator1;
 	private com.floreantpos.ui.TitlePanel titlePanel;
 
@@ -132,6 +171,13 @@ public class BeanEditorDialog extends javax.swing.JDialog implements WindowListe
 	public void open() {
 		canceled = false;
 		this.pack();
+		this.setLocationRelativeTo(this.getOwner());
+		super.setVisible(true);
+	}
+
+	public void open(int w, int h) {
+		canceled = false;
+		this.setSize(w, h);
 		this.setLocationRelativeTo(this.getOwner());
 		super.setVisible(true);
 	}
@@ -196,6 +242,8 @@ public class BeanEditorDialog extends javax.swing.JDialog implements WindowListe
 			beanEditorContainer.revalidate();
 		}
 	}
-	
-	
+
+	public com.floreantpos.swing.TransparentPanel getButtonPanel() {
+		return buttonPanel;
+	}
 }
