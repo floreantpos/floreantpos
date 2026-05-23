@@ -77,7 +77,15 @@ public class PayoutDialog extends OkCancelOptionDialog {
 		PayoutRecepient recepient = payOutView.getRecepient();
 		String note = payOutView.getNote();
 
-		terminal.setCurrentBalance(terminal.getCurrentBalance() - payoutAmount);
+		double currentBalance = terminal.getCurrentBalance() == null ? 0.0 : terminal.getCurrentBalance();
+		if (payoutAmount > currentBalance) {
+			POSMessageDialog.showError(this,
+					"Cash withdrawal cannot be more than cash drawer balance ("
+							+ NumberUtil.formatNumber(currentBalance) + ").");
+			return;
+		}
+
+		terminal.setCurrentBalance(currentBalance - payoutAmount);
 
 		PayOutTransaction payOutTransaction = new PayOutTransaction();
 		payOutTransaction.setPaymentType(PaymentType.CASH.name());

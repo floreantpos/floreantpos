@@ -63,6 +63,8 @@ public class PrintConfigurationView extends ConfigurationView {
 	private JComboBox cbReceiptPrinterName;
 	private JComboBox cbReportPrinterName;
 	private JCheckBox chkKitchenBtn = new JCheckBox("Show KDS button on login screen");
+	private JCheckBox cbShowBarCodeOnReceipt     = new JCheckBox(Messages.getString("TerminalConfigurationView.21")); //$NON-NLS-1$
+	private JCheckBox cbGroupKitchenReceiptItems = new JCheckBox(Messages.getString("TerminalConfigurationView.7"));  //$NON-NLS-1$
 	private JTextField txtYellowTime;
 	private JTextField txtRedTime;
 
@@ -92,6 +94,8 @@ public class PrintConfigurationView extends ConfigurationView {
 		cbReceiptPrinterName.setRenderer(comboRenderer);
 		//cbFullscreenMode.setSelected(TerminalConfig.isFullscreenMode());
 		chkKitchenBtn.setSelected(TerminalConfig.isShowKitchenBtnOnLoginScreen());
+		cbShowBarCodeOnReceipt.setSelected(TerminalConfig.isShowBarcodeOnReceipt());
+		cbGroupKitchenReceiptItems.setSelected(TerminalConfig.isGroupKitchenReceiptItems());
 		setSelectedPrinter(cbReportPrinterName, printers.getReportPrinter());
 		setSelectedPrinter(cbReceiptPrinterName, printers.getReceiptPrinter());
 
@@ -148,6 +152,8 @@ public class PrintConfigurationView extends ConfigurationView {
 		AppConfig.put("RedTimeOut", txtRedTime.getText()); //$NON-NLS-1$
 
 		TerminalConfig.setShowKitchenBtnOnLoginScreen(chkKitchenBtn.isSelected());
+		TerminalConfig.setShowBarcodeOnReceipt(cbShowBarCodeOnReceipt.isSelected());
+		TerminalConfig.setGroupKitchenReceiptItems(cbGroupKitchenReceiptItems.isSelected());
 
 		//Application.getPrinters().save();
 
@@ -206,7 +212,9 @@ public class PrintConfigurationView extends ConfigurationView {
 		footerPanel.add(lblRedTime, "grow"); //$NON-NLS-1$
 		footerPanel.add(txtRedTime, "grow"); //$NON-NLS-1$
 		footerPanel.add(new JLabel("sec"), "grow,wrap"); //$NON-NLS-1$ //$NON-NLS-2$
-		footerPanel.add(chkKitchenBtn);
+		footerPanel.add(chkKitchenBtn, "span 3, wrap"); //$NON-NLS-1$
+		footerPanel.add(cbShowBarCodeOnReceipt, "span 3, wrap"); //$NON-NLS-1$
+		footerPanel.add(cbGroupKitchenReceiptItems, "span 3, wrap"); //$NON-NLS-1$
 		contentPanel.add(footerPanel, "newline, grow, span 2,wrap"); //$NON-NLS-1$
 
 		JScrollPane scrollPane = new JScrollPane(contentPanel);

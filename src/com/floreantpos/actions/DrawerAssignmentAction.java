@@ -58,38 +58,16 @@ public class DrawerAssignmentAction extends PosAction {
 	}
 
 	public void updateActionText() {
-		Terminal terminal = Application.getInstance().getTerminal();
-		User assignedUser = terminal.getAssignedUser();
-
-		if (assignedUser != null) {
-			putValue(Action.NAME, Messages.getString("DrawerAssignmentAction.1")); //$NON-NLS-1$
-		}
-		else {
-			putValue(Action.NAME, Messages.getString("DrawerAssignmentAction.2")); //$NON-NLS-1$
-		}
+		// Single, status-neutral label — the new DrawerStatusDialog handles both open and closed states.
+		putValue(Action.NAME, "Drawer Status");
 	}
 
 	@Override
 	public void execute() {
 		try {
-			Terminal terminal = Application.getInstance().getTerminal();
-			User assignedUser = terminal.getAssignedUser();
-
-			if (assignedUser != null) {
-				int option = POSMessageDialog.showYesNoQuestionDialog(Application.getPosWindow(),
-						Messages.getString("DrawerAssignmentAction.3") + assignedUser.getFullName() //$NON-NLS-1$
-								+ Messages.getString("DrawerAssignmentAction.4"), //$NON-NLS-1$
-						Messages.getString("DrawerAssignmentAction.5")); //$NON-NLS-1$
-				if (option != JOptionPane.YES_OPTION) {
-					return;
-				}
-
-				performDrawerClose(terminal);
-			}
-			else {
-				performAssignment(terminal);
-			}
-
+			com.floreantpos.ui.dialog.DrawerStatusDialog dialog = new com.floreantpos.ui.dialog.DrawerStatusDialog();
+			dialog.setVisible(true);
+			updateActionText();
 		} catch (Exception e) {
 			POSMessageDialog.showError(Application.getPosWindow(), e.getMessage(), e);
 		}

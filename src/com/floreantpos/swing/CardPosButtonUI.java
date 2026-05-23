@@ -170,6 +170,14 @@ public class CardPosButtonUI extends BasicButtonUI {
 	private static final Color CARD_SELECTED      = new Color(0x1E5FAA); // deep blue when group is selected
 	private static final Color CARD_SELECTED_HOVER = new Color(0x2570C8);
 
+	/** Subtle hover tint that doesn't shift orange → yellow like brighter(). */
+	private static Color softHover(Color c) {
+		int r = Math.min(255, (int) Math.round(c.getRed()   * 0.92 + 255 * 0.08));
+		int g = Math.min(255, (int) Math.round(c.getGreen() * 0.92 + 255 * 0.08));
+		int b = Math.min(255, (int) Math.round(c.getBlue()  * 0.92 + 255 * 0.08));
+		return new Color(r, g, b);
+	}
+
 	private Color resolveBackground(AbstractButton b, ButtonModel model) {
 		// Toggle-button selected state (e.g. active menu group)
 		if (model.isSelected()) {
@@ -183,7 +191,7 @@ public class CardPosButtonUI extends BasicButtonUI {
 				&& !comp.equals(UIManager.getColor("control")); //$NON-NLS-1$
 
 		if (hasCustomBg) {
-			return model.isPressed() ? comp.darker() : (model.isRollover() ? comp.brighter() : comp);
+			return model.isPressed() ? comp.darker() : (model.isRollover() ? softHover(comp) : comp);
 		}
 		if (model.isPressed())  return CARD_PRESS;
 		if (model.isRollover()) return CARD_HOVER;

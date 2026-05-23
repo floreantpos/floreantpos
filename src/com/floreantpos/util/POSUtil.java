@@ -158,28 +158,14 @@ public class POSUtil {
 	public static boolean checkDrawerAssignment() {
 		Terminal terminal = Application.getInstance().getTerminal();
 		if (!terminal.isCashDrawerAssigned()) {
-			int option = POSMessageDialog.showYesNoQuestionDialog(Application.getPosWindow(), Messages.getString("SwitchboardView.15") + //$NON-NLS-1$
-					Messages.getString("SwitchboardView.16"), Messages.getString("SwitchboardView.17")); //$NON-NLS-1$ //$NON-NLS-2$
-
-			if (option == JOptionPane.YES_OPTION) {
-				try {
-					DrawerAssignmentAction action = new DrawerAssignmentAction();
-					action.execute();
-					if (!terminal.isCashDrawerAssigned()) {
-						showUnableToAcceptPayment();
-						return false;
-					}
-					return true;
-				} catch (Exception e) {
-					return false;
-				}
-			}
-			else {
+			com.floreantpos.ui.dialog.DrawerStatusDialog dialog = new com.floreantpos.ui.dialog.DrawerStatusDialog();
+			dialog.setVisible(true);
+			if (!terminal.isCashDrawerAssigned()) {
 				showUnableToAcceptPayment();
 				return false;
 			}
+			return true;
 		}
-
 		return true;
 	}
 

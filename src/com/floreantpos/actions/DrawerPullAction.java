@@ -35,13 +35,12 @@ public class DrawerPullAction extends PosAction {
 	@Override
 	public void execute() {
 		try {
-			DrawerPullReportDialog dialog = new DrawerPullReportDialog();
-			dialog.setTitle(com.floreantpos.POSConstants.DRAWER_PULL_BUTTON_TEXT);
-			dialog.initialize();
-			dialog.setSize(PosUIManager.getSize(470, 500));
-			//dialog.setResizable(false);
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.open();
+			// "DRAWER STATUS" tile now opens the unified drawer status dialog
+			// where the user can open or close the drawer (no more standalone
+			// pull-report nag — the report is generated when closing).
+			com.floreantpos.ui.dialog.DrawerStatusDialog dialog =
+					new com.floreantpos.ui.dialog.DrawerStatusDialog();
+			dialog.setVisible(true);
 		} catch (Exception e) {
 			POSMessageDialog.showError(Application.getPosWindow(), e.getMessage(), e);
 		}

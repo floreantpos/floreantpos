@@ -18,15 +18,20 @@
 package com.floreantpos.ui;
 
 import java.awt.AWTEvent;
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.text.SimpleDateFormat;
 
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
@@ -70,6 +75,7 @@ public class HeaderPanel extends JPanel {
 	private PosButton btnHomeScreen;
 	private POSToggleButton btnMaintainance;
 	private PosButton btnOthers;
+	private PosButton btnDrawer;
 	private PosButton btnSwithboardView;
 	private PosButton btnLogout;
 	private PosButton btnClockOUt;
@@ -139,6 +145,18 @@ public class HeaderPanel extends JPanel {
 
 		btnOthers = new PosButton(new ShowOtherFunctionsAction(false, true));
 		buttonPanel.add(btnOthers, "w " + btnSize + "!, h " + btnSize + "!"); //$NON-NLS-1$
+
+		btnDrawer = new PosButton();
+		btnDrawer.setIcon(makeDrawerIcon(PosUIManager.getSize(28), new Color(0x1E, 0x2D, 0x3D)));
+		btnDrawer.setToolTipText("Cash & Card Management");
+		btnDrawer.addActionListener(new ActionListener() {
+			@Override public void actionPerformed(ActionEvent e) {
+				com.floreantpos.ui.dialog.CashCardManagementDialog dialog =
+						new com.floreantpos.ui.dialog.CashCardManagementDialog();
+				dialog.setVisible(true);
+			}
+		});
+		buttonPanel.add(btnDrawer, "w " + btnSize + "!, h " + btnSize + "!"); //$NON-NLS-1$
 
 		btnClockOUt = new PosButton(new ClockInOutAction(false, true));
 		buttonPanel.add(btnClockOUt, "w " + btnSize + "!, h " + btnSize + "!"); //$NON-NLS-1$
@@ -282,5 +300,48 @@ public class HeaderPanel extends JPanel {
 
 	public void updateHomeView(boolean enable) {
 		btnHomeScreen.setVisible(enable);
+	}
+
+	/**
+	 * Cash-drawer / point-of-sale icon painted at run time so no external PNG
+	 * is needed. Looks like a small register with a drawer slot and pull.
+	 */
+	private static ImageIcon makeDrawerIcon(int size, Color color) {
+		BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2 = img.createGraphics();
+		try {
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.setColor(color);
+			float stroke = Math.max(1.6f, size / 14f);
+			g2.setStroke(new BasicStroke(stroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+			int pad     = Math.round(size * 0.10f);
+			int top     = pad;
+			int left    = pad;
+			int right   = size - pad;
+			int bottom  = size - pad;
+			int topBoxH = Math.round(size * 0.28f);          // small display screen on top
+			int midY    = top + topBoxH + Math.round(size * 0.06f);
+
+			// Display screen on top
+			g2.drawRoundRect(left, top, right - left, topBoxH, 3, 3);
+
+			// Register body
+			g2.drawRoundRect(left, midY, right - left, bottom - midY, 4, 4);
+
+			// Drawer slot line across the middle of the body
+			int slotY = midY + (bottom - midY) / 2;
+			g2.drawLine(left + Math.round(stroke), slotY, right - Math.round(stroke), slotY);
+
+			// Little drawer pull centred under the slot
+			int pullW = Math.round(size * 0.18f);
+			int pullH = Math.max(2, Math.round(size * 0.05f));
+			int pullX = (size - pullW) / 2;
+			int pullY = slotY + Math.round(size * 0.04f);
+			g2.fillRoundRect(pullX, pullY, pullW, pullH, 2, 2);
+		} finally {
+			g2.dispose();
+		}
+		return new ImageIcon(img);
 	}
 }

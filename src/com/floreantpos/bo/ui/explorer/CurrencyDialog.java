@@ -1,12 +1,10 @@
 package com.floreantpos.bo.ui.explorer;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.List;
 
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 import com.floreantpos.Messages;
 import com.floreantpos.model.Currency;
@@ -20,58 +18,36 @@ public class CurrencyDialog extends OkCancelOptionDialog {
 
 	public CurrencyDialog() {
 		JPanel contentPanel = getContentPanel();
-		this.getContentPane();
+		contentPanel.setLayout(new BorderLayout());
 		setTitle(Messages.getString("CurrencyDialog.0")); //$NON-NLS-1$
 		setTitlePaneText(Messages.getString("CurrencyDialog.0")); //$NON-NLS-1$
+		setOkButtonText("Close");
+
 		currencyExplorer = new CurrencyExplorer();
-		contentPanel.add(currencyExplorer);
+		contentPanel.add(currencyExplorer, BorderLayout.CENTER);
+
+		// Bigger dialog: 50% larger than before so the split + form breathe
+		setPreferredSize(new Dimension(1350, 960));
+		setMinimumSize(new Dimension(1080, 780));
 	}
 
 	@Override
 	public void doOk() {
-		List<Currency> currencyList = currencyExplorer.getModel().getRows();
-
-		Currency mainCurrency = null;
+		// Each row is saved individually via the inline form; OK just validates
+		// that a Main currency exists and closes the dialog.
+		List<Currency> currencyList = CurrencyDAO.getInstance().findAll();
 		boolean isMainSelected = false;
 		for (Currency currency : currencyList) {
 			if (currency.isMain()) {
 				isMainSelected = true;
-				mainCurrency = currency;
+				break;
 			}
 		}
-
 		if (!isMainSelected) {
-			POSMessageDialog.showMessage(POSUtil.getFocusedWindow(), Messages.getString("CurrencyDialog.2")); //$NON-NLS-1$
+			POSMessageDialog.showMessage(POSUtil.getFocusedWindow(),
+					Messages.getString("CurrencyDialog.2")); //$NON-NLS-1$
 			return;
 		}
-		else {
-			if (mainCurrency.getExchangeRate() != 1) {
-				if (POSMessageDialog.showYesNoQuestionDialog(this, Messages.getString("CurrencyDialog.3"), Messages.getString("CurrencyDialog.4")) == JOptionPane.OK_OPTION) { //$NON-NLS-1$ //$NON-NLS-2$
-					mainCurrency.setExchangeRate(1.0);
-				}
-				else {
-					return;
-				}
-			}
-		}
-
-		Session session = null;
-		Transaction tx = null;
-		try {
-			session = CurrencyDAO.getInstance().createNewSession();
-			tx = session.beginTransaction();
-
-			for (Currency currency : currencyList) {
-				session.saveOrUpdate(currency);
-			}
-			tx.commit();
-		} catch (Exception e) {
-			tx.rollback();
-			return;
-		} finally {
-			session.close();
-		}
-
 		setCanceled(true);
 		dispose();
 	}

@@ -29,6 +29,7 @@ public class Terminal extends BaseTerminal {
 	
 	public final static String PROP_AUTO_LOGIN_ENABLE = "auto.login.enable";
 	public final static String PROP_AUTO_LOGIN_USER_AUTO_ID = "auto.login.userAutoId";
+	public final static String PROP_DRAWER_SHIFT_NAME = "drawer.shift.name";
 
 	/*[CONSTRUCTOR MARKER BEGIN]*/
 	public Terminal () {

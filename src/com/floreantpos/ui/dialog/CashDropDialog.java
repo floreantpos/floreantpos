@@ -281,16 +281,25 @@ public class CashDropDialog extends POSDialog {
 
 			if (!dialog.isCanceled()) {
 				double amount = dialog.getValue();
+				Terminal current = Application.getInstance().refreshAndGetTerminal();
+				double currentBalance = current.getCurrentBalance() == null ? 0.0 : current.getCurrentBalance();
+				if (amount > currentBalance) {
+					POSMessageDialog.showError(this,
+							"Cash withdrawal cannot be more than cash drawer balance ("
+									+ NumberUtil.formatNumber(currentBalance) + ").");
+					return;
+				}
+
 				CashDropTransaction transaction = new CashDropTransaction();
 				transaction.setDrawerResetted(false);
-				transaction.setTerminal(Application.getInstance().getTerminal());
+				transaction.setTerminal(current);
 				transaction.setUser(Application.getCurrentUser());
 				transaction.setTransactionTime(new Date());
 				transaction.setAmount(amount);
 				transaction.setPaymentType(PaymentType.CASH.toString());
 
 				CashDropTransactionDAO dao = new CashDropTransactionDAO();
-				dao.saveNewCashDrop(transaction, Application.getInstance().getTerminal());
+				dao.saveNewCashDrop(transaction, current);
 
 				tableModel.addCashDrop(transaction);
 			}

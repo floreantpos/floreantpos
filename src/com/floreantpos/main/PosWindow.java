@@ -107,7 +107,7 @@ public class PosWindow extends JFrame implements WindowListener {
 		//		ImageIcon icon = IconFactory.getIcon("/ui_icons/", "footer-logo.png");
 		//		statusLabel.setIcon(icon);
 
-		statusLabel.setText("A Product by OROCUBE LLC.");
+		statusLabel.setText("A Product of OROCUBE LLC · Since 2008");
 		statusLabel.addMouseListener(new MouseListener() {
 
 			@Override
@@ -192,7 +192,7 @@ public class PosWindow extends JFrame implements WindowListener {
 			lblTime.setForeground(Color.WHITE);
 		} else {
 			infoPanel.setBackground(Color.WHITE);
-			statusLabel.setText("A Product by OROCUBE LLC."); //$NON-NLS-1$
+			statusLabel.setText("A Product of OROCUBE LLC · Since 2008"); //$NON-NLS-1$
 			statusLabel.setForeground(Color.BLACK);
 			statusLabel.setFont(statusLabel.getFont().deriveFont(Font.BOLD, (float) PosUIManager.getFontSize(12)));
 			lblTerminal.setForeground(Color.BLACK);

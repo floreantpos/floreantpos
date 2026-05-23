@@ -263,8 +263,8 @@ public class BackOfficeSidebarPanel extends JPanel {
             };
             headerBtn.setIcon(sectionIcon);
             headerBtn.setText(title.toUpperCase() + "  \u25B8");
-            headerBtn.setFont(new java.awt.Font(javax.swing.UIManager.getFont("Label.font").getFamily(), java.awt.Font.PLAIN, PosUIManager.getFontSize(13)));
-            headerBtn.setForeground(MUTED);
+            headerBtn.setFont(new java.awt.Font(javax.swing.UIManager.getFont("Label.font").getFamily(), java.awt.Font.BOLD, PosUIManager.getFontSize(14)));
+            headerBtn.setForeground(java.awt.Color.BLACK);
             headerBtn.setHorizontalAlignment(SwingConstants.LEFT);
             headerBtn.setHorizontalTextPosition(SwingConstants.RIGHT);
             headerBtn.setIconTextGap(10);
@@ -309,7 +309,7 @@ public class BackOfficeSidebarPanel extends JPanel {
             if (!collapsedMode) {
                 headerBtn.setText(title.toUpperCase() + arrow);
             }
-            headerBtn.setForeground(expand ? TEXT : MUTED);
+            headerBtn.setForeground(java.awt.Color.BLACK);
             // Invalidate from here up so BoxLayout re-queries getMaximumSize()
             invalidate();
             if (getParent() != null) getParent().revalidate();

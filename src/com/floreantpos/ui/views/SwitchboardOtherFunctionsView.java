@@ -71,20 +71,15 @@ public class SwitchboardOtherFunctionsView extends ViewPanel {
 
 		contentPanel = new JPanel(new MigLayout("hidemode 3,align 50% 50%, wrap 6", "sg fill", ""));
 
+		// Cash / drawer / tips / card-txn functions have moved to the new
+		// Cash & Card Management dialog (header register icon). The Other
+		// Functions screen now only carries Back Office and Kitchen Display.
 		List<PosAction> actions = new ArrayList();
 		actions.add(new ShowBackofficeAction());
+		actions.add(new ShowKitchenDisplayAction());
+		// drawerAction is kept as an instance for legacy refs (e.g. payment
+		// flow callers) but is NOT added to the visible action grid.
 		drawerAction = new DrawerAssignmentAction();
-		actions.add(drawerAction);
-		actions.add(new DrawerPullAction());
-		actions.add(new DrawerBleedAction());
-		actions.add(new DrawerKickAction());
-		actions.add(new PayoutAction());
-		actions.add(new ServerTipsAction());
-		actions.add(new ShowTransactionsAuthorizationsAction());
-		actions.add(new ShowKitchenDisplayAction()
-		/*); actions.add(new SwithboardViewAction()*/);
-		actions.add(new ManageTableLayoutAction());
-		actions.add(new ShowOnlineTicketManagementAction());
 
 		List<FloreantPlugin> plugins = ExtensionManager.getPlugins();
 		if (plugins != null) {

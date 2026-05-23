@@ -126,8 +126,8 @@ public class OrderView extends ViewPanel implements PaymentListener, TicketEditL
 	private OrderController orderController = new OrderController(this);
 
 	// Yellow background for Pay Total button when total > 0
-	private static final Color PAY_TOTAL_ACTIVE_BG  = new Color(0xFFB800);
-	private static final Color PAY_TOTAL_ACTIVE_FG  = Color.BLACK;
+	private static final Color PAY_TOTAL_ACTIVE_BG  = new Color(0xD9, 0x5B, 0x00); // darker orange
+	private static final Color PAY_TOTAL_ACTIVE_FG  = Color.WHITE;
 	private Color btnTotalPlusBg; // saved lazily on first activation
 
 	// All action buttons live in one single row.
@@ -450,7 +450,7 @@ btnCancel.addActionListener(new java.awt.event.ActionListener() {
 
 		// Icon and button size scale with screen DPI
 		int iconSize  = PosUIManager.getSize(30);
-		int btnHeight = PosUIManager.getSize(45);
+		int btnHeight = PosUIManager.getSize(34);
 
 		// Icons match the login-screen button style: icon LEFT, text RIGHT
 		setupActionButton(btnOrderType,          "btn_orders.png",           "Order Type",   iconSize); //$NON-NLS-1$ //$NON-NLS-2$
@@ -465,7 +465,9 @@ btnCancel.addActionListener(new java.awt.event.ActionListener() {
 		setupActionButton(btnHold,               "notification_off.png",     "Hold Order",   iconSize); //$NON-NLS-1$ //$NON-NLS-2$
 		setupActionButton(btnSend,               "btn_kitchen.png",          "Send Kitchen", iconSize); //$NON-NLS-1$ //$NON-NLS-2$
 		setupActionButton(btnCancel,             "btn_clockout.png",         "Cancel Order", iconSize); //$NON-NLS-1$ //$NON-NLS-2$
-		setupActionButton(btnTotalPlus,          "settle_ticket.png",        "Total",        iconSize); //$NON-NLS-1$ //$NON-NLS-2$
+		// Total uses a programmatically-drawn flat icon to match btn_*.png style
+		setupActionButtonNoIcon(btnTotalPlus, "Total");
+		btnTotalPlus.setIcon(makeTotalFlatIcon(iconSize, new Color(0x1E, 0x2D, 0x3D)));
 
 		// Single row — all buttons share space; hidemode 3 means hidden ones take no space
 		String cell      = "grow, push, sg btn, hmin " + btnHeight; //$NON-NLS-1$
@@ -519,6 +521,68 @@ btnCancel.addActionListener(new java.awt.event.ActionListener() {
 		btn.setText(text);
 		btn.setFont(btn.getFont().deriveFont(Font.BOLD, PosUIManager.getFontSize(11)));
 		btn.setForeground(new Color(0x1E2D3D));
+	}
+
+	/** Same as setupActionButton but skips icon loading — caller sets it. */
+	private void setupActionButtonNoIcon(PosButton btn, String text) {
+		btn.setUI(new com.floreantpos.swing.CardPosButtonUI());
+		btn.setText(text);
+		btn.setFont(btn.getFont().deriveFont(Font.BOLD, PosUIManager.getFontSize(11)));
+		btn.setForeground(new Color(0x1E2D3D));
+	}
+
+	/**
+	 * Programmatic flat "Total" icon — a small receipt with a dollar sign.
+	 * Matches the visual weight of the other btn_*.png action icons (single
+	 * dark colour, no shading).
+	 */
+	private static ImageIcon makeTotalFlatIcon(int size, Color color) {
+		java.awt.image.BufferedImage img =
+				new java.awt.image.BufferedImage(size, size, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+		java.awt.Graphics2D g2 = img.createGraphics();
+		try {
+			g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+			g2.setColor(color);
+			float stroke = Math.max(1.6f, size / 14f);
+			g2.setStroke(new java.awt.BasicStroke(stroke, java.awt.BasicStroke.CAP_ROUND, java.awt.BasicStroke.JOIN_ROUND));
+
+			int pad   = Math.round(size * 0.14f);
+			int left  = pad;
+			int right = size - pad;
+			int top   = pad;
+			int bottom = size - pad;
+
+			// Receipt outline with zig-zag bottom
+			java.awt.geom.Path2D.Double p = new java.awt.geom.Path2D.Double();
+			p.moveTo(left, top);
+			p.lineTo(right, top);
+			p.lineTo(right, bottom - size * 0.10);
+			// Bottom zig-zag
+			int teeth = 4;
+			double w = (right - left) / (double) teeth;
+			boolean down = true;
+			for (int i = 0; i < teeth; i++) {
+				double xs = right - w * i;
+				double xm = right - w * (i + 0.5);
+				double xe = right - w * (i + 1);
+				p.lineTo(xm, bottom);
+				p.lineTo(xe, bottom - size * 0.10);
+			}
+			p.lineTo(left, top);
+			p.closePath();
+			g2.draw(p);
+
+			// Big bold $ centred
+			java.awt.Font dollarFont = new java.awt.Font("Arial", java.awt.Font.BOLD, (int)(size * 0.55));
+			g2.setFont(dollarFont);
+			java.awt.FontMetrics fm = g2.getFontMetrics();
+			String dol = "$";
+			int dw = fm.stringWidth(dol);
+			g2.drawString(dol, (size - dw) / 2, (size + fm.getAscent() - fm.getDescent()) / 2);
+		} finally {
+			g2.dispose();
+		}
+		return new ImageIcon(img);
 	}
 
 	private JPanel createTicketSummeryPanel() {
